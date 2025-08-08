@@ -94,7 +94,7 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
         return (
           <Star
             key={ratingValue}
-            size={readOnly ? 14 : 20} {/* Changed size from 16 to 14 for readOnly */}
+            size={readOnly ? 14 : 20}
             className={cn(
               "transition-colors",
               isFilled
