@@ -1,12 +1,12 @@
 import { useParams, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowLeft } from "lucide-react";
+import { Star, ArrowLeft, Youtube } from "lucide-react"; // Added Youtube icon
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
-import PersonalRating from "@/components/PersonalRating"; // Import PersonalRating
+import PersonalRating from "@/components/PersonalRating";
 import { useSession } from "@/contexts/SessionContext";
 import { useQuery } from "@tanstack/react-query";
 
@@ -15,7 +15,7 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific U
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { session } = useSession();
-  const userId = session?.user?.id; // Keep userId for conditional interactive rating
+  const userId = session?.user?.id;
 
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loadingMovie, setLoadingMovie] = useState(true);
@@ -52,28 +52,28 @@ const MovieDetail = () => {
 
   // Fetch admin's personal rating for this movie (visible to all)
   const { data: adminPersonalRatingData, isLoading: isLoadingAdminPersonalRating } = useQuery({
-    queryKey: ['admin_user_rating', id, ADMIN_USER_ID], // Use a distinct query key
+    queryKey: ['admin_user_rating', id, ADMIN_USER_ID],
     queryFn: async () => {
       if (!id) return null;
       const { data, error } = await supabase
         .from('user_ratings')
         .select('rating')
-        .eq('user_id', ADMIN_USER_ID) // Always fetch for admin user
+        .eq('user_id', ADMIN_USER_ID)
         .eq('movie_id', id)
         .single();
-      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+      if (error && error.code !== 'PGRST116') {
         console.error("Error fetching admin's personal rating:", error);
         return null;
       }
       return data?.rating ?? null;
     },
-    enabled: !!id, // Only enable if movie ID is available
-    staleTime: 1000 * 60 * 5, // Cache personal rating for 5 minutes
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
   });
 
   // Fetch current user's personal rating (for interactive rating if logged in)
   const { data: currentUserPersonalRatingData, isLoading: isLoadingCurrentUserPersonalRating } = useQuery({
-    queryKey: ['current_user_rating', id, userId], // Use a distinct query key
+    queryKey: ['current_user_rating', id, userId],
     queryFn: async () => {
       if (!userId || !id) return null;
       const { data, error } = await supabase
@@ -88,10 +88,9 @@ const MovieDetail = () => {
       }
       return data?.rating ?? null;
     },
-    enabled: !!userId && !!id, // Only enable if user is logged in and movie ID is available
+    enabled: !!userId && !!id,
     staleTime: 1000 * 60 * 5,
   });
-
 
   if (loadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating) {
     return (
@@ -127,9 +126,27 @@ const MovieDetail = () => {
   
   const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
 
+  // Find movie logo
+  const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
+  const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
+
+  // Find YouTube trailer
+  const trailer = tmdbMovie?.videos?.results?.find(
+    (video: any) => video.type === "Trailer" && video.site === "YouTube"
+  );
+  const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
+
   return (
-    <div className="min-h-screen bg-background text-foreground py-12">
-      <div className="container mx-auto px-4">
+    <div className="relative min-h-screen bg-background text-foreground">
+      {/* Backdrop Image */}
+      {tmdbMovie?.backdrop_path && (
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-10 md:opacity-20"
+          style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path})` }}
+        ></div>
+      )}
+
+      <div className="relative z-10 container mx-auto px-4 py-8 md:py-12">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
@@ -146,14 +163,18 @@ const MovieDetail = () => {
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-                onError={(e) => (e.currentTarget.src = '/placeholder.svg')} // Fallback to generic placeholder on image error
+                onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
               />
             )}
           </div>
           <div className="md:col-span-2">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-              {movie.title}
-            </h1>
+            {logoUrl && !isLoadingTmdb ? (
+              <img src={logoUrl} alt={`${movie.title} logo`} className="max-h-24 md:max-h-32 mb-4 object-contain" />
+            ) : (
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+                {movie.title}
+              </h1>
+            )}
             <p className="text-xl text-muted-foreground mt-2">{movie.year}</p>
             <div className="flex items-center flex-wrap gap-4 mt-4">
               <div className="flex items-center gap-1">
@@ -187,7 +208,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              {isLoadingTmdb && !synopsis ? ( // Show skeleton only if TMDb is loading AND synopsis is empty
+              {isLoadingTmdb && !synopsis ? (
                 <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-full" />
@@ -199,7 +220,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Director</h2>
-               {isLoadingTmdb && !director ? ( // Show skeleton only if TMDb is loading AND director is empty
+               {isLoadingTmdb && !director ? (
                 <Skeleton className="h-4 w-1/2 mt-2" />
               ) : (
               <p className="mt-2 text-lg text-muted-foreground">{director}</p>
@@ -207,7 +228,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Cast</h2>
-               {isLoadingTmdb && !cast ? ( // Show skeleton only if TMDb is loading AND cast is empty
+               {isLoadingTmdb && !cast ? (
                  <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-2/3" />
@@ -216,6 +237,22 @@ const MovieDetail = () => {
               <p className="mt-2 text-lg text-muted-foreground">{cast}</p>
               )}
             </div>
+            {trailerUrl && (
+              <div className="mt-8">
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  <Youtube size={24} className="text-red-500" /> Trailer
+                </h2>
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
+                  <iframe
+                    className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+                    src={trailerUrl}
+                    title={`${movie.title} Trailer`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

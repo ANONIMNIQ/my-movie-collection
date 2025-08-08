@@ -21,7 +21,7 @@ export const useTmdbMovie = (title: string, year: string) => {
 
       const movieSummary = searchResults.results[0];
       const details = await fetchFromTmdb(`/movie/${movieSummary.id}`, {
-        append_to_response: "credits",
+        append_to_response: "credits,release_dates,images,videos", // Added images and videos
       });
       return details;
     },
