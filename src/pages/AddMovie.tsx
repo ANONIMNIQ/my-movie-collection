@@ -19,17 +19,6 @@ const AddMovie = () => {
   const navigate = useNavigate();
   const { session, loading: sessionLoading } = useSession();
 
-  useEffect(() => {
-    if (!sessionLoading) {
-      if (!session) {
-        navigate('/login');
-      } else if (session.user?.id !== ADMIN_USER_ID) {
-        showError("You do not have permission to add movies.");
-        navigate('/');
-      }
-    }
-  }, [session, sessionLoading, navigate]);
-
   const [formData, setFormData] = useState({
     title: "",
     year: "",
@@ -46,6 +35,17 @@ const AddMovie = () => {
   const [loading, setLoading] = useState(false);
   const [tmdbUrl, setTmdbUrl] = useState("");
   const [fetchingTmdb, setFetchingTmdb] = useState(false);
+
+  useEffect(() => {
+    if (!sessionLoading) {
+      if (!session) {
+        navigate('/login');
+      } else if (session.user?.id !== ADMIN_USER_ID) {
+        showError("You do not have permission to add movies.");
+        navigate('/');
+      }
+    }
+  }, [session, sessionLoading, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;

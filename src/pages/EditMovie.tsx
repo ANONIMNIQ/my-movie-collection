@@ -43,6 +43,49 @@ const EditMovie = () => {
   const [tmdbUrl, setTmdbUrl] = useState("");
   const [fetchingTmdb, setFetchingTmdb] = useState(false);
 
+  // Fetch main movie data using useQuery
+  const { data: movieData, isLoading: isLoadingMovieData, isError: isErrorMovieData } = useQuery<Movie, Error>({
+    queryKey: ["movie", id],
+    queryFn: async () => {
+      if (!id) throw new Error("Movie ID is missing.");
+      const { data, error } = await supabase
+        .from("movies")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching movie details:", error);
+        throw new Error("Failed to load movie details.");
+      }
+      return data as Movie;
+    },
+    enabled: !!id && !sessionLoading, // Only run this query if id is available and session is loaded
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    retry: false, // Do not retry on error, handle it directly
+  });
+
+  // Fetch current user's personal rating (for interactive rating if logged in)
+  const { data: currentUserPersonalRatingData, isLoading: isLoadingCurrentUserPersonalRating } = useQuery({
+    queryKey: ['current_user_rating', id, userId],
+    queryFn: async () => {
+      if (!userId || !id) return null;
+      const { data, error } = await supabase
+        .from('user_ratings')
+        .select('rating')
+        .eq('user_id', userId)
+        .eq('movie_id', id)
+        .single();
+      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+        console.error("Error fetching current user's personal rating:", error);
+        return null;
+      }
+      return data?.rating ?? null;
+    },
+    enabled: !!userId && !!id && !sessionLoading,
+    staleTime: 1000 * 60 * 5,
+  });
+
   useEffect(() => {
     if (!sessionLoading) {
       if (!session || session.user?.id !== ADMIN_USER_ID) {
@@ -50,54 +93,28 @@ const EditMovie = () => {
         navigate('/');
         return;
       }
-      fetchMovieData();
-    }
-  }, [session, sessionLoading, navigate, id]);
-
-  const fetchMovieData = async () => {
-    if (!id) {
-      setError("Movie ID is missing.");
-      setLoading(false);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("movies")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error("Error fetching movie:", error);
-      setError("Failed to load movie details: " + error.message);
-    } else if (data) {
-      setFormData({
-        title: data.title,
-        year: data.year,
-        genres: data.genres.join(", "),
-        rating: data.rating,
-        runtime: data.runtime,
-        community_rating: data.community_rating,
-        poster_url: data.poster_url,
-        synopsis: data.synopsis,
-        movie_cast: data.movie_cast.join(", "),
-        director: data.director,
-      });
-      // Fetch personal rating for this movie
-      if (userId) {
-        const { data: personalRatingData } = await supabase
-          .from('user_ratings')
-          .select('rating')
-          .eq('user_id', userId)
-          .eq('movie_id', id)
-          .single();
-        setPersonalRating(personalRatingData?.rating ?? null);
+      // Set initial form data and personal rating once movieData and currentUserPersonalRatingData are loaded
+      if (movieData && !isLoadingMovieData) {
+        setFormData({
+          title: movieData.title,
+          year: movieData.year,
+          genres: movieData.genres?.join(", ") || "",
+          rating: movieData.rating,
+          runtime: movieData.runtime,
+          community_rating: movieData.community_rating,
+          poster_url: movieData.poster_url,
+          synopsis: movieData.synopsis,
+          movie_cast: movieData.movie_cast?.join(", ") || "",
+          director: movieData.director,
+        });
+        setLoading(false);
       }
-    } else {
-      setError("Movie not found.");
+      if (!isLoadingCurrentUserPersonalRating) {
+        setPersonalRating(currentUserPersonalRatingData ?? null);
+      }
     }
-    setLoading(false);
-  };
+  }, [session, sessionLoading, navigate, movieData, isLoadingMovieData, currentUserPersonalRatingData, isLoadingCurrentUserPersonalRating]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -244,7 +261,10 @@ const EditMovie = () => {
     setLoading(false);
   };
 
-  if (sessionLoading || loading) {
+  // Combine all loading states for the skeleton
+  const overallLoading = sessionLoading || isLoadingMovieData || isLoadingCurrentUserPersonalRating || loading;
+
+  if (overallLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <Skeleton className="w-64 h-96 rounded-lg" />
@@ -252,18 +272,22 @@ const EditMovie = () => {
     );
   }
 
-  if (error) {
+  if (isErrorMovieData || !movieData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Error</h1>
-          <p className="text-xl text-muted-foreground mb-4">{error}</p>
+          <p className="text-xl text-muted-foreground mb-4">{error || "Failed to load movie details."}</p>
           <Link to="/" className="text-primary hover:underline">
             Back to Home
           </Link>
         </div>
       </div>
     );
+  }
+
+  if (!session || session.user?.id !== ADMIN_USER_ID) {
+    return null; // Redirect handled by useEffect
   }
 
   return (
