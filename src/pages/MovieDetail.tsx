@@ -5,10 +5,16 @@ import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Movie } from "@/data/movies"; // Keep for interface definition for now
+import { Movie } from "@/data/movies";
+import PersonalRating from "@/components/PersonalRating"; // Import PersonalRating
+import { useSession } from "@/contexts/SessionContext";
+import { useQuery } from "@tanstack/react-query";
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const { session } = useSession();
+  const userId = session?.user?.id;
+
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loadingMovie, setLoadingMovie] = useState(true);
   const [errorMovie, setErrorMovie] = useState<string | null>(null);
@@ -42,7 +48,28 @@ const MovieDetail = () => {
     movie?.year ?? "",
   );
 
-  if (loadingMovie) {
+  // Fetch personal rating for this movie
+  const { data: personalRatingData, isLoading: isLoadingPersonalRating } = useQuery({
+    queryKey: ['user_rating', id, userId],
+    queryFn: async () => {
+      if (!userId || !id) return null;
+      const { data, error } = await supabase
+        .from('user_ratings')
+        .select('rating')
+        .eq('user_id', userId)
+        .eq('movie_id', id)
+        .single();
+      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+        console.error("Error fetching personal rating:", error);
+        return null;
+      }
+      return data?.rating ?? null;
+    },
+    enabled: !!userId && !!id,
+    staleTime: 1000 * 60 * 5, // Cache personal rating for 5 minutes
+  });
+
+  if (loadingMovie || isLoadingPersonalRating) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Skeleton className="w-64 h-96 rounded-lg" />
@@ -65,7 +92,7 @@ const MovieDetail = () => {
 
   const posterUrl = tmdbMovie?.poster_path
     ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}`
-    : movie.poster_url; // Changed to movie.poster_url
+    : movie.poster_url;
   const synopsis = tmdbMovie?.overview || movie.synopsis;
   const cast =
     tmdbMovie?.credits?.cast
@@ -95,7 +122,7 @@ const MovieDetail = () => {
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-                onError={(e) => (e.currentTarget.src = movie.poster_url)} // Changed to movie.poster_url
+                onError={(e) => (e.currentTarget.src = movie.poster_url)}
               />
             )}
           </div>
@@ -114,6 +141,12 @@ const MovieDetail = () => {
               <Badge variant="outline">{movie.rating}</Badge>
               <span className="text-muted-foreground">{movie.runtime} min</span>
             </div>
+            {userId && (
+              <div className="mt-4 flex items-center gap-2">
+                <span className="text-lg font-semibold">Your Rating:</span>
+                <PersonalRating movieId={movie.id} initialRating={personalRatingData} />
+              </div>
+            )}
             <div className="flex flex-wrap gap-2 mt-4">
               {movie.genres.map((genre) => (
                 <Badge key={genre} variant="secondary">
