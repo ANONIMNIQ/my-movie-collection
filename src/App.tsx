@@ -8,7 +8,8 @@ import NotFound from "./pages/NotFound";
 import MovieDetail from "./pages/MovieDetail";
 import AddMovie from "./pages/AddMovie";
 import Login from "./pages/Login";
-import ImportMovies from "./pages/ImportMovies"; // Import the new ImportMovies page
+import ImportMovies from "./pages/ImportMovies";
+import EditMovie from "./pages/EditMovie"; // Import the new EditMovie page
 import { SessionContextProvider } from "./contexts/SessionContext";
 
 const queryClient = new QueryClient();
@@ -25,7 +26,8 @@ const App = () => (
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/add-movie" element={<AddMovie />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/import-movies" element={<ImportMovies />} /> {/* New route for importing movies */}
+            <Route path="/import-movies" element={<ImportMovies />} />
+            <Route path="/edit-movie/:id" element={<EditMovie />} /> {/* New route for editing movies */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
