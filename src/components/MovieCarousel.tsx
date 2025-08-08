@@ -6,6 +6,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  useCarousel, // Import useCarousel hook
 } from "@/components/ui/carousel";
 import { MovieCard } from './MovieCard';
 
@@ -21,6 +22,28 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     return null;
   }
 
+  const [api, setApi] = React.useState<ReturnType<typeof useCarousel>[0] | null>(null);
+  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
+  const [canScrollNext, setCanScrollNext] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    const onSelect = () => {
+      setCanScrollPrev(api.canScrollPrev());
+      setCanScrollNext(api.canScrollNext());
+    };
+
+    api.on("select", onSelect);
+    onSelect(); // Initial check
+
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
   return (
     <section className="mb-12 relative group">
       <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
@@ -29,6 +52,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           align: "start",
         }}
         className="w-full"
+        setApi={setApi} // Pass setApi to Carousel
       >
         <CarouselContent className="-ml-4">
           {movies.map((movie) => (
@@ -44,12 +68,20 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           ))}
         </CarouselContent>
         {/* Overlaid Navigation Arrows - now circular and positioned just over the edge */}
-        <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
-        <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+        {canScrollPrev && (
+          <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+        )}
+        {canScrollNext && (
+          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+        )}
 
         {/* Blur Overlays */}
-        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+        {canScrollPrev && (
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
+        )}
+        {canScrollNext && (
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+        )}
       </Carousel>
     </section>
   );
