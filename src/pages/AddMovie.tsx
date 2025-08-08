@@ -1,4 +1,4 @@
-import { useState, useEffect } => "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -143,8 +143,8 @@ const AddMovie = () => {
                 <Input id="runtime" value={formData.runtime} onChange={handleChange} />
               </div>
               <div>
-                <Label htmlFor="community_rating">Community Rating (e.g., 7.5)</Label> {/* Changed label htmlFor */}
-                <Input id="community_rating" type="number" step="0.1" value={formData.community_rating} onChange={handleChange} /> {/* Changed id and value */}
+                <Label htmlFor="community_rating">Community Rating (e.g., 7.5)</Label>
+                <Input id="community_rating" type="number" step="0.1" value={formData.community_rating} onChange={handleChange} />
               </div>
               <div>
                 <Label htmlFor="posterUrl">Poster URL</Label>
