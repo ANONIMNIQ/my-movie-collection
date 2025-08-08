@@ -10,14 +10,21 @@ import { showSuccess, showError } from "@/utils/toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "@/contexts/SessionContext"; // Import useSession
 
+const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
+
 const AddMovie = () => {
   const navigate = useNavigate();
   const { session, loading: sessionLoading } = useSession(); // Get session and loading state
 
-  // Redirect if not authenticated and session is loaded
+  // Redirect if not authenticated or if authenticated user is not the admin
   useEffect(() => {
-    if (!sessionLoading && !session) {
-      navigate('/login');
+    if (!sessionLoading) {
+      if (!session) {
+        navigate('/login');
+      } else if (session.user?.id !== ADMIN_USER_ID) {
+        showError("You do not have permission to add movies.");
+        navigate('/'); // Redirect non-admin users to home
+      }
     }
   }, [session, sessionLoading, navigate]);
 
@@ -43,6 +50,14 @@ const AddMovie = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    // Double-check authorization on submit for robustness
+    if (!session || session.user?.id !== ADMIN_USER_ID) {
+      showError("You do not have permission to add movies.");
+      setLoading(false);
+      navigate('/');
+      return;
+    }
 
     const { title, year, genres, rating, runtime, communityRating, posterUrl, synopsis, cast, director } = formData;
 
@@ -76,13 +91,19 @@ const AddMovie = () => {
     setLoading(false);
   };
 
-  // Render null or loading state while session is loading or if not authenticated
-  if (sessionLoading || !session) {
+  // Render loading state while session is loading
+  if (sessionLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <p>Loading authentication...</p>
       </div>
     );
+  }
+
+  // If session is loaded but user is not admin, this component won't render due to useEffect redirect
+  // This check is primarily for initial render before useEffect kicks in or if direct access is attempted
+  if (!session || session.user?.id !== ADMIN_USER_ID) {
+    return null; // Or a simple message, as useEffect will handle redirection
   }
 
   return (
