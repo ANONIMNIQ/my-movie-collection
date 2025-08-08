@@ -174,7 +174,7 @@ const Index = () => {
                     <Button variant="secondary">Import Movies (CSV)</Button>
                   </Link>
                 )}
-                <Link to="/import-ratings"> {/* New button for importing ratings */}
+                <Link to="/import-ratings">
                   <Button variant="outline">Import My Ratings</Button>
                 </Link>
                 <Button variant="outline" onClick={handleLogout}>
@@ -182,9 +182,8 @@ const Index = () => {
                 </Button>
               </>
             ) : (
-              <Link to="/login">
-                <Button>Login</Button>
-              </Link>
+              // Removed the login button here
+              <></>
             )}
           </div>
         </header>
