@@ -38,28 +38,47 @@ serve(async (req) => {
       }
     );
 
-    const moviesToInsert = movies_to_seed.map((movie: { title: string; tmdb_id: number }) => ({
+    // 1. Fetch existing tmdb_ids for this user to prevent duplicates
+    const { data: existingMovies, error: fetchError } = await supabaseClient
+      .from('movies')
+      .select('tmdb_id')
+      .eq('user_id', user_id);
+
+    if (fetchError) {
+      console.error('Supabase fetch error:', fetchError);
+      throw new Error(`Failed to fetch existing movies: ${fetchError.message}`);
+    }
+
+    const existingTmdbIds = new Set(existingMovies.map(movie => movie.tmdb_id));
+
+    // 2. Filter movies_to_seed to only include new movies for this user
+    const moviesToInsert = movies_to_seed.filter((movie: { title: string; tmdb_id: number }) =>
+      !existingTmdbIds.has(movie.tmdb_id)
+    ).map((movie: { title: string; tmdb_id: number }) => ({
       user_id: user_id,
       title: movie.title,
       tmdb_id: movie.tmdb_id,
     }));
 
-    // Use onConflict with doNothing() to ignore duplicates based on tmdb_id
+    if (moviesToInsert.length === 0) {
+      return new Response(JSON.stringify({ message: 'All provided movies already exist in your list. No new movies added.' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    }
+
+    // 3. Perform the insert operation for the filtered new movies
     const { data, error } = await supabaseClient
       .from('movies')
       .insert(moviesToInsert)
-      .onConflict('tmdb_id') // Specify the column with the unique constraint
-      .doNothing() // Tell Supabase to do nothing if a conflict occurs
-      .select(); // .select() is needed to get the inserted rows, even if doNothing() is used
+      .select(); // .select() is needed to get the inserted rows
 
     if (error) {
       console.error('Supabase insert error:', error);
       throw new Error(`Failed to insert movies into Supabase: ${error.message}`);
     }
 
-    // data will be null if all inserts were ignored due to conflict, so we check for that
-    const insertedCount = data ? data.length : 0;
-    return new Response(JSON.stringify({ message: `Successfully added ${insertedCount} new movies to your list!`, movies: data }), {
+    return new Response(JSON.stringify({ message: `Successfully added ${data.length} new movies to your list!`, movies: data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
