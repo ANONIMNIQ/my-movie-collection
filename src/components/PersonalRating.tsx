@@ -24,7 +24,10 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
 
   useEffect(() => {
     setCurrentRating(initialRating ?? null);
-  }, [initialRating]);
+    if (readOnly) {
+      console.log(`PersonalRating (readOnly) for movie ${movieId}: initialRating =`, initialRating);
+    }
+  }, [initialRating, movieId, readOnly]);
 
   const handleRatingClick = async (ratingValue: number) => {
     if (readOnly || !userId || loading) return;
@@ -54,6 +57,7 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
         setCurrentRating(null);
         showSuccess("Rating removed!");
         queryClient.invalidateQueries({ queryKey: ['user_rating', movieId, userId] });
+        queryClient.invalidateQueries({ queryKey: ['admin_user_rating', movieId, userId] }); // Invalidate admin rating too
       }
     } else {
       // Insert or update rating
@@ -71,6 +75,7 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
         setCurrentRating(newRating);
         showSuccess("Rating saved!");
         queryClient.invalidateQueries({ queryKey: ['user_rating', movieId, userId] });
+        queryClient.invalidateQueries({ queryKey: ['admin_user_rating', movieId, userId] }); // Invalidate admin rating too
       }
     }
     setLoading(false);
@@ -82,20 +87,20 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
     <div className="flex items-center gap-1">
       {Array.from({ length: 10 }).map((_, index) => {
         const ratingValue = index + 1;
+        const isFilled = readOnly
+          ? ratingValue <= (initialRating ?? 0)
+          : ratingValue <= (hoverRating || (currentRating ?? 0));
+
         return (
           <Star
             key={ratingValue}
             size={readOnly ? 16 : 20}
             className={cn(
-              "cursor-pointer transition-colors",
-              readOnly
-                ? ratingValue <= (initialRating ?? 0)
-                  ? "text-yellow-400"
-                  : "text-muted-foreground"
-                : ratingValue <= (hoverRating || (currentRating ?? 0))
-                  ? "text-yellow-400"
-                  : "text-gray-400 hover:text-yellow-300",
-              readOnly ? "" : "hover:scale-110",
+              "transition-colors",
+              isFilled
+                ? "text-yellow-400"
+                : "text-gray-400",
+              !readOnly && "cursor-pointer hover:text-yellow-300 hover:scale-110", // Only apply interactive styles if not readOnly
               loading ? "opacity-50 cursor-not-allowed" : ""
             )}
             onMouseEnter={() => !readOnly && setHoverRating(ratingValue)}
@@ -104,7 +109,12 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
           />
         );
       })}
-      {!readOnly && (
+      {readOnly && initialRating !== null && ( // Display numeric rating for readOnly
+        <span className="ml-1 text-sm font-medium text-muted-foreground">
+          {initialRating.toFixed(1)}
+        </span>
+      )}
+      {!readOnly && ( // Display "Rate it!" or current rating for interactive mode
         <span className="ml-2 text-sm font-medium">
           {displayRating !== null ? displayRating.toFixed(1) : 'Rate it!'}
         </span>

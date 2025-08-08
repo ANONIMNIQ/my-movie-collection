@@ -36,26 +36,22 @@ export const MovieCard = ({ movie, isSelected, onSelect }: MovieCardProps) => {
   const { session } = useSession();
   const queryClient = useQueryClient();
 
-  const userId = session?.user?.id;
-
-  // Fetch personal rating for this movie
-  const { data: personalRatingData } = useQuery({
-    queryKey: ['user_rating', movie.id, userId],
+  // Fetch admin's personal rating for this movie, visible to all
+  const { data: adminPersonalRatingData } = useQuery({
+    queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID], // Use a distinct query key
     queryFn: async () => {
-      if (!userId) return null;
       const { data, error } = await supabase
         .from('user_ratings')
         .select('rating')
-        .eq('user_id', userId)
+        .eq('user_id', ADMIN_USER_ID) // Always fetch for admin user
         .eq('movie_id', movie.id)
         .single();
       if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
-        console.error("Error fetching personal rating:", error);
+        console.error("Error fetching admin's personal rating:", error);
         return null;
       }
       return data?.rating ?? null;
     },
-    enabled: !!userId,
     staleTime: 1000 * 60 * 5, // Cache personal rating for 5 minutes
   });
 
@@ -108,13 +104,12 @@ export const MovieCard = ({ movie, isSelected, onSelect }: MovieCardProps) => {
             {movie.title}
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">{movie.year}</p>
-          {userId && (
-            <div className="mt-2 flex items-center">
-              <span className="text-sm text-muted-foreground mr-1">Your Rating:</span>
-              <PersonalRating movieId={movie.id} initialRating={personalRatingData} readOnly={true} />
-              {personalRatingData === null && <span className="text-sm text-muted-foreground ml-1">N/A</span>}
-            </div>
-          )}
+          {/* Always show admin's rating */}
+          <div className="mt-2 flex items-center">
+            <span className="text-sm text-muted-foreground mr-1">My Rating:</span>
+            <PersonalRating movieId={movie.id} initialRating={adminPersonalRatingData} readOnly={true} />
+            {adminPersonalRatingData === null && <span className="text-sm text-muted-foreground ml-1">N/A</span>}
+          </div>
         </div>
       </Link>
       {isAdmin && (
