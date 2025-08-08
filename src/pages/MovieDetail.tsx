@@ -2,10 +2,17 @@ import { useParams, Link } from "react-router-dom";
 import { movies } from "@/data/movies";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft } from "lucide-react";
+import { useTmdbMovie } from "@/hooks/useTmdbMovie";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
   const movie = movies.find((m) => m.id.toString() === id);
+
+  const { data: tmdbMovie, isLoading } = useTmdbMovie(
+    movie?.title ?? "",
+    movie?.year ?? "",
+  );
 
   if (!movie) {
     return (
@@ -20,6 +27,19 @@ const MovieDetail = () => {
     );
   }
 
+  const posterUrl = tmdbMovie?.poster_path
+    ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}`
+    : movie.posterUrl;
+  const synopsis = tmdbMovie?.overview || movie.synopsis;
+  const cast =
+    tmdbMovie?.credits?.cast
+      ?.slice(0, 10)
+      .map((c: any) => c.name)
+      .join(", ") || movie.cast.join(", ");
+  const director =
+    tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
+    movie.director;
+
   return (
     <div className="min-h-screen bg-background text-foreground py-12">
       <div className="container mx-auto px-4">
@@ -32,39 +52,69 @@ const MovieDetail = () => {
         </Link>
         <div className="grid md:grid-cols-3 gap-8 md:gap-12">
           <div className="md:col-span-1">
-            <img
-              src={movie.posterUrl}
-              alt={movie.title}
-              className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-            />
+            {isLoading ? (
+              <Skeleton className="w-full aspect-[2/3] rounded-lg" />
+            ) : (
+              <img
+                src={posterUrl}
+                alt={movie.title}
+                className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
+                onError={(e) => (e.currentTarget.src = movie.posterUrl)}
+              />
+            )}
           </div>
           <div className="md:col-span-2">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">{movie.title}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+              {movie.title}
+            </h1>
             <p className="text-xl text-muted-foreground mt-2">{movie.year}</p>
             <div className="flex items-center flex-wrap gap-4 mt-4">
               <div className="flex items-center gap-1">
                 <Star className="text-yellow-400" size={20} />
-                <span className="font-bold text-lg">{movie.communityRating.toFixed(1)}</span>
+                <span className="font-bold text-lg">
+                  {movie.communityRating.toFixed(1)}
+                </span>
               </div>
               <Badge variant="outline">{movie.rating}</Badge>
               <span className="text-muted-foreground">{movie.runtime} min</span>
             </div>
             <div className="flex flex-wrap gap-2 mt-4">
               {movie.genres.map((genre) => (
-                <Badge key={genre} variant="secondary">{genre}</Badge>
+                <Badge key={genre} variant="secondary">
+                  {genre}
+                </Badge>
               ))}
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              <p className="mt-2 text-lg text-muted-foreground">{movie.synopsis}</p>
+              {isLoading ? (
+                <div className="space-y-2 mt-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              ) : (
+                <p className="mt-2 text-lg text-muted-foreground">{synopsis}</p>
+              )}
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Director</h2>
-              <p className="mt-2 text-lg text-muted-foreground">{movie.director}</p>
+               {isLoading ? (
+                <Skeleton className="h-4 w-1/2 mt-2" />
+              ) : (
+              <p className="mt-2 text-lg text-muted-foreground">{director}</p>
+              )}
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Cast</h2>
-              <p className="mt-2 text-lg text-muted-foreground">{movie.cast.join(", ")}</p>
+               {isLoading ? (
+                 <div className="space-y-2 mt-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              ) : (
+              <p className="mt-2 text-lg text-muted-foreground">{cast}</p>
+              )}
             </div>
           </div>
         </div>
