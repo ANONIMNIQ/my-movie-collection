@@ -45,7 +45,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   return (
-    <section className="mb-12 relative group">
+    <section className="mb-12 relative group px-4"> {/* Added px-4 here */}
       <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
       <Carousel
         opts={{
@@ -54,7 +54,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="-ml-4 overflow-visible py-12"> {/* Increased py-4 to py-12 here */}
+        <CarouselContent className="-ml-4 overflow-visible py-12">
           {movies.map((movie) => {
             const [isHovered, setIsHovered] = React.useState(false);
             return (
