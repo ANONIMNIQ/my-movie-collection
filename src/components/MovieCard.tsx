@@ -4,7 +4,7 @@ import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Star, Play, Youtube, Info } from "lucide-react"; // Added Info icon
+import { Edit, Trash2, Star, Play, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -81,14 +81,14 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <Card
-      className={`relative overflow-hidden rounded-md transition-all duration-300 ease-in-out group
+      className={`relative overflow-hidden transition-all duration-300 ease-in-out group
         ${isHovered ? "scale-110 shadow-2xl z-30" : "scale-100 shadow-lg z-10"}
         h-full flex flex-col bg-card`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {isAdmin && (
-        <div className="absolute top-2 left-2 z-40"> {/* Higher z-index for controls */}
+        <div className="absolute top-2 left-2 z-40">
           <Checkbox
             checked={selectedMovieIds.has(movie.id)}
             onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
@@ -97,7 +97,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
         </div>
       )}
       
-      <div className="aspect-[2/3] w-full overflow-hidden bg-muted rounded-md">
+      <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
@@ -144,7 +144,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
       )}
 
       {isAdmin && (
-        <div className="absolute top-2 right-2 flex gap-2 z-40"> {/* Higher z-index for controls */}
+        <div className="absolute top-2 right-2 flex gap-2 z-40">
           <Link to={`/edit-movie/${movie.id}`}>
             <Button variant="secondary" size="icon" className="h-8 w-8">
               <Edit className="h-4 w-4" />

@@ -22,7 +22,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }
 
   return (
-    <section className="mb-12 relative group"> {/* Added relative and group for hover effects */}
+    <section className="mb-12 relative group">
       <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
       <Carousel
         opts={{
@@ -43,9 +43,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             </CarouselItem>
           ))}
         </CarouselContent>
-        {/* Overlaid Navigation Arrows */}
-        <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-r-md h-full w-12 flex items-center justify-center" />
-        <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-l-md h-full w-12 flex items-center justify-center" />
+        {/* Overlaid Navigation Arrows - now circular and positioned inside */}
+        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
 
         {/* Blur Overlays */}
         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
