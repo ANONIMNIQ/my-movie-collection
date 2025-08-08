@@ -21,17 +21,17 @@ export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<
       complete: (results) => {
         const movies: Movie[] = results.data
           .filter(row => row.Name && row.Year) // Ensure basic data exists
-          .map((row, index) => {
+          .map((row) => { // Removed index as it's no longer needed for ID generation
             const communityRating = parseFloat(row.CommunityRating);
             return {
-              id: `csv-${Date.now()}-${index}`, // Generate a unique ID for new entries
+              // Removed 'id' field here to let Supabase generate it automatically
               title: row.Name.trim(),
               year: row.Year.toString().trim(),
               genres: row.Genres ? row.Genres.split(';').map(g => g.trim()).filter(Boolean) : [],
               rating: row.ParentalRating ? row.ParentalRating.trim() : 'N/A',
               runtime: row.Runtime ? row.Runtime.toString().trim() : 'N/A',
               community_rating: isNaN(communityRating) ? null : communityRating,
-              poster_url: row.ImagePrimary && row.ImagePrimary !== 'x' ? row.ImagePrimary.trim() : '/placeholder.svg', // Changed to poster_url
+              poster_url: row.ImagePrimary && row.ImagePrimary !== 'x' ? row.ImagePrimary.trim() : '/placeholder.svg',
               synopsis: "", // Not available in CSV, default to empty
               movie_cast: [],
               director: "", // Not available in CSV, default to empty
