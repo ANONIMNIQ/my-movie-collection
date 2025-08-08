@@ -269,6 +269,11 @@ const Index = () => {
           </div>
         )}
 
+        {/* All Movies Title */}
+        {!loadingMovies && filteredMovies.length > 0 && (
+          <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">All Movies</h2>
+        )}
+
         {loadingMovies ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {Array.from({ length: 18 }).map((_, index) => (

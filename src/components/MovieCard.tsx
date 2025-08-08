@@ -36,7 +36,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
-  const [isHovered, setIsHovered] = React.useState(false); // Move state here
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -79,14 +79,18 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   );
   const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
 
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.backdrop_path}` : null;
+  const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
+  const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
+
   return (
     <div
       className={`relative h-full flex flex-col transition-all duration-300 ease-in-out overflow-visible
         ${isHovered ? "scale-125 z-30" : "scale-100 z-10"}`}
-      onMouseEnter={() => setIsHovered(true)} // Add handlers here
-      onMouseLeave={() => setIsHovered(false)} // Add handlers here
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="h-full flex flex-col bg-card overflow-visible"> {/* Card itself should be overflow-visible */}
+      <Card className="h-full flex flex-col bg-card overflow-visible">
         {isAdmin && (
           <div className="absolute top-2 left-2 z-40">
             <Checkbox
@@ -112,33 +116,57 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
         {/* Hover Overlay */}
         {isHovered && (
-          <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-end p-4 transition-opacity duration-300 z-20">
-            <h3 className="text-lg font-bold text-white line-clamp-2 mb-1">
-              {movie.title}
-            </h3>
-            <p className="text-sm text-gray-300 line-clamp-3 mb-2">
-              {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-            </p>
-            <div className="text-xs text-gray-400 mb-4">
-              <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-              <div className="flex items-center mt-1">
-                <Star className="text-yellow-400 h-3 w-3 mr-1" />
-                <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Link to={`/movie/${movie.id}`}>
-                <Button variant="secondary" className="w-full justify-center gap-2">
-                  <Info className="h-4 w-4" /> Info
-                </Button>
-              </Link>
-              {trailerUrl && (
-                <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" className="w-full justify-center gap-2">
-                    <Youtube className="h-4 w-4" /> Trailer
-                  </Button>
-                </a>
+          <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-lg overflow-hidden">
+            {/* Top section: Backdrop and Logo */}
+            <div
+              className="relative h-2/3 w-full bg-cover bg-center flex items-center justify-center p-2"
+              style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
+            >
+              {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+              {logoUrl && (
+                <img
+                  src={logoUrl}
+                  alt={`${movie.title} logo`}
+                  className="max-h-full max-w-full object-contain z-10"
+                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                />
               )}
+              {!backdropUrl && !logoUrl && (
+                <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
+              )}
+            </div>
+
+            {/* Bottom section: Movie Info and Buttons */}
+            <div className="h-1/3 w-full bg-black flex flex-col justify-between p-3 text-white">
+              <div>
+                <h3 className="text-lg font-bold line-clamp-1">
+                  {movie.title}
+                </h3>
+                <p className="text-xs text-gray-300 line-clamp-2 mb-1">
+                  {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+                </p>
+                <div className="text-xs text-gray-400">
+                  <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+                  <div className="flex items-center mt-1">
+                    <Star className="text-yellow-400 h-3 w-3 mr-1" />
+                    <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 mt-2">
+                <Link to={`/movie/${movie.id}`}>
+                  <Button variant="secondary" className="w-full justify-center gap-2 text-sm h-8">
+                    <Info className="h-4 w-4" /> Info
+                  </Button>
+                </Link>
+                {trailerUrl && (
+                  <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" className="w-full justify-center gap-2 text-sm h-8">
+                      <Youtube className="h-4 w-4" /> Trailer
+                    </Button>
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         )}
