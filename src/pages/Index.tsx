@@ -1,12 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
-import { movies } from "@/data/movies";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { Movie } from "@/data/movies"; // Keep for interface definition
 
 const Index = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [visibleCount, setVisibleCount] = useState(18);
-  const moviesToShow = movies.slice(0, visibleCount);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("movies")
+        .select("*")
+        .order("id", { ascending: true })
+        .range(0, visibleCount - 1); // Fetch up to visibleCount
+
+      if (error) {
+        console.error("Error fetching movies:", error);
+      } else {
+        setMovies(data || []);
+        setHasMore(data ? data.length === visibleCount : false);
+      }
+      setLoading(false);
+    };
+
+    fetchMovies();
+  }, [visibleCount]);
 
   const handleLoadMore = () => {
     setVisibleCount((prevCount) => prevCount + 18);
@@ -23,11 +47,19 @@ const Index = () => {
             A minimalist collection of cinematic gems.
           </p>
         </header>
-        <MovieGrid movies={moviesToShow} />
-        {visibleCount < movies.length && (
+        {loading && movies.length === 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            {Array.from({ length: 18 }).map((_, i) => (
+              <div key={i} className="w-full aspect-[2/3] bg-muted rounded-lg animate-pulse"></div>
+            ))}
+          </div>
+        ) : (
+          <MovieGrid movies={movies} />
+        )}
+        {hasMore && (
           <div className="text-center mt-12">
-            <Button onClick={handleLoadMore} size="lg">
-              Load More
+            <Button onClick={handleLoadMore} size="lg" disabled={loading}>
+              {loading ? "Loading..." : "Load More"}
             </Button>
           </div>
         )}
