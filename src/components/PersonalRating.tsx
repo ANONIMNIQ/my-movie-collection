@@ -116,7 +116,7 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
       )}
       {!readOnly && ( // Display "Rate it!" or current rating for interactive mode
         <span className="ml-2 text-sm font-medium">
-          {displayRating !== null ? displayRating.toFixed(1) : 'Rate it!'}
+          {typeof displayRating === 'number' ? displayRating.toFixed(1) : 'Rate it!'}
         </span>
       )}
     </div>
