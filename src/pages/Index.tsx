@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { MovieCarousel } from "@/components/MovieCarousel"; // Import MovieCarousel
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 const BATCH_SIZE = 50; // Define batch size for bulk operations
@@ -34,11 +35,12 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set()); // Corrected initialization
-  const [isDeleting, setIsDeleting] = useState(false); // New state for deletion in progress
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
+  const currentYear = new Date().getFullYear().toString();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -76,6 +78,10 @@ const Index = () => {
         movie.year.includes(lowerCaseQuery)
     );
   }, [movies, searchQuery]);
+
+  const newMovies = useMemo(() => {
+    return movies.filter(movie => movie.year === currentYear);
+  }, [movies, currentYear]);
 
   const moviesToShow = filteredMovies.slice(0, visibleCount);
 
@@ -198,6 +204,25 @@ const Index = () => {
             className="w-full"
           />
         </div>
+
+        {/* New Movies Carousel */}
+        {loadingMovies ? (
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">New Movies</h2>
+            <div className="flex overflow-hidden gap-4">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Skeleton key={index} className="aspect-[2/3] w-[180px] flex-shrink-0 rounded-lg" />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <MovieCarousel
+            title="New Movies"
+            movies={newMovies}
+            selectedMovieIds={selectedMovieIds}
+            onSelectMovie={handleSelectMovie}
+          />
+        )}
 
         {/* Admin Bulk Actions */}
         {isAdmin && (
