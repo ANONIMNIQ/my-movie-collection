@@ -119,7 +119,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
           <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-lg overflow-hidden">
             {/* Top section: Backdrop and Logo */}
             <div
-              className="relative h-2/3 w-full bg-cover bg-center flex items-center justify-center p-2"
+              className="relative h-1/2 w-full bg-cover bg-center flex items-center justify-center p-2"
               style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
             >
               {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
@@ -137,7 +137,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             </div>
 
             {/* Bottom section: Movie Info and Buttons */}
-            <div className="h-1/3 w-full bg-black flex flex-col justify-between p-3 text-white">
+            <div className="h-1/2 w-full bg-black flex flex-col justify-between p-3 text-white">
               <div>
                 <h3 className="text-lg font-bold line-clamp-1">
                   {movie.title}
