@@ -51,7 +51,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full"
+        className="w-full overflow-visible" // Add overflow-visible here
         setApi={setApi}
       >
         <CarouselContent className="-ml-4 overflow-visible"> {/* Ensure CarouselContent allows overflow */}
@@ -60,8 +60,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             return (
               <CarouselItem
                 key={movie.id}
-                className={`pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative transition-all duration-300 ease-in-out overflow-visible
-                  ${isHovered ? "scale-115 z-30" : "scale-100 z-10"}`}
+                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible" // Only overflow-visible here
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >

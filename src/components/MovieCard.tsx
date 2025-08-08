@@ -81,7 +81,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, isHoveredPro
 
   return (
     <Card
-      className="relative h-full flex flex-col bg-card overflow-visible" // Ensure overflow-visible here
+      className={`relative h-full flex flex-col bg-card transition-all duration-300 ease-in-out overflow-visible
+        ${isHoveredProp ? "scale-120 shadow-2xl z-30" : "scale-100 shadow-lg z-10"}`}
     >
       {isAdmin && (
         <div className="absolute top-2 left-2 z-40">
