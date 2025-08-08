@@ -109,7 +109,7 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
           />
         );
       })}
-      {readOnly && initialRating !== null && ( // Display numeric rating for readOnly
+      {readOnly && typeof initialRating === 'number' && initialRating !== null && ( // Added typeof check for initialRating
         <span className="ml-1 text-sm font-medium text-muted-foreground">
           {initialRating.toFixed(1)}
         </span>
