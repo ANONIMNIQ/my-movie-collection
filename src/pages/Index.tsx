@@ -1,31 +1,29 @@
+import { useEffect, useMemo } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useUserMovies } from "@/hooks/useUserMovies";
-import { useAllMovies } from "@/hooks/useAllMovies"; // Import the new hook
-import { useSession } from "@/integrations/supabase/auth";
-import { AddMovieForm } from "@/components/AddMovieForm";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useTmdbPopularMovies } from "@/hooks/useTmdbPopularMovies";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
-  const { session } = useSession();
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useTmdbPopularMovies();
 
-  // Conditionally use the appropriate hook based on session
-  const { data: userMovies, isLoading: isLoadingUserMovies, isError: isUserMoviesError } = useUserMovies();
-  const { data: allMovies, isLoading: isLoadingAllMovies, isError: isAllMoviesError } = useAllMovies();
-
-  const moviesToDisplay = session ? userMovies : allMovies;
-  const isLoading = session ? isLoadingUserMovies : isLoadingAllMovies;
-  const isError = session ? isUserMoviesError : isAllMoviesError;
-
-  const showAddMovieForm = !!session;
+  const movies = useMemo(() => {
+    return data?.pages.flatMap((page) => page.results) || [];
+  }, [data]);
 
   if (isError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <p className="text-lg text-destructive">
-          Error loading your movie list.
+          Error loading movies. Please check your TMDb API key.
         </p>
       </div>
     );
@@ -36,37 +34,26 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <header className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-            My Movie Collection
+            Popular Movies
           </h1>
           <p className="text-muted-foreground mt-2 text-lg">
-            Your personal list of favorite films.
+            Discover the latest and greatest films.
           </p>
-          {!session && (
-            <p className="text-muted-foreground mt-4">
-              <Link to="/login" className="text-primary hover:underline">
-                Log in
-              </Link> to manage your own collection.
-            </p>
-          )}
         </header>
-
-        {showAddMovieForm && <AddMovieForm />}
-
-        {isLoading ? (
+        {isLoading && movies.length === 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-            {Array.from({ length: 12 }).map((_, i) => (
+            {Array.from({ length: 18 }).map((_, i) => (
               <div key={i} className="w-full aspect-[2/3] bg-muted rounded-lg animate-pulse"></div>
             ))}
           </div>
-        ) : moviesToDisplay && moviesToDisplay.length > 0 ? (
-          <MovieGrid movies={moviesToDisplay} />
         ) : (
-          <div className="text-center text-muted-foreground text-lg mt-12">
-            {session ? (
-              "Your movie list is empty. Search and add some movies above!"
-            ) : (
-              "No movies to display. This list is currently empty."
-            )}
+          <MovieGrid movies={movies} />
+        )}
+        {hasNextPage && (
+          <div className="text-center mt-12">
+            <Button onClick={() => fetchNextPage()} size="lg" disabled={isFetchingNextPage}>
+              {isFetchingNextPage ? "Loading..." : "Load More"}
+            </Button>
           </div>
         )}
       </main>

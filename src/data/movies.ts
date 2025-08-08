@@ -25,20 +25,3 @@ export interface TmdbMovieDetail {
   };
   // Add other fields as needed from TMDb API
 }
-
-// New interface for movies stored in Supabase
-export interface Movie {
-  id: number; // Supabase ID
-  user_id: string;
-  title: string;
-  tmdb_id: number; // TMDb ID
-  created_at: string;
-  poster_path: string | null;
-  backdrop_path: string | null;
-  release_date: string | null;
-  overview: string | null;
-  genres: string[] | null; // Storing genre names as an array of strings
-  runtime: number | null;
-  tagline: string | null;
-  vote_average: number | null;
-}
