@@ -52,6 +52,7 @@ const Index = () => {
         setError("Failed to load movies.");
         setLoadingMovies(false);
       } else {
+        console.log("Fetched movies count:", data?.length); // Added console log here
         setMovies(data as Movie[]);
         setLoadingMovies(false);
       }
