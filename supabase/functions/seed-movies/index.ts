@@ -38,7 +38,16 @@ serve(async (req) => {
       }
     );
 
-    // 1. Fetch existing (user_id, tmdb_id) pairs for this user to prevent duplicates
+    // 1. Deduplicate movies_to_seed based on tmdb_id in case the input array has duplicates
+    const uniqueMoviesToSeedMap = new Map<number, { title: string; tmdb_id: number }>();
+    movies_to_seed.forEach((movie: { title: string; tmdb_id: number }) => {
+      if (!uniqueMoviesToSeedMap.has(movie.tmdb_id)) {
+        uniqueMoviesToSeedMap.set(movie.tmdb_id, movie);
+      }
+    });
+    const deduplicatedMoviesToSeed = Array.from(uniqueMoviesToSeedMap.values());
+
+    // 2. Fetch existing (user_id, tmdb_id) pairs for this user to prevent duplicates
     const { data: existingMovies, error: fetchError } = await supabaseClient
       .from('movies')
       .select('tmdb_id')
@@ -52,8 +61,8 @@ serve(async (req) => {
     // Create a set of existing tmdb_ids for the current user
     const existingTmdbIdsForUser = new Set(existingMovies.map(movie => movie.tmdb_id));
 
-    // 2. Filter movies_to_seed to only include new movies for this specific user
-    const moviesToInsert = movies_to_seed.filter((movie: { title: string; tmdb_id: number }) =>
+    // 3. Filter deduplicated_movies_to_seed to only include new movies for this specific user
+    const moviesToInsert = deduplicatedMoviesToSeed.filter((movie: { title: string; tmdb_id: number }) =>
       !existingTmdbIdsForUser.has(movie.tmdb_id)
     ).map((movie: { title: string; tmdb_id: number }) => ({
       user_id: user_id,
@@ -68,7 +77,7 @@ serve(async (req) => {
       });
     }
 
-    // 3. Perform the insert operation for the filtered new movies
+    // 4. Perform the insert operation for the filtered new movies
     const { data, error } = await supabaseClient
       .from('movies')
       .insert(moviesToInsert)
