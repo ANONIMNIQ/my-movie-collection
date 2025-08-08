@@ -104,7 +104,7 @@ const MovieDetail = () => {
     tmdbMovie?.credits?.cast
       ?.slice(0, 10)
       .map((c: any) => c.name)
-      .join(", ") || movie.cast.join(", ");
+      .join(", ") || movie.movie_cast.join(", "); // Use movie.movie_cast
   const director =
     tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
     movie.director;
