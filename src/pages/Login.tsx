@@ -6,7 +6,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-center text-foreground">Sign In / Sign Up</h2>
+        <h2 className="text-2xl font-bold text-center text-foreground">Sign In</h2>
         <Auth
           supabaseClient={supabase}
           providers={[]} // No third-party providers for now
@@ -33,6 +33,7 @@ const Login = () => {
             },
           }}
           theme="light"
+          view="sign_in" // This line ensures only the sign-in form is shown
         />
       </div>
     </div>
