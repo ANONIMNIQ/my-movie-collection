@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Play, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
@@ -99,7 +99,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
                 checked={selectedMovieIds.has(movie.id)}
                 onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
                 className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                onClick={(e) => e.stopPropagation()} {/* Prevent click from propagating to the Link */}
+                // Prevent click from propagating to the Link
+                onClick={(e) => e.stopPropagation()} 
               />
             </div>
           )}
@@ -157,9 +158,10 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
                   </div>
                 </div>
                 <div className="flex flex-row gap-1 mt-2">
-                  {/* Removed Info button as card itself is clickable */}
                   {trailerUrl && (
-                    <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={(e) => e.stopPropagation()}> {/* Stop propagation for trailer link */}
+                    <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1" 
+                       // Stop propagation for trailer link
+                       onClick={(e) => e.stopPropagation()}> 
                       <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
                         <Youtube className="h-3 w-3" /> Trailer
                       </Button>
@@ -172,14 +174,18 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
           {isAdmin && (
             <div className="absolute top-2 right-2 flex gap-2 z-40">
-              <Link to={`/edit-movie/${movie.id}`} onClick={(e) => e.stopPropagation()}> {/* Stop propagation for edit link */}
+              <Link to={`/edit-movie/${movie.id}`} 
+                    // Stop propagation for edit link
+                    onClick={(e) => e.stopPropagation()}> 
                 <Button variant="secondary" size="icon" className="h-8 w-8">
                   <Edit className="h-4 w-4" />
                 </Button>
               </Link>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}> {/* Stop propagation for delete trigger */}
+                  <Button variant="destructive" size="icon" className="h-8 w-8" 
+                          // Stop propagation for delete trigger
+                          onClick={(e) => e.stopPropagation()}> 
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </AlertDialogTrigger>
