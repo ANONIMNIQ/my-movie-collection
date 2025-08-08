@@ -8,17 +8,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies"; // Keep for interface definition
 
 const MovieDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: movieIdParam } = useParams<{ id: string }>();
+  const movieId = parseInt(movieIdParam || '', 10); // Parse to number
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loadingMovie, setLoadingMovie] = useState(true);
 
   useEffect(() => {
     const fetchMovie = async () => {
       setLoadingMovie(true);
+      // Ensure movieId is a valid number before fetching
+      if (isNaN(movieId)) {
+        console.error("Invalid movie ID:", movieIdParam);
+        setMovie(null);
+        setLoadingMovie(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("movies")
         .select("*")
-        .eq("id", id)
+        .eq("id", movieId) // Use parsed movieId
         .single();
 
       if (error) {
@@ -30,10 +39,10 @@ const MovieDetail = () => {
       setLoadingMovie(false);
     };
 
-    if (id) {
+    if (movieIdParam) { // Only fetch if ID param exists
       fetchMovie();
     }
-  }, [id]);
+  }, [movieIdParam, movieId]); // Depend on both original param and parsed number
 
   const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovie(
     movie?.title ?? "",
@@ -104,7 +113,7 @@ const MovieDetail = () => {
     tmdbMovie?.credits?.cast
       ?.slice(0, 10)
       .map((c: any) => c.name)
-      .join(", ") || movie.movie_cast.join(", "); // Use movie.movie_cast
+      .join(", ") || movie.movie_cast.join(", ");
   const director =
     tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
     movie.director;
@@ -141,7 +150,10 @@ const MovieDetail = () => {
               <div className="flex items-center gap-1">
                 <Star className="text-yellow-400" size={20} />
                 <span className="font-bold text-lg">
-                  {movie.communityRating.toFixed(1)}
+                  {/* Defensive check for communityRating */}
+                  {movie.communityRating !== undefined && movie.communityRating !== null
+                    ? movie.communityRating.toFixed(1)
+                    : 'N/A'}
                 </span>
               </div>
               <Badge variant="outline">{movie.rating}</Badge>
