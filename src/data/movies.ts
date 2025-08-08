@@ -1,5 +1,5 @@
 export interface Movie {
-  id: number;
+  id: string; // Changed from number to string for UUID
   title: string;
   year: string;
   genres: string[];
@@ -14,7 +14,7 @@ export interface Movie {
 
 export const movies: Movie[] = [
   {
-    id: 1,
+    id: "1",
     title: "[REC]",
     year: "2007",
     genres: ["Horror", "Thriller"],
@@ -27,7 +27,7 @@ export const movies: Movie[] = [
     director: "Jaume Balagueró, Paco Plaza",
   },
   {
-    id: 2,
+    id: "2",
     title: "#Alive",
     year: "2020",
     genres: ["Action", "Horror", "Thriller"],
@@ -40,7 +40,7 @@ export const movies: Movie[] = [
     director: "Il Cho",
   },
   {
-    id: 3,
+    id: "3",
     title: "3 Idiots",
     year: "2009",
     genres: ["Comedy", "Drama"],
@@ -53,7 +53,7 @@ export const movies: Movie[] = [
     director: "Rajkumar Hirani",
   },
   {
-    id: 4,
+    id: "4",
     title: "3-Iron",
     year: "2004",
     genres: ["Drama", "Romance"],
@@ -66,7 +66,7 @@ export const movies: Movie[] = [
     director: "Kim Ki-duk",
   },
   {
-    id: 5,
+    id: "5",
     title: "3:10 to Yuma",
     year: "2007",
     genres: ["Action", "Crime", "Drama"],
@@ -79,7 +79,7 @@ export const movies: Movie[] = [
     director: "James Mangold",
   },
   {
-    id: 6,
+    id: "6",
     title: "5 Centimeters per Second",
     year: "2007",
     genres: ["Animation", "Drama", "Romance"],
@@ -92,7 +92,7 @@ export const movies: Movie[] = [
     director: "Makoto Shinkai",
   },
   {
-    id: 7,
+    id: "7",
     title: "12 Angry Men",
     year: "1957",
     genres: ["Crime", "Drama"],
@@ -105,7 +105,7 @@ export const movies: Movie[] = [
     director: "Sidney Lumet",
   },
   {
-    id: 8,
+    id: "8",
     title: "28 Days Later",
     year: "2002",
     genres: ["Drama", "Horror", "Sci-Fi"],
@@ -118,7 +118,7 @@ export const movies: Movie[] = [
     director: "Danny Boyle",
   },
   {
-    id: 9,
+    id: "9",
     title: "2001: A Space Odyssey",
     year: "1968",
     genres: ["Adventure", "Sci-Fi"],
@@ -131,7 +131,7 @@ export const movies: Movie[] = [
     director: "Stanley Kubrick",
   },
   {
-    id: 10,
+    id: "10",
     title: "A.I. Artificial Intelligence",
     year: "2001",
     genres: ["Drama", "Sci-Fi"],
@@ -144,7 +144,7 @@ export const movies: Movie[] = [
     director: "Steven Spielberg",
   },
   {
-    id: 11,
+    id: "11",
     title: "About Time",
     year: "2013",
     genres: ["Comedy", "Drama", "Fantasy"],
@@ -157,7 +157,7 @@ export const movies: Movie[] = [
     director: "Richard Curtis",
   },
   {
-    id: 12,
+    id: "12",
     title: "The Abyss",
     year: "1989",
     genres: ["Adventure", "Drama", "Mystery"],
@@ -170,7 +170,7 @@ export const movies: Movie[] = [
     director: "James Cameron",
   },
   {
-    id: 13,
+    id: "13",
     title: "Adaptation.",
     year: "2002",
     genres: ["Comedy", "Drama"],
@@ -183,7 +183,7 @@ export const movies: Movie[] = [
     director: "Spike Jonze",
   },
   {
-    id: 14,
+    id: "14",
     title: "Aftersun",
     year: "2022",
     genres: ["Drama"],
@@ -196,7 +196,7 @@ export const movies: Movie[] = [
     director: "Charlotte Wells",
   },
   {
-    id: 15,
+    id: "15",
     title: "Air",
     year: "2023",
     genres: ["Drama", "Sport"],
@@ -209,7 +209,7 @@ export const movies: Movie[] = [
     director: "Ben Affleck",
   },
   {
-    id: 16,
+    id: "16",
     title: "Akira",
     year: "1988",
     genres: ["Animation", "Action", "Drama"],
@@ -222,7 +222,7 @@ export const movies: Movie[] = [
     director: "Katsuhiro Ôtomo",
   },
   {
-    id: 17,
+    id: "17",
     title: "Alien",
     year: "1979",
     genres: ["Horror", "Sci-Fi"],
@@ -235,7 +235,7 @@ export const movies: Movie[] = [
     director: "Ridley Scott",
   },
   {
-    id: 18,
+    id: "18",
     title: "Amélie",
     year: "2001",
     genres: ["Comedy", "Romance"],
@@ -248,7 +248,7 @@ export const movies: Movie[] = [
     director: "Jean-Pierre Jeunet",
   },
   {
-    id: 19,
+    id: "19",
     title: "American Beauty",
     year: "1999",
     genres: ["Drama"],
@@ -261,7 +261,7 @@ export const movies: Movie[] = [
     director: "Sam Mendes",
   },
   {
-    id: 20,
+    id: "20",
     title: "American Fiction",
     year: "2023",
     genres: ["Comedy", "Drama"],
@@ -274,7 +274,7 @@ export const movies: Movie[] = [
     director: "Cord Jefferson",
   },
   {
-    id: 21,
+    id: "21",
     title: "American History X",
     year: "1998",
     genres: ["Crime", "Drama"],
@@ -287,7 +287,7 @@ export const movies: Movie[] = [
     director: "Tony Kaye",
   },
   {
-    id: 22,
+    id: "22",
     title: "American Psycho",
     year: "2000",
     genres: ["Comedy", "Crime", "Drama"],
@@ -300,7 +300,7 @@ export const movies: Movie[] = [
     director: "Mary Harron",
   },
   {
-    id: 23,
+    id: "23",
     title: "Anatomy of a Fall",
     year: "2023",
     genres: ["Crime", "Drama", "Thriller"],
@@ -313,7 +313,7 @@ export const movies: Movie[] = [
     director: "Justine Triet",
   },
   {
-    id: 24,
+    id: "24",
     title: "Andhadhun",
     year: "2018",
     genres: ["Comedy", "Crime", "Music"],
@@ -326,7 +326,7 @@ export const movies: Movie[] = [
     director: "Sriram Raghavan",
   },
   {
-    id: 25,
+    id: "25",
     title: "Annihilation",
     year: "2018",
     genres: ["Adventure", "Drama", "Horror"],
@@ -339,7 +339,7 @@ export const movies: Movie[] = [
     director: "Alex Garland",
   },
   {
-    id: 26,
+    id: "26",
     title: "Another Round",
     year: "2020",
     genres: ["Comedy", "Drama"],
@@ -352,7 +352,7 @@ export const movies: Movie[] = [
     director: "Thomas Vinterberg",
   },
   {
-    id: 27,
+    id: "27",
     title: "Apocalypse Now",
     year: "1979",
     genres: ["Drama", "Mystery", "War"],
@@ -365,7 +365,7 @@ export const movies: Movie[] = [
     director: "Francis Ford Coppola",
   },
   {
-    id: 28,
+    id: "28",
     title: "Apocalypto",
     year: "2006",
     genres: ["Action", "Adventure", "Drama"],
@@ -378,7 +378,7 @@ export const movies: Movie[] = [
     director: "Mel Gibson",
   },
   {
-    id: 29,
+    id: "29",
     title: "Arrival",
     year: "2016",
     genres: ["Drama", "Mystery", "Sci-Fi"],
@@ -391,7 +391,7 @@ export const movies: Movie[] = [
     director: "Denis Villeneuve",
   },
   {
-    id: 30,
+    id: "30",
     title: "Atonement",
     year: "2007",
     genres: ["Drama", "Mystery", "Romance"],
@@ -404,7 +404,7 @@ export const movies: Movie[] = [
     director: "Joe Wright",
   },
   {
-    id: 31,
+    id: "31",
     title: "Baby Driver",
     year: "2017",
     genres: ["Action", "Crime", "Drama"],
@@ -417,7 +417,7 @@ export const movies: Movie[] = [
     director: "Edgar Wright",
   },
   {
-    id: 32,
+    id: "32",
     title: "Back to the Future",
     year: "1985",
     genres: ["Adventure", "Comedy", "Sci-Fi"],
@@ -430,7 +430,7 @@ export const movies: Movie[] = [
     director: "Robert Zemeckis",
   },
   {
-    id: 33,
+    id: "33",
     title: "Bad Education",
     year: "2019",
     genres: ["Comedy", "Crime", "Drama"],
@@ -443,7 +443,7 @@ export const movies: Movie[] = [
     director: "Cory Finley",
   },
   {
-    id: 34,
+    id: "34",
     title: "Bad Times at the El Royale",
     year: "2018",
     genres: ["Crime", "Drama", "Mystery"],
@@ -456,7 +456,7 @@ export const movies: Movie[] = [
     director: "Drew Goddard",
   },
   {
-    id: 35,
+    id: "35",
     title: "The Babadook",
     year: "2014",
     genres: ["Drama", "Horror"],
@@ -469,7 +469,7 @@ export const movies: Movie[] = [
     director: "Jennifer Kent",
   },
   {
-    id: 36,
+    id: "36",
     title: "The Banshees of Inisherin",
     year: "2022",
     genres: ["Comedy", "Drama"],
@@ -482,7 +482,7 @@ export const movies: Movie[] = [
     director: "Martin McDonagh",
   },
   {
-    id: 37,
+    id: "37",
     title: "Barbarian",
     year: "2022",
     genres: ["Horror", "Thriller"],
@@ -495,7 +495,7 @@ export const movies: Movie[] = [
     director: "Zach Cregger",
   },
   {
-    id: 38,
+    id: "38",
     title: "Barry Lyndon",
     year: "1975",
     genres: ["Adventure", "Drama", "History"],
@@ -508,7 +508,7 @@ export const movies: Movie[] = [
     director: "Stanley Kubrick",
   },
   {
-    id: 39,
+    id: "39",
     title: "Batman Begins",
     year: "2005",
     genres: ["Action", "Crime", "Drama"],
@@ -521,7 +521,7 @@ export const movies: Movie[] = [
     director: "Christopher Nolan",
   },
   {
-    id: 40,
+    id: "40",
     title: "Beau Is Afraid",
     year: "2023",
     genres: ["Comedy", "Drama", "Horror"],
@@ -534,7 +534,7 @@ export const movies: Movie[] = [
     director: "Ari Aster",
   },
   {
-    id: 41,
+    id: "41",
     title: "Before Sunrise",
     year: "1995",
     genres: ["Drama", "Romance"],
@@ -547,7 +547,7 @@ export const movies: Movie[] = [
     director: "Richard Linklater",
   },
   {
-    id: 42,
+    id: "42",
     title: "Being John Malkovich",
     year: "1999",
     genres: ["Comedy", "Drama", "Fantasy"],
@@ -560,7 +560,7 @@ export const movies: Movie[] = [
     director: "Spike Jonze",
   },
   {
-    id: 43,
+    id: "43",
     title: "The Big Lebowski",
     year: "1998",
     genres: ["Comedy", "Crime", "Sport"],
@@ -573,7 +573,7 @@ export const movies: Movie[] = [
     director: "Joel Coen, Ethan Coen",
   },
   {
-    id: 44,
+    id: "44",
     title: "Birdman or (The Unexpected Virtue of Ignorance)",
     year: "2014",
     genres: ["Comedy", "Drama"],
@@ -586,7 +586,7 @@ export const movies: Movie[] = [
     director: "Alejandro G. Iñárritu",
   },
   {
-    id: 45,
+    id: "45",
     title: "Blade Runner",
     year: "1982",
     genres: ["Action", "Drama", "Sci-Fi"],
@@ -599,7 +599,7 @@ export const movies: Movie[] = [
     director: "Ridley Scott",
   },
   {
-    id: 46,
+    id: "46",
     title: "Blade Runner 2049",
     year: "2017",
     genres: ["Action", "Drama", "Mystery"],
@@ -612,7 +612,7 @@ export const movies: Movie[] = [
     director: "Denis Villeneuve",
   },
   {
-    id: 47,
+    id: "47",
     title: "Blindspotting",
     year: "2018",
     genres: ["Comedy", "Crime", "Drama"],
@@ -625,7 +625,7 @@ export const movies: Movie[] = [
     director: "Carlos López Estrada",
   },
   {
-    id: 48,
+    id: "48",
     title: "Blue Velvet",
     year: "1986",
     genres: ["Drama", "Mystery", "Thriller"],
@@ -638,7 +638,7 @@ export const movies: Movie[] = [
     director: "David Lynch",
   },
   {
-    id: 49,
+    id: "49",
     title: "Booksmart",
     year: "2019",
     genres: ["Comedy"],
@@ -651,7 +651,7 @@ export const movies: Movie[] = [
     director: "Olivia Wilde",
   },
   {
-    id: 50,
+    id: "50",
     title: "Boyhood",
     year: "2014",
     genres: ["Drama"],
@@ -664,7 +664,7 @@ export const movies: Movie[] = [
     director: "Richard Linklater",
   },
   {
-    id: 51,
+    id: "51",
     title: "Brazil",
     year: "1985",
     genres: ["Comedy", "Drama", "Sci-Fi"],
@@ -677,7 +677,7 @@ export const movies: Movie[] = [
     director: "Terry Gilliam",
   },
   {
-    id: 52,
+    id: "52",
     title: "The Breakfast Club",
     year: "1985",
     genres: ["Comedy", "Drama"],
@@ -690,7 +690,7 @@ export const movies: Movie[] = [
     director: "John Hughes",
   },
   {
-    id: 53,
+    id: "53",
     title: "Brick",
     year: "2005",
     genres: ["Crime", "Drama", "Mystery"],
@@ -703,7 +703,7 @@ export const movies: Movie[] = [
     director: "Rian Johnson",
   },
   {
-    id: 54,
+    id: "54",
     title: "Bridge of Spies",
     year: "2015",
     genres: ["Drama", "History", "Thriller"],
@@ -716,7 +716,7 @@ export const movies: Movie[] = [
     director: "Steven Spielberg",
   },
   {
-    id: 55,
+    id: "55",
     title: "Burning",
     year: "2018",
     genres: ["Drama", "Mystery", "Thriller"],
@@ -729,7 +729,7 @@ export const movies: Movie[] = [
     director: "Lee Chang-dong",
   },
   {
-    id: 56,
+    id: "56",
     title: "Call Me by Your Name",
     year: "2017",
     genres: ["Drama", "Romance"],
@@ -742,7 +742,7 @@ export const movies: Movie[] = [
     director: "Luca Guadagnino",
   },
   {
-    id: 57,
+    id: "57",
     title: "Capernaum",
     year: "2018",
     genres: ["Drama"],
@@ -755,7 +755,7 @@ export const movies: Movie[] = [
     director: "Nadine Labaki",
   },
   {
-    id: 58,
+    id: "58",
     title: "Captain Fantastic",
     year: "2016",
     genres: ["Comedy", "Drama", "Romance"],
@@ -768,7 +768,7 @@ export const movies: Movie[] = [
     director: "Matt Ross",
   },
   {
-    id: 59,
+    id: "59",
     title: "Catch Me If You Can",
     year: "2002",
     genres: ["Biography", "Crime", "Drama"],
@@ -781,7 +781,7 @@ export const movies: Movie[] = [
     director: "Steven Spielberg",
   },
   {
-    id: 60,
+    id: "60",
     title: "Children of Men",
     year: "2006",
     genres: ["Action", "Drama", "Sci-Fi"],
@@ -794,7 +794,7 @@ export const movies: Movie[] = [
     director: "Alfonso Cuarón",
   },
   {
-    id: 61,
+    id: "61",
     title: "Chinatown",
     year: "1974",
     genres: ["Drama", "Mystery", "Thriller"],
@@ -807,7 +807,7 @@ export const movies: Movie[] = [
     director: "Roman Polanski",
   },
   {
-    id: 62,
+    id: "62",
     title: "City of God",
     year: "2002",
     genres: ["Crime", "Drama"],
@@ -820,7 +820,7 @@ export const movies: Movie[] = [
     director: "Fernando Meirelles, Kátia Lund",
   },
   {
-    id: 63,
+    id: "63",
     title: "Climax",
     year: "2018",
     genres: ["Drama", "Horror", "Music"],
@@ -833,7 +833,7 @@ export const movies: Movie[] = [
     director: "Gaspar Noé",
   },
   {
-    id: 64,
+    id: "64",
     title: "Close Encounters of the Third Kind",
     year: "1977",
     genres: ["Drama", "Sci-Fi"],
@@ -846,7 +846,7 @@ export const movies: Movie[] = [
     director: "Steven Spielberg",
   },
   {
-    id: 65,
+    id: "65",
     title: "Coco",
     year: "2017",
     genres: ["Animation", "Adventure", "Family"],
@@ -859,7 +859,7 @@ export const movies: Movie[] = [
     director: "Lee Unkrich, Adrian Molina",
   },
   {
-    id: 66,
+    id: "66",
     title: "Coherence",
     year: "2013",
     genres: ["Mystery", "Sci-Fi", "Thriller"],
@@ -872,7 +872,7 @@ export const movies: Movie[] = [
     director: "James Ward Byrkit",
   },
   {
-    id: 67,
+    id: "67",
     title: "Come and See",
     year: "1985",
     genres: ["Drama", "War"],
@@ -885,7 +885,7 @@ export const movies: Movie[] = [
     director: "Elem Klimov",
   },
   {
-    id: 68,
+    id: "68",
     title: "Contagion",
     year: "2011",
     genres: ["Drama", "Sci-Fi", "Thriller"],
@@ -898,7 +898,7 @@ export const movies: Movie[] = [
     director: "Steven Soderbergh",
   },
   {
-    id: 69,
+    id: "69",
     title: "The Conversation",
     year: "1974",
     genres: ["Drama", "Mystery", "Thriller"],
@@ -911,7 +911,7 @@ export const movies: Movie[] = [
     director: "Francis Ford Coppola",
   },
   {
-    id: 70,
+    id: "70",
     title: "The Cook, the Thief, His Wife & Her Lover",
     year: "1989",
     genres: ["Crime", "Drama", "Romance"],
@@ -924,7 +924,7 @@ export const movies: Movie[] = [
     director: "Peter Greenaway",
   },
   {
-    id: 71,
+    id: "71",
     title: "Crouching Tiger, Hidden Dragon",
     year: "2000",
     genres: ["Action", "Adventure", "Fantasy"],
@@ -937,7 +937,7 @@ export const movies: Movie[] = [
     director: "Ang Lee",
   },
   {
-    id: 72,
+    id: "72",
     title: "Dancer in the Dark",
     year: "2000",
     genres: ["Crime", "Drama", "Musical"],
@@ -950,7 +950,7 @@ export const movies: Movie[] = [
     director: "Lars von Trier",
   },
   {
-    id: 73,
+    id: "73",
     title: "The Dark Knight",
     year: "2008",
     genres: ["Action", "Crime", "Drama"],
@@ -963,7 +963,7 @@ export const movies: Movie[] = [
     director: "Christopher Nolan",
   },
   {
-    id: 74,
+    id: "74",
     title: "The Dark Knight Rises",
     year: "2012",
     genres: ["Action", "Adventure", "Thriller"],
@@ -976,7 +976,7 @@ export const movies: Movie[] = [
     director: "Christopher Nolan",
   },
   {
-    id: 75,
+    id: "75",
     title: "Dawn of the Dead",
     year: "1978",
     genres: ["Horror"],
@@ -989,7 +989,7 @@ export const movies: Movie[] = [
     director: "George A. Romero",
   },
   {
-    id: 76,
+    id: "76",
     title: "Dead Poets Society",
     year: "1989",
     genres: ["Comedy", "Drama"],
@@ -1002,7 +1002,7 @@ export const movies: Movie[] = [
     director: "Peter Weir",
   },
   {
-    id: 77,
+    id: "77",
     title: "The Deer Hunter",
     year: "1978",
     genres: ["Drama", "War"],
@@ -1015,7 +1015,7 @@ export const movies: Movie[] = [
     director: "Michael Cimino",
   },
   {
-    id: 78,
+    id: "78",
     title: "Departures",
     year: "2008",
     genres: ["Drama", "Music"],
@@ -1028,7 +1028,7 @@ export const movies: Movie[] = [
     director: "Yôjirô Takita",
   },
   {
-    id: 79,
+    id: "79",
     title: "The Departed",
     year: "2006",
     genres: ["Crime", "Drama", "Thriller"],
@@ -1041,7 +1041,7 @@ export const movies: Movie[] = [
     director: "Martin Scorsese",
   },
   {
-    id: 80,
+    id: "80",
     title: "District 9",
     year: "2009",
     genres: ["Action", "Sci-Fi", "Thriller"],
@@ -1054,7 +1054,7 @@ export const movies: Movie[] = [
     director: "Neill Blomkamp",
   },
   {
-    id: 81,
+    id: "81",
     title: "Dog Day Afternoon",
     year: "1975",
     genres: ["Biography", "Crime", "Drama"],
@@ -1067,7 +1067,7 @@ export const movies: Movie[] = [
     director: "Sidney Lumet",
   },
   {
-    id: 82,
+    id: "82",
     title: "Donnie Darko",
     year: "2001",
     genres: ["Drama", "Sci-Fi", "Thriller"],
@@ -1080,7 +1080,7 @@ export const movies: Movie[] = [
     director: "Richard Kelly",
   },
   {
-    id: 83,
+    id: "83",
     title: "Downfall",
     year: "2004",
     genres: ["Biography", "Drama", "History"],
@@ -1093,7 +1093,7 @@ export const movies: Movie[] = [
     director: "Oliver Hirschbiegel",
   },
   {
-    id: 84,
+    id: "84",
     title: "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
     year: "1964",
     genres: ["Comedy", "War"],
@@ -1106,7 +1106,7 @@ export const movies: Movie[] = [
     director: "Stanley Kubrick",
   },
   {
-    id: 85,
+    id: "85",
     title: "Dunkirk",
     year: "2017",
     genres: ["Action", "Drama", "History"],
@@ -1119,7 +1119,7 @@ export const movies: Movie[] = [
     director: "Christopher Nolan",
   },
   {
-    id: 86,
+    id: "86",
     title: "Edge of Tomorrow",
     year: "2014",
     genres: ["Action", "Sci-Fi"],
@@ -1132,7 +1132,7 @@ export const movies: Movie[] = [
     director: "Doug Liman",
   },
   {
-    id: 87,
+    id: "87",
     title: "Eighth Grade",
     year: "2018",
     genres: ["Comedy", "Drama"],
@@ -1145,7 +1145,7 @@ export const movies: Movie[] = [
     director: "Bo Burnham",
   },
   {
-    id: 88,
+    id: "88",
     title: "Everything Everywhere All at Once",
     year: "2022",
     genres: ["Action", "Adventure", "Comedy"],
@@ -1158,7 +1158,7 @@ export const movies: Movie[] = [
     director: "Daniel Kwan, Daniel Scheinert",
   },
   {
-    id: 89,
+    id: "89",
     title: "Ex Machina",
     year: "2014",
     genres: ["Drama", "Mystery", "Sci-Fi"],
@@ -1171,7 +1171,7 @@ export const movies: Movie[] = [
     director: "Alex Garland",
   },
   {
-    id: 90,
+    id: "90",
     title: "Fargo",
     year: "1996",
     genres: ["Crime", "Drama", "Thriller"],
@@ -1184,7 +1184,7 @@ export const movies: Movie[] = [
     director: "Joel Coen, Ethan Coen",
   },
   {
-    id: 91,
+    id: "91",
     title: "Fight Club",
     year: "1999",
     genres: ["Drama"],
@@ -1197,7 +1197,7 @@ export const movies: Movie[] = [
     director: "David Fincher",
   },
   {
-    id: 92,
+    id: "92",
     title: "Finding Nemo",
     year: "2003",
     genres: ["Animation", "Adventure", "Family"],
@@ -1210,7 +1210,7 @@ export const movies: Movie[] = [
     director: "Andrew Stanton, Lee Unkrich",
   },
   {
-    id: 93,
+    id: "93",
     title: "First Reformed",
     year: "2017",
     genres: ["Drama", "Thriller"],
@@ -1223,7 +1223,7 @@ export const movies: Movie[] = [
     director: "Paul Schrader",
   },
   {
-    id: 94,
+    id: "94",
     title: "Forrest Gump",
     year: "1994",
     genres: ["Comedy", "Drama", "Romance"],
@@ -1236,7 +1236,7 @@ export const movies: Movie[] = [
     director: "Robert Zemeckis",
   },
   {
-    id: 95,
+    id: "95",
     title: "Frances Ha",
     year: "2012",
     genres: ["Comedy", "Drama", "Romance"],
@@ -1249,7 +1249,7 @@ export const movies: Movie[] = [
     director: "Noah Baumbach",
   },
   {
-    id: 96,
+    id: "96",
     title: "The French Dispatch",
     year: "2021",
     genres: ["Comedy", "Drama", "Romance"],
@@ -1262,7 +1262,7 @@ export const movies: Movie[] = [
     director: "Wes Anderson",
   },
   {
-    id: 97,
+    id: "97",
     title: "Full Metal Jacket",
     year: "1987",
     genres: ["Drama", "War"],
@@ -1275,7 +1275,7 @@ export const movies: Movie[] = [
     director: "Stanley Kubrick",
   },
   {
-    id: 98,
+    id: "98",
     title: "Get Out",
     year: "2017",
     genres: ["Horror", "Mystery", "Thriller"],
@@ -1288,7 +1288,7 @@ export const movies: Movie[] = [
     director: "Jordan Peele",
   },
   {
-    id: 99,
+    id: "99",
     title: "Gladiator",
     year: "2000",
     genres: ["Action", "Adventure", "Drama"],
@@ -1301,7 +1301,7 @@ export const movies: Movie[] = [
     director: "Ridley Scott",
   },
   {
-    id: 100,
+    id: "100",
     title: "God's Own Country",
     year: "2017",
     genres: ["Drama", "Romance"],

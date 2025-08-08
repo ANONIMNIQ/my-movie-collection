@@ -1,20 +1,56 @@
 import { useParams, Link } from "react-router-dom";
-import { movies } from "@/data/movies";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Movie } from "@/data/movies"; // Keep for interface definition for now
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const movie = movies.find((m) => m.id.toString() === id);
+  const [movie, setMovie] = useState<Movie | null>(null);
+  const [loadingMovie, setLoadingMovie] = useState(true);
+  const [errorMovie, setErrorMovie] = useState<string | null>(null);
 
-  const { data: tmdbMovie, isLoading } = useTmdbMovie(
+  useEffect(() => {
+    const fetchMovie = async () => {
+      setLoadingMovie(true);
+      const { data, error } = await supabase
+        .from("movies")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching movie details:", error);
+        setErrorMovie("Failed to load movie details.");
+        setLoadingMovie(false);
+      } else {
+        setMovie(data as Movie);
+        setLoadingMovie(false);
+      }
+    };
+
+    if (id) {
+      fetchMovie();
+    }
+  }, [id]);
+
+  const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovie(
     movie?.title ?? "",
     movie?.year ?? "",
   );
 
-  if (!movie) {
+  if (loadingMovie) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Skeleton className="w-64 h-96 rounded-lg" />
+      </div>
+    );
+  }
+
+  if (errorMovie || !movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -52,7 +88,7 @@ const MovieDetail = () => {
         </Link>
         <div className="grid md:grid-cols-3 gap-8 md:gap-12">
           <div className="md:col-span-1">
-            {isLoading ? (
+            {isLoadingTmdb ? (
               <Skeleton className="w-full aspect-[2/3] rounded-lg" />
             ) : (
               <img
@@ -87,7 +123,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              {isLoading ? (
+              {isLoadingTmdb ? (
                 <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-full" />
@@ -99,7 +135,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Director</h2>
-               {isLoading ? (
+               {isLoadingTmdb ? (
                 <Skeleton className="h-4 w-1/2 mt-2" />
               ) : (
               <p className="mt-2 text-lg text-muted-foreground">{director}</p>
@@ -107,7 +143,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Cast</h2>
-               {isLoading ? (
+               {isLoadingTmdb ? (
                  <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-2/3" />
