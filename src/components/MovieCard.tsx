@@ -80,97 +80,99 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, isHoveredPro
   const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
 
   return (
-    <Card
-      className={`relative h-full flex flex-col bg-card transition-all duration-300 ease-in-out overflow-visible
-        ${isHoveredProp ? "scale-120 shadow-2xl z-30" : "scale-100 shadow-lg z-10"}`}
+    <div
+      className={`relative h-full flex flex-col transition-all duration-300 ease-in-out overflow-visible
+        ${isHoveredProp ? "scale-125 z-30" : "scale-100 z-10"}`}
     >
-      {isAdmin && (
-        <div className="absolute top-2 left-2 z-40">
-          <Checkbox
-            checked={selectedMovieIds.has(movie.id)}
-            onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
-            className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-          />
-        </div>
-      )}
-      
-      <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
-        {isLoading ? (
-          <Skeleton className="w-full h-full" />
-        ) : (
-          <img
-            src={posterUrl}
-            alt={movie.title}
-            className="w-full h-full object-cover"
-            onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
-          />
+      <Card className="h-full flex flex-col bg-card overflow-visible"> {/* Card itself should be overflow-visible */}
+        {isAdmin && (
+          <div className="absolute top-2 left-2 z-40">
+            <Checkbox
+              checked={selectedMovieIds.has(movie.id)}
+              onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
+              className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            />
+          </div>
         )}
-      </div>
+        
+        <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
+          {isLoading ? (
+            <Skeleton className="w-full h-full" />
+          ) : (
+            <img
+              src={posterUrl}
+              alt={movie.title}
+              className="w-full h-full object-cover"
+              onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
+            />
+          )}
+        </div>
 
-      {/* Hover Overlay */}
-      {isHoveredProp && (
-        <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-end p-4 transition-opacity duration-300 z-20">
-          <h3 className="text-lg font-bold text-white line-clamp-2 mb-1">
-            {movie.title}
-          </h3>
-          <p className="text-sm text-gray-300 line-clamp-3 mb-2">
-            {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-          </p>
-          <div className="text-xs text-gray-400 mb-4">
-            <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-            <div className="flex items-center mt-1">
-              <Star className="text-yellow-400 h-3 w-3 mr-1" />
-              <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
+        {/* Hover Overlay */}
+        {isHoveredProp && (
+          <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-end p-4 transition-opacity duration-300 z-20">
+            <h3 className="text-lg font-bold text-white line-clamp-2 mb-1">
+              {movie.title}
+            </h3>
+            <p className="text-sm text-gray-300 line-clamp-3 mb-2">
+              {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+            </p>
+            <div className="text-xs text-gray-400 mb-4">
+              <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+              <div className="flex items-center mt-1">
+                <Star className="text-yellow-400 h-3 w-3 mr-1" />
+                <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Link to={`/movie/${movie.id}`}>
+                <Button variant="secondary" className="w-full justify-center gap-2">
+                  <Info className="h-4 w-4" /> Info
+                </Button>
+              </Link>
+              {trailerUrl && (
+                <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" className="w-full justify-center gap-2">
+                    <Youtube className="h-4 w-4" /> Trailer
+                  </Button>
+                </a>
+              )}
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Link to={`/movie/${movie.id}`}>
-              <Button variant="secondary" className="w-full justify-center gap-2">
-                <Info className="h-4 w-4" /> Info
+        )}
+
+        {isAdmin && (
+          <div className="absolute top-2 right-2 flex gap-2 z-40">
+            <Link to={`/edit-movie/${movie.id}`}>
+              <Button variant="secondary" size="icon" className="h-8 w-8">
+                <Edit className="h-4 w-4" />
               </Button>
             </Link>
-            {trailerUrl && (
-              <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="w-full justify-center gap-2">
-                  <Youtube className="h-4 w-4" /> Trailer
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="icon" className="h-8 w-8">
+                  <Trash2 className="h-4 w-4" />
                 </Button>
-              </a>
-            )}
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the
+                    movie "{movie.title}" from your collection.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
-        </div>
-      )}
-
-      {isAdmin && (
-        <div className="absolute top-2 right-2 flex gap-2 z-40">
-          <Link to={`/edit-movie/${movie.id}`}>
-            <Button variant="secondary" size="icon" className="h-8 w-8">
-              <Edit className="h-4 w-4" />
-            </Button>
-          </Link>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="icon" className="h-8 w-8">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the
-                  movie "{movie.title}" from your collection.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-      )}
-    </Card>
+        )}
+      </Card>
+    </div>
   );
 };

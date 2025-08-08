@@ -16,7 +16,7 @@ export const MovieGrid = ({ movies, selectedMovieIds, onSelectMovie }: MovieGrid
         return (
           <div
             key={movie.id}
-            className="relative overflow-visible" // Only overflow-visible here
+            className="relative overflow-visible" // Ensure overflow-visible here
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
