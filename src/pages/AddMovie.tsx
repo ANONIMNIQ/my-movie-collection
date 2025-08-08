@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } => "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ const AddMovie = () => {
     genres: "",
     rating: "",
     runtime: "",
-    communityRating: "",
+    community_rating: "", // Changed from 'communityRating' to 'community_rating'
     posterUrl: "",
     synopsis: "",
     movie_cast: "", // Changed from 'cast' to 'movie_cast'
@@ -59,10 +59,10 @@ const AddMovie = () => {
       return;
     }
 
-    const { title, year, genres, rating, runtime, communityRating, posterUrl, synopsis, movie_cast, director } = formData; // Changed 'cast' to 'movie_cast'
+    const { title, year, genres, rating, runtime, community_rating, posterUrl, synopsis, movie_cast, director } = formData; // Changed 'communityRating' to 'community_rating'
 
-    // Safely parse communityRating, setting to null if empty or results in NaN
-    const parsedCommunityRating = communityRating ? parseFloat(communityRating) : null;
+    // Safely parse community_rating, setting to null if empty or results in NaN
+    const parsedCommunityRating = community_rating ? parseFloat(community_rating) : null;
     const finalCommunityRating = isNaN(parsedCommunityRating as number) ? null : parsedCommunityRating;
 
     const movieData = {
@@ -143,8 +143,8 @@ const AddMovie = () => {
                 <Input id="runtime" value={formData.runtime} onChange={handleChange} />
               </div>
               <div>
-                <Label htmlFor="communityRating">Community Rating (e.g., 7.5)</Label>
-                <Input id="communityRating" type="number" step="0.1" value={formData.communityRating} onChange={handleChange} />
+                <Label htmlFor="community_rating">Community Rating (e.g., 7.5)</Label> {/* Changed label htmlFor */}
+                <Input id="community_rating" type="number" step="0.1" value={formData.community_rating} onChange={handleChange} /> {/* Changed id and value */}
               </div>
               <div>
                 <Label htmlFor="posterUrl">Poster URL</Label>
@@ -155,8 +155,8 @@ const AddMovie = () => {
                 <Textarea id="synopsis" value={formData.synopsis} onChange={handleChange} rows={5} />
               </div>
               <div>
-                <Label htmlFor="movie_cast">Cast (comma-separated)</Label> {/* Changed label htmlFor */}
-                <Textarea id="movie_cast" value={formData.movie_cast} onChange={handleChange} rows={3} placeholder="e.g., Actor 1, Actor 2, Actor 3" /> {/* Changed id and value */}
+                <Label htmlFor="movie_cast">Cast (comma-separated)</Label>
+                <Textarea id="movie_cast" value={formData.movie_cast} onChange={handleChange} rows={3} placeholder="e.g., Actor 1, Actor 2, Actor 3" />
               </div>
               <div>
                 <Label htmlFor="director">Director</Label>

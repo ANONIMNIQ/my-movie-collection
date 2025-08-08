@@ -108,7 +108,7 @@ const MovieDetail = () => {
               <div className="flex items-center gap-1">
                 <Star className="text-yellow-400" size={20} />
                 <span className="font-bold text-lg">
-                  {movie.communityRating?.toFixed(1) ?? "N/A"}
+                  {movie.community_rating?.toFixed(1) ?? "N/A"} {/* Changed to community_rating */}
                 </span>
               </div>
               <Badge variant="outline">{movie.rating}</Badge>

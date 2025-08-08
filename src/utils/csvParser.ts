@@ -30,7 +30,7 @@ export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<
               genres: row.Genres ? row.Genres.split(';').map(g => g.trim()).filter(Boolean) : [],
               rating: row.ParentalRating ? row.ParentalRating.trim() : 'N/A',
               runtime: row.Runtime ? row.Runtime.toString().trim() : 'N/A',
-              communityRating: isNaN(communityRating) ? null : communityRating,
+              community_rating: isNaN(communityRating) ? null : communityRating, // Changed to community_rating
               posterUrl: row.ImagePrimary && row.ImagePrimary !== 'x' ? row.ImagePrimary.trim() : '/placeholder.svg',
               synopsis: "", // Not available in CSV, default to empty
               movie_cast: [],     // Changed from 'cast' to 'movie_cast'
