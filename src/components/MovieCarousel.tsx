@@ -54,7 +54,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="-ml-4 overflow-visible py-4"> {/* Added py-4 here */}
+        <CarouselContent className="-ml-4 overflow-visible py-12"> {/* Increased py-4 to py-12 here */}
           {movies.map((movie) => {
             const [isHovered, setIsHovered] = React.useState(false);
             return (
