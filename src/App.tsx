@@ -7,8 +7,9 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MovieDetail from "./pages/MovieDetail";
 import AddMovie from "./pages/AddMovie";
-import Login from "./pages/Login"; // Import the new Login page
-import { SessionContextProvider } from "./contexts/SessionContext"; // Import SessionContextProvider
+import Login from "./pages/Login";
+import ImportMovies from "./pages/ImportMovies"; // Import the new ImportMovies page
+import { SessionContextProvider } from "./contexts/SessionContext";
 
 const queryClient = new QueryClient();
 
@@ -18,12 +19,13 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SessionContextProvider> {/* Wrap routes with SessionContextProvider */}
+        <SessionContextProvider>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/add-movie" element={<AddMovie />} />
-            <Route path="/login" element={<Login />} /> {/* New route for login */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/import-movies" element={<ImportMovies />} /> {/* New route for importing movies */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

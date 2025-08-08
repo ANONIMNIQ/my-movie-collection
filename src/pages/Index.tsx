@@ -6,10 +6,12 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSession } from "@/contexts/SessionContext"; // Import useSession
+import { useSession } from "@/contexts/SessionContext";
+
+const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
 const Index = () => {
-  const { session, loading: sessionLoading } = useSession(); // Get session and loading state
+  const { session, loading: sessionLoading } = useSession();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loadingMovies, setLoadingMovies] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +66,11 @@ const Index = () => {
                 <Link to="/add-movie">
                   <Button>Add New Movie</Button>
                 </Link>
+                {session.user?.id === ADMIN_USER_ID && ( // Only show import button for admin
+                  <Link to="/import-movies">
+                    <Button variant="secondary">Import Movies (CSV)</Button>
+                  </Link>
+                )}
                 <Button variant="outline" onClick={handleLogout}>
                   Logout
                 </Button>
