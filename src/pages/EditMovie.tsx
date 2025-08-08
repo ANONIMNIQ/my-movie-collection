@@ -201,6 +201,10 @@ const EditMovie = () => {
       console.error("Error updating movie:", updateError);
       showError("Failed to update movie: " + updateError.message);
     } else {
+      // Invalidate caches to ensure fresh data is displayed on other pages
+      queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: ["tmdb", title, year] }); // Invalidate specific TMDb query
+
       // Update personal rating if changed
       if (userId && id) {
         if (personalRating !== null) {
