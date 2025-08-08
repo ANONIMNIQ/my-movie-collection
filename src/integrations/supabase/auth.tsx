@@ -23,16 +23,21 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
 
     getSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } = {} } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (!session) {
-        navigate('/login');
-      } else if (window.location.pathname === '/login') {
+      // If a session exists and the user is on the login page, redirect to home
+      if (session && window.location.pathname === '/login') {
         navigate('/');
       }
+      // Do NOT redirect to /login if session is null and user is on home page.
+      // The Index component will handle showing content based on session.
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, [navigate]);
 
   if (loading) {

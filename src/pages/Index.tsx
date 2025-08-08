@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,22 +11,8 @@ const Index = () => {
   const { session } = useSession();
   const { data: movies, isLoading, isError } = useUserMovies();
 
-  if (!session) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4">
-        <h1 className="text-3xl font-bold mb-4">Welcome to Your Movie List!</h1>
-        <p className="text-lg text-muted-foreground mb-6 text-center">
-          Please log in to manage your personal movie collection.
-        </p>
-        <Link to="/login">
-          <Button size="lg">Go to Login</Button>
-        </Link>
-        <footer className="py-8 absolute bottom-0">
-          <MadeWithDyad />
-        </footer>
-      </div>
-    );
-  }
+  // Determine if the AddMovieForm should be shown
+  const showAddMovieForm = !!session;
 
   if (isError) {
     return (
@@ -49,11 +34,18 @@ const Index = () => {
           <p className="text-muted-foreground mt-2 text-lg">
             Your personal list of favorite films.
           </p>
+          {!session && (
+            <p className="text-muted-foreground mt-4">
+              <Link to="/login" className="text-primary hover:underline">
+                Log in
+              </Link> to manage your own collection.
+            </p>
+          )}
         </header>
 
-        <AddMovieForm />
+        {showAddMovieForm && <AddMovieForm />}
 
-        {isLoading ? (
+        {isLoading && showAddMovieForm ? ( // Only show skeleton if logged in and loading
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="w-full aspect-[2/3] bg-muted rounded-lg animate-pulse"></div>
@@ -63,7 +55,11 @@ const Index = () => {
           <MovieGrid movies={movies} />
         ) : (
           <div className="text-center text-muted-foreground text-lg mt-12">
-            Your movie list is empty. Search and add some movies above!
+            {session ? (
+              "Your movie list is empty. Search and add some movies above!"
+            ) : (
+              "No movies to display. Log in to see your collection or add new movies."
+            )}
           </div>
         )}
       </main>
