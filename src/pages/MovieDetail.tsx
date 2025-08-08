@@ -1,45 +1,20 @@
 import { useParams, Link } from "react-router-dom";
+import { movies } from "@/data/movies";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Movie } from "@/data/movies"; // Import the updated Movie interface
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const movie = movies.find((m) => m.id.toString() === id);
 
-  const { data: movie, isLoading: isMovieLoading, isError: isMovieError } = useQuery({
-    queryKey: ["movie", id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("movies")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error) throw error;
-      return data as Movie;
-    },
-    enabled: !!id,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-  });
-
-  const { data: tmdbMovie, isLoading: isTmdbLoading } = useTmdbMovie(
+  const { data: tmdbMovie, isLoading } = useTmdbMovie(
     movie?.title ?? "",
     movie?.year ?? "",
   );
 
-  if (isMovieLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading movie details...</p>
-      </div>
-    );
-  }
-
-  if (isMovieError || !movie) {
+  if (!movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -54,13 +29,13 @@ const MovieDetail = () => {
 
   const posterUrl = tmdbMovie?.poster_path
     ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}`
-    : movie.poster_url; // Changed to movie.poster_url
+    : movie.posterUrl;
   const synopsis = tmdbMovie?.overview || movie.synopsis;
   const cast =
     tmdbMovie?.credits?.cast
       ?.slice(0, 10)
       .map((c: any) => c.name)
-      .join(", ") || movie.movie_cast.join(", ");
+      .join(", ") || movie.cast.join(", ");
   const director =
     tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
     movie.director;
@@ -77,14 +52,14 @@ const MovieDetail = () => {
         </Link>
         <div className="grid md:grid-cols-3 gap-8 md:gap-12">
           <div className="md:col-span-1">
-            {isTmdbLoading ? (
+            {isLoading ? (
               <Skeleton className="w-full aspect-[2/3] rounded-lg" />
             ) : (
               <img
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-                onError={(e) => (e.currentTarget.src = movie.poster_url)} // Changed to movie.poster_url
+                onError={(e) => (e.currentTarget.src = movie.posterUrl)}
               />
             )}
           </div>
@@ -97,7 +72,7 @@ const MovieDetail = () => {
               <div className="flex items-center gap-1">
                 <Star className="text-yellow-400" size={20} />
                 <span className="font-bold text-lg">
-                  {movie.community_rating.toFixed(1)} {/* Changed to movie.community_rating */}
+                  {movie.communityRating.toFixed(1)}
                 </span>
               </div>
               <Badge variant="outline">{movie.rating}</Badge>
@@ -112,7 +87,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              {isTmdbLoading ? (
+              {isLoading ? (
                 <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-full" />
@@ -124,7 +99,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Director</h2>
-               {isTmdbLoading ? (
+               {isLoading ? (
                 <Skeleton className="h-4 w-1/2 mt-2" />
               ) : (
               <p className="mt-2 text-lg text-muted-foreground">{director}</p>
@@ -132,7 +107,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Cast</h2>
-               {isTmdbLoading ? (
+               {isLoading ? (
                  <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-2/3" />

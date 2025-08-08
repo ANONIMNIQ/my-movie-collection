@@ -13,7 +13,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
 
   const posterUrl = tmdbMovie?.poster_path
     ? `https://image.tmdb.org/t/p/w500${tmdbMovie.poster_path}`
-    : movie.poster_url; // Changed to movie.poster_url
+    : movie.posterUrl;
 
   return (
     <Link to={`/movie/${movie.id}`} className="block group">
@@ -28,7 +28,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
                 alt={movie.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 // Use placeholder on error
-                onError={(e) => (e.currentTarget.src = movie.poster_url)} // Changed to movie.poster_url
+                onError={(e) => (e.currentTarget.src = movie.posterUrl)}
               />
             )}
           </div>
