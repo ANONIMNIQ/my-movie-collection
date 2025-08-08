@@ -7,11 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
-import { Input } from "@/components/ui/input"; // Import Input for search bar
-import { Checkbox } from "@/components/ui/checkbox"; // Import Checkbox for select all
-import { Trash2 } from "lucide-react"; // Import Trash2 icon
-import { showSuccess, showError } from "@/utils/toast"; // Import toast utilities
-import { useQueryClient } from "@tanstack/react-query"; // Import useQueryClient for cache invalidation
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Trash2 } from "lucide-react";
+import { showSuccess, showError } from "@/utils/toast";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
+const BATCH_SIZE = 50; // Define batch size for bulk operations
 
 const Index = () => {
   const { session, loading: sessionLoading } = useSession();
@@ -32,9 +33,10 @@ const Index = () => {
   const [loadingMovies, setLoadingMovies] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set()); // State for selected movie IDs
-  const queryClient = useQueryClient(); // Initialize query client
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false); // New state for deletion in progress
+  const queryClient = useQueryClient();
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -45,7 +47,7 @@ const Index = () => {
         .from("movies")
         .select("*")
         .order("title", { ascending: true })
-        .limit(5000); // Increased limit to fetch more movies
+        .limit(5000);
 
       if (error) {
         console.error("Error fetching movies:", error);
@@ -60,7 +62,6 @@ const Index = () => {
     fetchMovies();
   }, []);
 
-  // Filter movies based on search query
   const filteredMovies = useMemo(() => {
     if (!searchQuery) {
       return movies;
@@ -113,20 +114,38 @@ const Index = () => {
       return;
     }
 
+    setIsDeleting(true);
     const idsToDelete = Array.from(selectedMovieIds);
-    const { error: deleteError } = await supabase
-      .from("movies")
-      .delete()
-      .in("id", idsToDelete);
+    let successfulDeletions = 0;
+    let failedDeletions = 0;
+    const errors: string[] = [];
 
-    if (deleteError) {
-      console.error("Error deleting movies:", deleteError);
-      showError("Failed to delete selected movies: " + deleteError.message);
-    } else {
-      showSuccess(`Successfully deleted ${idsToDelete.length} movies!`);
-      setSelectedMovieIds(new Set()); // Clear selection
-      queryClient.invalidateQueries({ queryKey: ["movies"] }); // Invalidate cache to refetch movie list
+    for (let i = 0; i < idsToDelete.length; i += BATCH_SIZE) {
+      const batch = idsToDelete.slice(i, i + BATCH_SIZE);
+      const { error: deleteError } = await supabase
+        .from("movies")
+        .delete()
+        .in("id", batch);
+
+      if (deleteError) {
+        console.error("Error deleting batch:", deleteError);
+        errors.push(deleteError.message);
+        failedDeletions += batch.length;
+      } else {
+        successfulDeletions += batch.length;
+      }
     }
+
+    if (successfulDeletions > 0) {
+      showSuccess(`Successfully deleted ${successfulDeletions} movies.`);
+    }
+    if (failedDeletions > 0) {
+      showError(`Failed to delete ${failedDeletions} movies. Errors: ${errors.join("; ")}`);
+    }
+    
+    setSelectedMovieIds(new Set()); // Clear selection
+    queryClient.invalidateQueries({ queryKey: ["movies"] }); // Invalidate cache to refetch movie list
+    setIsDeleting(false);
   };
 
   return (
@@ -186,7 +205,7 @@ const Index = () => {
                 id="select-all"
                 checked={selectedMovieIds.size === filteredMovies.length && filteredMovies.length > 0}
                 onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                disabled={filteredMovies.length === 0}
+                disabled={filteredMovies.length === 0 || isDeleting}
               />
               <label
                 htmlFor="select-all"
@@ -198,8 +217,8 @@ const Index = () => {
             {selectedMovieIds.size > 0 && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="gap-2">
-                    <Trash2 className="h-4 w-4" /> Delete Selected ({selectedMovieIds.size})
+                  <Button variant="destructive" className="gap-2" disabled={isDeleting}>
+                    <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -212,9 +231,9 @@ const Index = () => {
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleBulkDelete}>
-                      Delete All
+                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
+                      {isDeleting ? "Deleting..." : "Delete All"}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -238,7 +257,6 @@ const Index = () => {
         ) : (
           <MovieGrid
             movies={moviesToShow}
-            // Pass selection props to MovieGrid, which will pass them to MovieCard
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
