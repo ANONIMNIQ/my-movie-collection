@@ -51,16 +51,16 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible" // Add overflow-visible here
+        className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="-ml-4 overflow-visible"> {/* Ensure CarouselContent allows overflow */}
+        <CarouselContent className="-ml-4 overflow-visible py-4"> {/* Added py-4 here */}
           {movies.map((movie) => {
             const [isHovered, setIsHovered] = React.useState(false);
             return (
               <CarouselItem
                 key={movie.id}
-                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible" // Only overflow-visible here
+                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
@@ -69,7 +69,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
                     movie={movie}
                     selectedMovieIds={selectedMovieIds}
                     onSelectMovie={onSelectMovie}
-                    isHoveredProp={isHovered} // Pass hover state as prop
+                    isHoveredProp={isHovered}
                   />
                 </div>
               </CarouselItem>
