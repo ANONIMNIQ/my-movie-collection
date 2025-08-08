@@ -1,34 +1,34 @@
 import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { TmdbMovieSummary } from "@/data/movies";
+import { Movie } from "@/data/movies";
+import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
-import { IMAGE_BASE_URL } from "@/lib/tmdb";
 
 interface MovieCardProps {
-  movie: TmdbMovieSummary;
+  movie: Movie;
 }
 
 export const MovieCard = ({ movie }: MovieCardProps) => {
-  const posterUrl = movie.poster_path
-    ? `${IMAGE_BASE_URL}w500${movie.poster_path}`
-    : "/placeholder.svg"; // Fallback to a local placeholder if no poster
+  const { data: tmdbMovie, isLoading, isError } = useTmdbMovie(movie.title, movie.year);
 
-  const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : "N/A";
+  const posterUrl = tmdbMovie?.poster_path
+    ? `https://image.tmdb.org/t/p/w500${tmdbMovie.poster_path}`
+    : movie.posterUrl;
 
   return (
     <Link to={`/movie/${movie.id}`} className="block group">
       <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col bg-card">
         <CardHeader className="p-0 relative">
           <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
-            {movie.poster_path === null ? ( // Show skeleton if poster_path is explicitly null
+            {isLoading ? (
               <Skeleton className="w-full h-full" />
             ) : (
               <img
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                // Use placeholder on error if image fails to load
-                onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
+                // Use placeholder on error
+                onError={(e) => (e.currentTarget.src = movie.posterUrl)}
               />
             )}
           </div>
@@ -37,7 +37,7 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
           <CardTitle className="text-base font-bold line-clamp-2 flex-grow">
             {movie.title}
           </CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">{releaseYear}</p>
+          <p className="text-sm text-muted-foreground mt-1">{movie.year}</p>
         </div>
       </Card>
     </Link>

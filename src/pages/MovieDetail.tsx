@@ -1,64 +1,24 @@
 import { useParams, Link } from "react-router-dom";
+import { movies } from "@/data/movies";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft } from "lucide-react";
-import { useTmdbMovieDetails } from "@/hooks/useTmdbMovieDetails";
+import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
-import { IMAGE_BASE_URL } from "@/lib/tmdb";
 
 const MovieDetail = () => {
-  const { tmdbId: tmdbIdParam } = useParams<{ tmdbId: string }>();
-  const tmdbId = parseInt(tmdbIdParam || '', 10);
+  const { id } = useParams<{ id: string }>();
+  const movie = movies.find((m) => m.id.toString() === id);
 
-  const { data: movie, isLoading, isError } = useTmdbMovieDetails(tmdbId);
+  const { data: tmdbMovie, isLoading } = useTmdbMovie(
+    movie?.title ?? "",
+    movie?.year ?? "",
+  );
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background text-foreground py-12">
-        <div className="container mx-auto px-4">
-          <Skeleton className="h-6 w-48 mb-8" />
-          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-            <div className="md:col-span-1">
-              <Skeleton className="w-full aspect-[2/3] rounded-lg" />
-            </div>
-            <div className="md:col-span-2">
-              <Skeleton className="h-10 w-3/4 mb-2" />
-              <Skeleton className="h-6 w-1/4 mb-4" />
-              <div className="flex items-center flex-wrap gap-4 mt-4">
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-6 w-16" />
-                <Skeleton className="h-6 w-24" />
-              </div>
-              <div className="flex flex-wrap gap-2 mt-4">
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-6 w-20" />
-              </div>
-              <div className="mt-8 space-y-2">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
-              <div className="mt-8 space-y-2">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-1/2" />
-              </div>
-              <div className="mt-8 space-y-2">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-2/3" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isError || !movie) {
+  if (!movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Movie not found or error loading details</h1>
+          <h1 className="text-4xl font-bold mb-4">Movie not found</h1>
           <Link to="/" className="text-primary hover:underline">
             Back to collection
           </Link>
@@ -67,16 +27,18 @@ const MovieDetail = () => {
     );
   }
 
-  const posterUrl = movie.poster_path
-    ? `${IMAGE_BASE_URL}w780${movie.poster_path}`
-    : "/placeholder.svg";
-  const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : "N/A";
-  const communityRating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-  const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
-  const genres = movie.genres?.map(g => g.name) || [];
-  const cast = movie.credits?.cast?.slice(0, 10).map((c) => c.name).join(", ") || "N/A";
-  const director = movie.credits?.crew?.find((c) => c.job === "Director")?.name || "N/A";
-  const synopsis = movie.overview || "No synopsis available.";
+  const posterUrl = tmdbMovie?.poster_path
+    ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}`
+    : movie.posterUrl;
+  const synopsis = tmdbMovie?.overview || movie.synopsis;
+  const cast =
+    tmdbMovie?.credits?.cast
+      ?.slice(0, 10)
+      .map((c: any) => c.name)
+      .join(", ") || movie.cast.join(", ");
+  const director =
+    tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
+    movie.director;
 
   return (
     <div className="min-h-screen bg-background text-foreground py-12">
@@ -90,30 +52,34 @@ const MovieDetail = () => {
         </Link>
         <div className="grid md:grid-cols-3 gap-8 md:gap-12">
           <div className="md:col-span-1">
-            <img
-              src={posterUrl}
-              alt={movie.title}
-              className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-              onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
-            />
+            {isLoading ? (
+              <Skeleton className="w-full aspect-[2/3] rounded-lg" />
+            ) : (
+              <img
+                src={posterUrl}
+                alt={movie.title}
+                className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
+                onError={(e) => (e.currentTarget.src = movie.posterUrl)}
+              />
+            )}
           </div>
           <div className="md:col-span-2">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
               {movie.title}
             </h1>
-            <p className="text-xl text-muted-foreground mt-2">{releaseYear}</p>
+            <p className="text-xl text-muted-foreground mt-2">{movie.year}</p>
             <div className="flex items-center flex-wrap gap-4 mt-4">
               <div className="flex items-center gap-1">
                 <Star className="text-yellow-400" size={20} />
                 <span className="font-bold text-lg">
-                  {communityRating}
+                  {movie.communityRating.toFixed(1)}
                 </span>
               </div>
-              {/* TMDb doesn't have a direct 'rating' like PG/R in summary, so we'll omit this for now or find an alternative */}
-              <span className="text-muted-foreground">{runtime}</span>
+              <Badge variant="outline">{movie.rating}</Badge>
+              <span className="text-muted-foreground">{movie.runtime} min</span>
             </div>
             <div className="flex flex-wrap gap-2 mt-4">
-              {genres.map((genre) => (
+              {movie.genres.map((genre) => (
                 <Badge key={genre} variant="secondary">
                   {genre}
                 </Badge>
@@ -121,15 +87,34 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              <p className="mt-2 text-lg text-muted-foreground">{synopsis}</p>
+              {isLoading ? (
+                <div className="space-y-2 mt-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              ) : (
+                <p className="mt-2 text-lg text-muted-foreground">{synopsis}</p>
+              )}
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Director</h2>
+               {isLoading ? (
+                <Skeleton className="h-4 w-1/2 mt-2" />
+              ) : (
               <p className="mt-2 text-lg text-muted-foreground">{director}</p>
+              )}
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Cast</h2>
+               {isLoading ? (
+                 <div className="space-y-2 mt-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              ) : (
               <p className="mt-2 text-lg text-muted-foreground">{cast}</p>
+              )}
             </div>
           </div>
         </div>
