@@ -28,15 +28,15 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
+  isHoveredProp: boolean; // New prop to control hover state from parent
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
+export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, isHoveredProp }: MovieCardProps) => {
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
-  const [isHovered, setIsHovered] = React.useState(false);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -81,11 +81,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <Card
-      className={`relative transition-all duration-300 ease-in-out
-        ${isHovered ? "scale-110 shadow-2xl z-30" : "scale-100 shadow-lg z-10"}
-        h-full flex flex-col bg-card`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="relative h-full flex flex-col bg-card overflow-visible" // Ensure overflow-visible here
     >
       {isAdmin && (
         <div className="absolute top-2 left-2 z-40">
@@ -111,7 +107,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
       </div>
 
       {/* Hover Overlay */}
-      {isHovered && (
+      {isHoveredProp && (
         <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-end p-4 transition-opacity duration-300 z-20">
           <h3 className="text-lg font-bold text-white line-clamp-2 mb-1">
             {movie.title}

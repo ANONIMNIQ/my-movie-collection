@@ -6,7 +6,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  useCarousel, // Import useCarousel hook
+  useCarousel,
 } from "@/components/ui/carousel";
 import { MovieCard } from './MovieCard';
 
@@ -52,22 +52,31 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           align: "start",
         }}
         className="w-full"
-        setApi={setApi} // Pass setApi to Carousel
+        setApi={setApi}
       >
-        <CarouselContent className="-ml-4">
-          {movies.map((movie) => (
-            <CarouselItem key={movie.id} className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6">
-              <div className="p-1">
-                <MovieCard
-                  movie={movie}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={onSelectMovie}
-                />
-              </div>
-            </CarouselItem>
-          ))}
+        <CarouselContent className="-ml-4 overflow-visible"> {/* Ensure CarouselContent allows overflow */}
+          {movies.map((movie) => {
+            const [isHovered, setIsHovered] = React.useState(false);
+            return (
+              <CarouselItem
+                key={movie.id}
+                className={`pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative transition-all duration-300 ease-in-out overflow-visible
+                  ${isHovered ? "scale-115 z-30" : "scale-100 z-10"}`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <div className="p-1">
+                  <MovieCard
+                    movie={movie}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={onSelectMovie}
+                    isHoveredProp={isHovered} // Pass hover state as prop
+                  />
+                </div>
+              </CarouselItem>
+            );
+          })}
         </CarouselContent>
-        {/* Overlaid Navigation Arrows - now circular and positioned just over the edge */}
         {canScrollPrev && (
           <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
@@ -75,7 +84,6 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
-        {/* Blur Overlays */}
         {canScrollPrev && (
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
         )}
