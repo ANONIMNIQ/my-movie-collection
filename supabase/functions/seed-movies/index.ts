@@ -38,22 +38,23 @@ serve(async (req) => {
       }
     );
 
-    // 1. Fetch existing tmdb_ids for this user to prevent duplicates
+    // 1. Fetch existing (user_id, tmdb_id) pairs for this user to prevent duplicates
     const { data: existingMovies, error: fetchError } = await supabaseClient
       .from('movies')
       .select('tmdb_id')
-      .eq('user_id', user_id);
+      .eq('user_id', user_id); // Filter by user_id
 
     if (fetchError) {
       console.error('Supabase fetch error:', fetchError);
       throw new Error(`Failed to fetch existing movies: ${fetchError.message}`);
     }
 
-    const existingTmdbIds = new Set(existingMovies.map(movie => movie.tmdb_id));
+    // Create a set of existing tmdb_ids for the current user
+    const existingTmdbIdsForUser = new Set(existingMovies.map(movie => movie.tmdb_id));
 
-    // 2. Filter movies_to_seed to only include new movies for this user
+    // 2. Filter movies_to_seed to only include new movies for this specific user
     const moviesToInsert = movies_to_seed.filter((movie: { title: string; tmdb_id: number }) =>
-      !existingTmdbIds.has(movie.tmdb_id)
+      !existingTmdbIdsForUser.has(movie.tmdb_id)
     ).map((movie: { title: string; tmdb_id: number }) => ({
       user_id: user_id,
       title: movie.title,
