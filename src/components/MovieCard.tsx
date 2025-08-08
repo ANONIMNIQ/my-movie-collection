@@ -28,15 +28,15 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
-  isHoveredProp: boolean; // New prop to control hover state from parent
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, isHoveredProp }: MovieCardProps) => {
+export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
+  const [isHovered, setIsHovered] = React.useState(false); // Move state here
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -82,7 +82,9 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, isHoveredPro
   return (
     <div
       className={`relative h-full flex flex-col transition-all duration-300 ease-in-out overflow-visible
-        ${isHoveredProp ? "scale-125 z-30" : "scale-100 z-10"}`}
+        ${isHovered ? "scale-125 z-30" : "scale-100 z-10"}`}
+      onMouseEnter={() => setIsHovered(true)} // Add handlers here
+      onMouseLeave={() => setIsHovered(false)} // Add handlers here
     >
       <Card className="h-full flex flex-col bg-card overflow-visible"> {/* Card itself should be overflow-visible */}
         {isAdmin && (
@@ -109,7 +111,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, isHoveredPro
         </div>
 
         {/* Hover Overlay */}
-        {isHoveredProp && (
+        {isHovered && (
           <div className="absolute inset-0 bg-black bg-opacity-80 flex flex-col justify-end p-4 transition-opacity duration-300 z-20">
             <h3 className="text-lg font-bold text-white line-clamp-2 mb-1">
               {movie.title}
