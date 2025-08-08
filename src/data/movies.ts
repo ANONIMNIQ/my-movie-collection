@@ -5,7 +5,7 @@ export interface Movie {
   genres: string[];
   rating: string;
   runtime: string;
-  communityRating: number;
+  communityRating: number | null; // Allow null for communityRating
   posterUrl: string;
   synopsis: string;
   cast: string[];
