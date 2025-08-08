@@ -37,6 +37,9 @@ const Login = () => {
               },
             }}
             theme="light" // Use light theme, adjust if dark mode is preferred
+            signUp={{
+              disabled: true, // Disable the sign-up option
+            }}
           />
         </CardContent>
       </Card>
