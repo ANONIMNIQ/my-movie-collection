@@ -90,119 +90,119 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Card className="h-full flex flex-col bg-card overflow-visible">
-        {isAdmin && (
-          <div className="absolute top-2 left-2 z-40">
-            <Checkbox
-              checked={selectedMovieIds.has(movie.id)}
-              onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
-              className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-            />
-          </div>
-        )}
-        
-        <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
-          {isLoading ? (
-            <Skeleton className="w-full h-full" />
-          ) : (
-            <img
-              src={posterUrl}
-              alt={movie.title}
-              className="w-full h-full object-cover"
-              onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
-            />
-          )}
-        </div>
-
-        {/* Hover Overlay */}
-        {isHovered && (
-          <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-lg overflow-hidden">
-            {/* Top section: Backdrop and Logo */}
-            <div
-              className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
-              style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
-            >
-              {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-              {logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt={`${movie.title} logo`}
-                  className="max-h-full max-w-full object-contain z-10"
-                  onError={(e) => (e.currentTarget.style.display = 'none')}
-                />
-              )}
-              {!backdropUrl && !logoUrl && (
-                <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
-              )}
+      {/* Wrap the Card with Link to make the entire card clickable */}
+      <Link to={`/movie/${movie.id}`} className="block h-full">
+        <Card className="h-full flex flex-col bg-card overflow-visible">
+          {isAdmin && (
+            <div className="absolute top-2 left-2 z-40">
+              <Checkbox
+                checked={selectedMovieIds.has(movie.id)}
+                onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
+                className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                onClick={(e) => e.stopPropagation()} {/* Prevent click from propagating to the Link */}
+              />
             </div>
+          )}
+          
+          <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
+            {isLoading ? (
+              <Skeleton className="w-full h-full" />
+            ) : (
+              <img
+                src={posterUrl}
+                alt={movie.title}
+                className="w-full h-full object-cover"
+                onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
+              />
+            )}
+          </div>
 
-            {/* Bottom section: Movie Info and Buttons */}
-            <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
-              <div>
-                <h3 className="text-lg font-bold line-clamp-1">
-                  {movie.title}
-                </h3>
-                <p className="text-xs text-gray-300 line-clamp-2 mb-1">
-                  {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-                </p>
-                <div className="text-xs text-gray-400">
-                  <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-                  <div className="flex items-center mt-1">
-                    <Star className="text-yellow-400 h-3 w-3 mr-1" />
-                    <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-row gap-1 mt-2">
-                <Link to={`/movie/${movie.id}`} className="flex-1">
-                  <Button variant="secondary" className="w-full justify-center gap-1 text-xs h-7 px-2">
-                    <Info className="h-3 w-3" /> Info
-                  </Button>
-                </Link>
-                {trailerUrl && (
-                  <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
-                    <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
-                      <Youtube className="h-3 w-3" /> Trailer
-                    </Button>
-                  </a>
+          {/* Hover Overlay */}
+          {isHovered && (
+            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-lg overflow-hidden">
+              {/* Top section: Backdrop and Logo */}
+              <div
+                className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
+                style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
+              >
+                {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+                {logoUrl && (
+                  <img
+                    src={logoUrl}
+                    alt={`${movie.title} logo`}
+                    className="max-h-full max-w-full object-contain z-10"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                )}
+                {!backdropUrl && !logoUrl && (
+                  <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
                 )}
               </div>
-            </div>
-          </div>
-        )}
 
-        {isAdmin && (
-          <div className="absolute top-2 right-2 flex gap-2 z-40">
-            <Link to={`/edit-movie/${movie.id}`}>
-              <Button variant="secondary" size="icon" className="h-8 w-8">
-                <Edit className="h-4 w-4" />
-              </Button>
-            </Link>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="icon" className="h-8 w-8">
-                  <Trash2 className="h-4 w-4" />
+              {/* Bottom section: Movie Info and Buttons */}
+              <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
+                <div>
+                  <h3 className="text-lg font-bold line-clamp-1">
+                    {movie.title}
+                  </h3>
+                  <p className="text-xs text-gray-300 line-clamp-2 mb-1">
+                    {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+                  </p>
+                  <div className="text-xs text-gray-400">
+                    <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+                    <div className="flex items-center mt-1">
+                      <Star className="text-yellow-400 h-3 w-3 mr-1" />
+                      <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-row gap-1 mt-2">
+                  {/* Removed Info button as card itself is clickable */}
+                  {trailerUrl && (
+                    <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={(e) => e.stopPropagation()}> {/* Stop propagation for trailer link */}
+                      <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
+                        <Youtube className="h-3 w-3" /> Trailer
+                      </Button>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isAdmin && (
+            <div className="absolute top-2 right-2 flex gap-2 z-40">
+              <Link to={`/edit-movie/${movie.id}`} onClick={(e) => e.stopPropagation()}> {/* Stop propagation for edit link */}
+                <Button variant="secondary" size="icon" className="h-8 w-8">
+                  <Edit className="h-4 w-4" />
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the
-                    movie "{movie.title}" from your collection.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        )}
-      </Card>
+              </Link>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}> {/* Stop propagation for delete trigger */}
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the
+                      movie "{movie.title}" from your collection.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          )}
+        </Card>
+      </Link>
     </div>
   );
 };

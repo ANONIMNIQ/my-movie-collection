@@ -194,17 +194,6 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Search Bar */}
-        <div className="mb-8 max-w-xl mx-auto">
-          <Input
-            type="text"
-            placeholder="Search movies by title, director, genre, or cast..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full"
-          />
-        </div>
-
         {/* New Movies Carousel */}
         {loadingMovies ? (
           <div className="mb-12">
@@ -224,9 +213,25 @@ const Index = () => {
           />
         )}
 
+        {/* All Movies Title and Search Bar on the same row */}
+        {!loadingMovies && filteredMovies.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 px-4 md:px-0 gap-4"> {/* Added flex container and gap */}
+            <h2 className="text-3xl font-bold">All Movies</h2>
+            <div className="w-full sm:w-auto sm:max-w-xs"> {/* Adjusted width for search input */}
+              <Input
+                type="text"
+                placeholder="Search movies..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Admin Bulk Actions */}
         {isAdmin && (
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 px-4 md:px-0">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="select-all"
@@ -269,13 +274,8 @@ const Index = () => {
           </div>
         )}
 
-        {/* All Movies Title */}
-        {!loadingMovies && filteredMovies.length > 0 && (
-          <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">All Movies</h2>
-        )}
-
         {loadingMovies ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4 md:px-0"> {/* Added px-4 md:px-0 for consistency */}
             {Array.from({ length: 18 }).map((_, index) => (
               <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
             ))}
