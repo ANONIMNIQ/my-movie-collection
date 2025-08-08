@@ -44,20 +44,22 @@ serve(async (req) => {
       tmdb_id: movie.tmdb_id,
     }));
 
-    // Use onConflict to ignore duplicates based on tmdb_id
+    // Use onConflict with doNothing() to ignore duplicates based on tmdb_id
     const { data, error } = await supabaseClient
       .from('movies')
       .insert(moviesToInsert)
       .onConflict('tmdb_id') // Specify the column with the unique constraint
-      .ignoreDuplicates() // Tell Supabase to ignore if a conflict occurs
-      .select();
+      .doNothing() // Tell Supabase to do nothing if a conflict occurs
+      .select(); // .select() is needed to get the inserted rows, even if doNothing() is used
 
     if (error) {
       console.error('Supabase insert error:', error);
       throw new Error(`Failed to insert movies into Supabase: ${error.message}`);
     }
 
-    return new Response(JSON.stringify({ message: `Successfully added ${data.length} new movies to your list!`, movies: data }), {
+    // data will be null if all inserts were ignored due to conflict, so we check for that
+    const insertedCount = data ? data.length : 0;
+    return new Response(JSON.stringify({ message: `Successfully added ${insertedCount} new movies to your list!`, movies: data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
