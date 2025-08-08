@@ -109,7 +109,7 @@ export const MovieCard = ({ movie, isSelected, onSelect }: MovieCardProps) => {
           <div className="mt-2 flex items-center">
             <span className="text-sm text-muted-foreground mr-1">My Rating:</span>
             <span className="text-sm font-medium">
-              {adminPersonalRatingData !== null ? adminPersonalRatingData.toFixed(1) : "N/A"}
+              {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}
             </span>
           </div>
         </div>
