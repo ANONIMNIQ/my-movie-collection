@@ -44,7 +44,8 @@ const Index = () => {
       const { data, error } = await supabase
         .from("movies")
         .select("*")
-        .order("title", { ascending: true });
+        .order("title", { ascending: true })
+        .limit(5000); // Increased limit to fetch more movies
 
       if (error) {
         console.error("Error fetching movies:", error);
