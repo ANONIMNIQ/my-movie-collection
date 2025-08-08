@@ -6,13 +6,10 @@ export interface Movie {
   genres: string[];
   rating: string;
   runtime: string;
-  communityRating: number;
-  posterUrl: string;
+  community_rating: number; // Changed from communityRating to community_rating
+  poster_url: string; // Changed from posterUrl to poster_url
   synopsis: string;
-  movie_cast: string[]; // Renamed from 'cast' to 'movie_cast'
+  movie_cast: string[];
   director: string;
   created_at: string; // Timestamp from Supabase
 }
-
-// The local 'movies' array is no longer needed as data will be fetched from Supabase.
-// export const movies: Movie[] = [...];
