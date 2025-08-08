@@ -36,13 +36,17 @@ const AddMovie = () => {
 
     const { title, year, genres, rating, runtime, communityRating, posterUrl, synopsis, cast, director } = formData;
 
+    // Safely parse communityRating, setting to null if empty or results in NaN
+    const parsedCommunityRating = communityRating ? parseFloat(communityRating) : null;
+    const finalCommunityRating = isNaN(parsedCommunityRating as number) ? null : parsedCommunityRating;
+
     const movieData = {
       title,
       year,
       genres: genres.split(",").map((g) => g.trim()).filter(Boolean),
       rating,
       runtime,
-      community_rating: parseFloat(communityRating),
+      community_rating: finalCommunityRating,
       poster_url: posterUrl || "/placeholder.svg",
       synopsis,
       movie_cast: cast.split(",").map((c) => c.trim()).filter(Boolean),
