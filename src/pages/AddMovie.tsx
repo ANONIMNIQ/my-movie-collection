@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSession } from "@/contexts/SessionContext"; // Import useSession
 
 const AddMovie = () => {
   const navigate = useNavigate();
+  const { session, loading: sessionLoading } = useSession(); // Get session and loading state
+
+  // Redirect if not authenticated and session is loaded
+  useEffect(() => {
+    if (!sessionLoading && !session) {
+      navigate('/login');
+    }
+  }, [session, sessionLoading, navigate]);
+
   const [formData, setFormData] = useState({
     title: "",
     year: "",
@@ -51,6 +61,7 @@ const AddMovie = () => {
       synopsis,
       movie_cast: cast.split(",").map((c) => c.trim()).filter(Boolean),
       director,
+      user_id: session?.user?.id, // Add the user_id from the session
     };
 
     const { error } = await supabase.from("movies").insert([movieData]);
@@ -64,6 +75,15 @@ const AddMovie = () => {
     }
     setLoading(false);
   };
+
+  // Render null or loading state while session is loading or if not authenticated
+  if (sessionLoading || !session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <p>Loading authentication...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground py-12">

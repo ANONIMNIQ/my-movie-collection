@@ -4,18 +4,20 @@ import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Movie } from "@/data/movies"; // Keep for interface definition for now
+import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "@/contexts/SessionContext"; // Import useSession
 
 const Index = () => {
+  const { session, loading: sessionLoading } = useSession(); // Get session and loading state
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingMovies, setLoadingMovies] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState(18); // Still used for pagination display
+  const [visibleCount, setVisibleCount] = useState(18);
 
   useEffect(() => {
     const fetchMovies = async () => {
-      setLoading(true);
+      setLoadingMovies(true);
       const { data, error } = await supabase
         .from("movies")
         .select("*")
@@ -24,10 +26,10 @@ const Index = () => {
       if (error) {
         console.error("Error fetching movies:", error);
         setError("Failed to load movies.");
-        setLoading(false);
+        setLoadingMovies(false);
       } else {
         setMovies(data as Movie[]);
-        setLoading(false);
+        setLoadingMovies(false);
       }
     };
 
@@ -40,6 +42,10 @@ const Index = () => {
     setVisibleCount((prevCount) => prevCount + 18);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto px-4 py-8">
@@ -50,13 +56,26 @@ const Index = () => {
           <p className="text-muted-foreground mt-2 text-lg">
             A minimalist collection of cinematic gems.
           </p>
-          <div className="mt-6">
-            <Link to="/add-movie">
-              <Button>Add New Movie</Button>
-            </Link>
+          <div className="mt-6 flex justify-center gap-4">
+            {sessionLoading ? (
+              <Skeleton className="w-32 h-10" />
+            ) : session ? (
+              <>
+                <Link to="/add-movie">
+                  <Button>Add New Movie</Button>
+                </Link>
+                <Button variant="outline" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Link to="/login">
+                <Button>Login</Button>
+              </Link>
+            )}
           </div>
         </header>
-        {loading ? (
+        {loadingMovies ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {Array.from({ length: 18 }).map((_, index) => (
               <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />

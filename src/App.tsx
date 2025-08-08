@@ -6,7 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MovieDetail from "./pages/MovieDetail";
-import AddMovie from "./pages/AddMovie"; // Import the new AddMovie page
+import AddMovie from "./pages/AddMovie";
+import Login from "./pages/Login"; // Import the new Login page
+import { SessionContextProvider } from "./contexts/SessionContext"; // Import SessionContextProvider
 
 const queryClient = new QueryClient();
 
@@ -16,13 +18,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/movie/:id" element={<MovieDetail />} />
-          <Route path="/add-movie" element={<AddMovie />} /> {/* New route for adding movies */}
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <SessionContextProvider> {/* Wrap routes with SessionContextProvider */}
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/movie/:id" element={<MovieDetail />} />
+            <Route path="/add-movie" element={<AddMovie />} />
+            <Route path="/login" element={<Login />} /> {/* New route for login */}
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </SessionContextProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
