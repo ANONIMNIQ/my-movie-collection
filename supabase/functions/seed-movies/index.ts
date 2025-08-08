@@ -6,6 +6,29 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// TMDb API configuration
+const TMDB_API_KEY = Deno.env.get('TMDB_API_KEY');
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+
+async function fetchTmdbMovieDetails(tmdbId: number) {
+  if (!TMDB_API_KEY) {
+    console.error("TMDb API key is missing in environment variables.");
+    return null;
+  }
+  try {
+    const url = `${TMDB_BASE_URL}/movie/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=credits`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`TMDb API request failed for ID ${tmdbId}: ${response.statusText}`);
+      return null;
+    }
+    return response.json();
+  } catch (error) {
+    console.error(`Error fetching TMDb details for ID ${tmdbId}:`, error.message);
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -22,7 +45,7 @@ serve(async (req) => {
     }
 
     if (!movies_to_seed || !Array.isArray(movies_to_seed) || movies_to_seed.length === 0) {
-      return new Response(JSON.stringify({ error: 'An array of movies (title, tmdb_id) is required.' }), {
+      return new Response(JSON.stringify({ error: 'An array of movies (tmdb_id, title) is required.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       });
@@ -51,24 +74,31 @@ serve(async (req) => {
     }
     console.log(`Successfully deleted existing movies for user: ${user_id}`);
 
-    // 2. Deduplicate movies_to_seed based on tmdb_id in case the input array has duplicates
-    const uniqueMoviesToSeedMap = new Map<number, { title: string; tmdb_id: number }>();
-    movies_to_seed.forEach((movie: { title: string; tmdb_id: number }) => {
-      if (!uniqueMoviesToSeedMap.has(movie.tmdb_id)) {
-        uniqueMoviesToSeedMap.set(movie.tmdb_id, movie);
-      }
-    });
-    const deduplicatedMoviesToSeed = Array.from(uniqueMoviesToSeedMap.values());
+    const moviesToInsert = [];
+    for (const movieSummary of movies_to_seed) {
+      const tmdbDetails = await fetchTmdbMovieDetails(movieSummary.tmdb_id);
 
-    // 3. Prepare movies for insertion (no need to check against existing now, as they've been deleted)
-    const moviesToInsert = deduplicatedMoviesToSeed.map((movie: { title: string; tmdb_id: number }) => ({
-      user_id: user_id,
-      title: movie.title,
-      tmdb_id: movie.tmdb_id,
-    }));
+      if (tmdbDetails) {
+        moviesToInsert.push({
+          user_id: user_id,
+          title: tmdbDetails.title,
+          tmdb_id: tmdbDetails.id,
+          poster_path: tmdbDetails.poster_path,
+          backdrop_path: tmdbDetails.backdrop_path,
+          release_date: tmdbDetails.release_date,
+          overview: tmdbDetails.overview,
+          genres: tmdbDetails.genres ? tmdbDetails.genres.map((g: { name: string }) => g.name) : [],
+          runtime: tmdbDetails.runtime,
+          tagline: tmdbDetails.tagline,
+          vote_average: tmdbDetails.vote_average,
+        });
+      } else {
+        console.warn(`Could not fetch TMDb details for movie ID: ${movieSummary.tmdb_id}. Skipping.`);
+      }
+    }
 
     if (moviesToInsert.length === 0) {
-      return new Response(JSON.stringify({ message: 'No movies provided to insert after deduplication.' }), {
+      return new Response(JSON.stringify({ message: 'No movies were successfully prepared for insertion.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       });
@@ -86,7 +116,7 @@ serve(async (req) => {
       throw new Error(`Failed to insert movies into Supabase: ${error.message}`);
     }
 
-    return new Response(JSON.stringify({ message: `Successfully deleted old movies and added ${data.length} new movies to your list!`, movies: data }), {
+    return new Response(JSON.stringify({ message: `Successfully deleted old movies and added ${data.length} new movies to your list with full TMDb details!`, movies: data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });

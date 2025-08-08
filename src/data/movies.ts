@@ -33,4 +33,12 @@ export interface Movie {
   title: string;
   tmdb_id: number; // TMDb ID
   created_at: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date: string | null;
+  overview: string | null;
+  genres: string[] | null; // Storing genre names as an array of strings
+  runtime: number | null;
+  tagline: string | null;
+  vote_average: number | null;
 }
