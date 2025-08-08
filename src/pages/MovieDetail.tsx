@@ -65,13 +65,13 @@ const MovieDetail = () => {
 
   const posterUrl = tmdbMovie?.poster_path
     ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}`
-    : movie.posterUrl;
+    : movie.poster_url; // Changed to movie.poster_url
   const synopsis = tmdbMovie?.overview || movie.synopsis;
   const cast =
     tmdbMovie?.credits?.cast
       ?.slice(0, 10)
       .map((c: any) => c.name)
-      .join(", ") || movie.movie_cast.join(", "); // Changed to movie.movie_cast
+      .join(", ") || movie.movie_cast.join(", ");
   const director =
     tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
     movie.director;
@@ -95,7 +95,7 @@ const MovieDetail = () => {
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-                onError={(e) => (e.currentTarget.src = movie.posterUrl)}
+                onError={(e) => (e.currentTarget.src = movie.poster_url)} // Changed to movie.poster_url
               />
             )}
           </div>
@@ -108,7 +108,7 @@ const MovieDetail = () => {
               <div className="flex items-center gap-1">
                 <Star className="text-yellow-400" size={20} />
                 <span className="font-bold text-lg">
-                  {movie.community_rating?.toFixed(1) ?? "N/A"} {/* Changed to community_rating */}
+                  {movie.community_rating?.toFixed(1) ?? "N/A"}
                 </span>
               </div>
               <Badge variant="outline">{movie.rating}</Badge>

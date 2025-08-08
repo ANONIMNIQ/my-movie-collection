@@ -34,10 +34,10 @@ const AddMovie = () => {
     genres: "",
     rating: "",
     runtime: "",
-    community_rating: "", // Changed from 'communityRating' to 'community_rating'
-    posterUrl: "",
+    community_rating: "",
+    poster_url: "", // Changed from 'posterUrl' to 'poster_url'
     synopsis: "",
-    movie_cast: "", // Changed from 'cast' to 'movie_cast'
+    movie_cast: "",
     director: "",
   });
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ const AddMovie = () => {
       return;
     }
 
-    const { title, year, genres, rating, runtime, community_rating, posterUrl, synopsis, movie_cast, director } = formData; // Changed 'communityRating' to 'community_rating'
+    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director } = formData; // Changed 'posterUrl' to 'poster_url'
 
     // Safely parse community_rating, setting to null if empty or results in NaN
     const parsedCommunityRating = community_rating ? parseFloat(community_rating) : null;
@@ -72,9 +72,9 @@ const AddMovie = () => {
       rating,
       runtime,
       community_rating: finalCommunityRating,
-      poster_url: posterUrl || "/placeholder.svg",
+      poster_url: poster_url || "/placeholder.svg", // Changed to poster_url
       synopsis,
-      movie_cast: movie_cast.split(",").map((c) => c.trim()).filter(Boolean), // Changed to movie_cast
+      movie_cast: movie_cast.split(",").map((c) => c.trim()).filter(Boolean),
       director,
       user_id: session?.user?.id, // Add the user_id from the session
     };
@@ -147,8 +147,8 @@ const AddMovie = () => {
                 <Input id="community_rating" type="number" step="0.1" value={formData.community_rating} onChange={handleChange} />
               </div>
               <div>
-                <Label htmlFor="posterUrl">Poster URL</Label>
-                <Input id="posterUrl" value={formData.posterUrl} onChange={handleChange} placeholder="Optional: URL to movie poster image" />
+                <Label htmlFor="poster_url">Poster URL</Label> {/* Changed label htmlFor */}
+                <Input id="poster_url" value={formData.poster_url} onChange={handleChange} placeholder="Optional: URL to movie poster image" /> {/* Changed id and value */}
               </div>
               <div>
                 <Label htmlFor="synopsis">Synopsis</Label>
