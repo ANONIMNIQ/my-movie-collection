@@ -9,7 +9,7 @@ export interface Movie {
   communityRating: number;
   posterUrl: string;
   synopsis: string;
-  cast: string[];
+  movie_cast: string[]; // Renamed from 'cast' to 'movie_cast'
   director: string;
   created_at: string; // Timestamp from Supabase
 }

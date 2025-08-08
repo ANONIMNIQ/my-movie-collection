@@ -25,7 +25,7 @@ const AddMovie = () => {
     communityRating: '',
     posterUrl: '',
     synopsis: '',
-    cast: '',
+    movieCast: '', // Renamed from 'cast' to 'movieCast'
     director: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +60,7 @@ const AddMovie = () => {
         community_rating: parseFloat(formData.communityRating),
         poster_url: formData.posterUrl || '/placeholder.svg', // Use placeholder if empty
         synopsis: formData.synopsis,
-        cast: formData.cast.split(',').map(c => c.trim()).filter(c => c),
+        movie_cast: formData.movieCast.split(',').map(c => c.trim()).filter(c => c), // Changed to movie_cast
         director: formData.director,
       });
 
@@ -131,8 +131,8 @@ const AddMovie = () => {
             <Textarea id="synopsis" value={formData.synopsis} onChange={handleChange} rows={5} />
           </div>
           <div>
-            <Label htmlFor="cast">Cast (comma-separated)</Label>
-            <Input id="cast" value={formData.cast} onChange={handleChange} placeholder="e.g., Actor 1, Actor 2" />
+            <Label htmlFor="movieCast">Cast (comma-separated)</Label> {/* Changed htmlFor and id */}
+            <Input id="movieCast" value={formData.movieCast} onChange={handleChange} placeholder="e.g., Actor 1, Actor 2" /> {/* Changed id and value */}
           </div>
           <div>
             <Label htmlFor="director">Director</Label>
