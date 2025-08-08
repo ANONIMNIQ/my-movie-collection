@@ -1,9 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowLeft, Youtube } from "lucide-react"; // Added Youtube icon
+import { Star, ArrowLeft, Youtube } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import PersonalRating from "@/components/PersonalRating";
@@ -17,13 +16,11 @@ const MovieDetail = () => {
   const { session } = useSession();
   const userId = session?.user?.id;
 
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [loadingMovie, setLoadingMovie] = useState(true);
-  const [errorMovie, setErrorMovie] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchMovie = async () => {
-      setLoadingMovie(true);
+  // Fetch main movie data using useQuery
+  const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie } = useQuery<Movie, Error>({
+    queryKey: ["movie", id],
+    queryFn: async () => {
+      if (!id) throw new Error("Movie ID is missing.");
       const { data, error } = await supabase
         .from("movies")
         .select("*")
@@ -32,18 +29,14 @@ const MovieDetail = () => {
 
       if (error) {
         console.error("Error fetching movie details:", error);
-        setErrorMovie("Failed to load movie details.");
-        setLoadingMovie(false);
-      } else {
-        setMovie(data as Movie);
-        setLoadingMovie(false);
+        throw new Error("Failed to load movie details.");
       }
-    };
-
-    if (id) {
-      fetchMovie();
-    }
-  }, [id]);
+      return data as Movie;
+    },
+    enabled: !!id, // Only run this query if id is available
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    retry: false, // Do not retry on error, handle it directly
+  });
 
   const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovie(
     movie?.title ?? "",
@@ -61,7 +54,7 @@ const MovieDetail = () => {
         .eq('user_id', ADMIN_USER_ID)
         .eq('movie_id', id)
         .single();
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
         console.error("Error fetching admin's personal rating:", error);
         return null;
       }
@@ -82,7 +75,7 @@ const MovieDetail = () => {
         .eq('user_id', userId)
         .eq('movie_id', id)
         .single();
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
         console.error("Error fetching current user's personal rating:", error);
         return null;
       }
@@ -92,7 +85,10 @@ const MovieDetail = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  if (loadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating) {
+  // Combine all loading states
+  const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating;
+
+  if (overallLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Skeleton className="w-64 h-96 rounded-lg" />
@@ -100,7 +96,7 @@ const MovieDetail = () => {
     );
   }
 
-  if (errorMovie || !movie) {
+  if (isErrorMovie || !movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -120,8 +116,12 @@ const MovieDetail = () => {
   
   const synopsis = movie.synopsis || tmdbMovie?.overview || "";
   
-  const cast = movie.movie_cast.length > 0
-    ? movie.movie_cast.join(", ")
+  // Safely access genres and movie_cast, providing empty array if null
+  const genresToDisplay = movie.genres || [];
+  const castToDisplay = movie.movie_cast || [];
+
+  const cast = castToDisplay.length > 0
+    ? castToDisplay.join(", ")
     : (tmdbMovie?.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "");
   
   const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
@@ -200,7 +200,7 @@ const MovieDetail = () => {
               </div>
             )}
             <div className="flex flex-wrap gap-2 mt-4">
-              {movie.genres.map((genre) => (
+              {genresToDisplay.map((genre) => (
                 <Badge key={genre} variant="secondary">
                   {genre}
                 </Badge>
@@ -208,7 +208,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              {isLoadingTmdb && !synopsis ? (
+               {isLoadingTmdb && !synopsis ? (
                 <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-full" />
