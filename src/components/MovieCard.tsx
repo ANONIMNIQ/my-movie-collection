@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"; // Corrected import
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Play, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
