@@ -1,13 +1,27 @@
-export interface Movie {
+export interface TmdbMovieSummary {
   id: number;
   title: string;
-  year: string;
-  genres: string[];
-  rating: string;
-  runtime: string;
-  communityRating: number;
-  posterUrl: string;
-  synopsis: string;
-  movie_cast: string[]; // Renamed from 'cast' to 'movie_cast'
-  director: string;
+  poster_path: string | null;
+  release_date: string; // YYYY-MM-DD format
+  vote_average: number;
+  overview: string;
+  genre_ids: number[];
+}
+
+export interface TmdbMovieDetail {
+  id: number;
+  title: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date: string;
+  vote_average: number;
+  overview: string;
+  genres: { id: number; name: string }[];
+  runtime: number | null; // in minutes
+  tagline: string | null;
+  credits: {
+    cast: { name: string; character: string }[];
+    crew: { name: string; job: string }[];
+  };
+  // Add other fields as needed from TMDb API
 }

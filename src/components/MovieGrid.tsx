@@ -1,8 +1,8 @@
-import { Movie } from "@/data/movies";
+import { TmdbMovieSummary } from "@/data/movies";
 import { MovieCard } from "./MovieCard";
 
 interface MovieGridProps {
-  movies: Movie[];
+  movies: TmdbMovieSummary[];
 }
 
 export const MovieGrid = ({ movies }: MovieGridProps) => {

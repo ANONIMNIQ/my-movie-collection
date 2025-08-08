@@ -1,55 +1,17 @@
 import { useParams, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft } from "lucide-react";
-import { useTmdbMovie } from "@/hooks/useTmdbMovie";
+import { useTmdbMovieDetails } from "@/hooks/useTmdbMovieDetails";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Movie } from "@/data/movies"; // Keep for interface definition
+import { IMAGE_BASE_URL } from "@/lib/tmdb";
 
 const MovieDetail = () => {
-  const { id: movieIdParam } = useParams<{ id: string }>();
-  const movieId = parseInt(movieIdParam || '', 10); // Parse to number
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [loadingMovie, setLoadingMovie] = useState(true);
+  const { tmdbId: tmdbIdParam } = useParams<{ tmdbId: string }>();
+  const tmdbId = parseInt(tmdbIdParam || '', 10);
 
-  useEffect(() => {
-    const fetchMovie = async () => {
-      setLoadingMovie(true);
-      // Ensure movieId is a valid number before fetching
-      if (isNaN(movieId)) {
-        console.error("Invalid movie ID:", movieIdParam);
-        setMovie(null);
-        setLoadingMovie(false);
-        return;
-      }
+  const { data: movie, isLoading, isError } = useTmdbMovieDetails(tmdbId);
 
-      const { data, error } = await supabase
-        .from("movies")
-        .select("*")
-        .eq("id", movieId) // Use parsed movieId
-        .single();
-
-      if (error) {
-        console.error("Error fetching movie details:", error);
-        setMovie(null);
-      } else {
-        setMovie(data as Movie);
-      }
-      setLoadingMovie(false);
-    };
-
-    if (movieIdParam) { // Only fetch if ID param exists
-      fetchMovie();
-    }
-  }, [movieIdParam, movieId]); // Depend on both original param and parsed number
-
-  const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovie(
-    movie?.title ?? "",
-    movie?.year ?? "",
-  );
-
-  if (loadingMovie) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background text-foreground py-12">
         <div className="container mx-auto px-4">
@@ -92,11 +54,11 @@ const MovieDetail = () => {
     );
   }
 
-  if (!movie) {
+  if (isError || !movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Movie not found</h1>
+          <h1 className="text-4xl font-bold mb-4">Movie not found or error loading details</h1>
           <Link to="/" className="text-primary hover:underline">
             Back to collection
           </Link>
@@ -105,18 +67,16 @@ const MovieDetail = () => {
     );
   }
 
-  const posterUrl = tmdbMovie?.poster_path
-    ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}`
-    : movie.posterUrl;
-  const synopsis = tmdbMovie?.overview || movie.synopsis;
-  const cast =
-    tmdbMovie?.credits?.cast
-      ?.slice(0, 10)
-      .map((c: any) => c.name)
-      .join(", ") || movie.movie_cast.join(", ");
-  const director =
-    tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
-    movie.director;
+  const posterUrl = movie.poster_path
+    ? `${IMAGE_BASE_URL}w780${movie.poster_path}`
+    : "/placeholder.svg";
+  const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : "N/A";
+  const communityRating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+  const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
+  const genres = movie.genres?.map(g => g.name) || [];
+  const cast = movie.credits?.cast?.slice(0, 10).map((c) => c.name).join(", ") || "N/A";
+  const director = movie.credits?.crew?.find((c) => c.job === "Director")?.name || "N/A";
+  const synopsis = movie.overview || "No synopsis available.";
 
   return (
     <div className="min-h-screen bg-background text-foreground py-12">
@@ -130,37 +90,30 @@ const MovieDetail = () => {
         </Link>
         <div className="grid md:grid-cols-3 gap-8 md:gap-12">
           <div className="md:col-span-1">
-            {isLoadingTmdb ? (
-              <Skeleton className="w-full aspect-[2/3] rounded-lg" />
-            ) : (
-              <img
-                src={posterUrl}
-                alt={movie.title}
-                className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-                onError={(e) => (e.currentTarget.src = movie.posterUrl)}
-              />
-            )}
+            <img
+              src={posterUrl}
+              alt={movie.title}
+              className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
+              onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
+            />
           </div>
           <div className="md:col-span-2">
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
               {movie.title}
             </h1>
-            <p className="text-xl text-muted-foreground mt-2">{movie.year}</p>
+            <p className="text-xl text-muted-foreground mt-2">{releaseYear}</p>
             <div className="flex items-center flex-wrap gap-4 mt-4">
               <div className="flex items-center gap-1">
                 <Star className="text-yellow-400" size={20} />
                 <span className="font-bold text-lg">
-                  {/* Defensive check for communityRating */}
-                  {movie.communityRating !== undefined && movie.communityRating !== null
-                    ? movie.communityRating.toFixed(1)
-                    : 'N/A'}
+                  {communityRating}
                 </span>
               </div>
-              <Badge variant="outline">{movie.rating}</Badge>
-              <span className="text-muted-foreground">{movie.runtime} min</span>
+              {/* TMDb doesn't have a direct 'rating' like PG/R in summary, so we'll omit this for now or find an alternative */}
+              <span className="text-muted-foreground">{runtime}</span>
             </div>
             <div className="flex flex-wrap gap-2 mt-4">
-              {movie.genres.map((genre) => (
+              {genres.map((genre) => (
                 <Badge key={genre} variant="secondary">
                   {genre}
                 </Badge>
@@ -168,34 +121,15 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              {isLoadingTmdb ? (
-                <div className="space-y-2 mt-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-              ) : (
-                <p className="mt-2 text-lg text-muted-foreground">{synopsis}</p>
-              )}
+              <p className="mt-2 text-lg text-muted-foreground">{synopsis}</p>
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Director</h2>
-               {isLoadingTmdb ? (
-                <Skeleton className="h-4 w-1/2 mt-2" />
-              ) : (
               <p className="mt-2 text-lg text-muted-foreground">{director}</p>
-              )}
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Cast</h2>
-               {isLoadingTmdb ? (
-                 <div className="space-y-2 mt-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
-              ) : (
               <p className="mt-2 text-lg text-muted-foreground">{cast}</p>
-              )}
             </div>
           </div>
         </div>
