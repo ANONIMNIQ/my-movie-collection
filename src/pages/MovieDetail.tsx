@@ -114,18 +114,18 @@ const MovieDetail = () => {
     );
   }
 
-  const posterUrl = tmdbMovie?.poster_path
-    ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}`
-    : movie.poster_url;
-  const synopsis = tmdbMovie?.overview || movie.synopsis;
-  const cast =
-    tmdbMovie?.credits?.cast
-      ?.slice(0, 10)
-      .map((c: any) => c.name)
-      .join(", ") || movie.movie_cast.join(", ");
-  const director =
-    tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name ||
-    movie.director;
+  // Prioritize Supabase data, fallback to TMDb if Supabase data is empty/placeholder
+  const posterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
+    ? movie.poster_url
+    : (tmdbMovie?.poster_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}` : '/placeholder.svg');
+  
+  const synopsis = movie.synopsis || tmdbMovie?.overview || "";
+  
+  const cast = movie.movie_cast.length > 0
+    ? movie.movie_cast.join(", ")
+    : (tmdbMovie?.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "");
+  
+  const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
 
   return (
     <div className="min-h-screen bg-background text-foreground py-12">
@@ -146,7 +146,7 @@ const MovieDetail = () => {
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-                onError={(e) => (e.currentTarget.src = movie.poster_url)}
+                onError={(e) => (e.currentTarget.src = '/placeholder.svg')} // Fallback to generic placeholder on image error
               />
             )}
           </div>
@@ -187,7 +187,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Synopsis</h2>
-              {isLoadingTmdb ? (
+              {isLoadingTmdb && !synopsis ? ( // Show skeleton only if TMDb is loading AND synopsis is empty
                 <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-full" />
@@ -199,7 +199,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Director</h2>
-               {isLoadingTmdb ? (
+               {isLoadingTmdb && !director ? ( // Show skeleton only if TMDb is loading AND director is empty
                 <Skeleton className="h-4 w-1/2 mt-2" />
               ) : (
               <p className="mt-2 text-lg text-muted-foreground">{director}</p>
@@ -207,7 +207,7 @@ const MovieDetail = () => {
             </div>
             <div className="mt-8">
               <h2 className="text-2xl font-semibold">Cast</h2>
-               {isLoadingTmdb ? (
+               {isLoadingTmdb && !cast ? ( // Show skeleton only if TMDb is loading AND cast is empty
                  <div className="space-y-2 mt-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-2/3" />

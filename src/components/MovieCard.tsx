@@ -55,9 +55,10 @@ export const MovieCard = ({ movie, isSelected, onSelect }: MovieCardProps) => {
     staleTime: 1000 * 60 * 5, // Cache personal rating for 5 minutes
   });
 
-  const posterUrl = tmdbMovie?.poster_path
-    ? `https://image.tmdb.org/t/p/w500${tmdbMovie.poster_path}`
-    : movie.poster_url;
+  // Prioritize movie.poster_url from Supabase, fallback to TMDb if movie.poster_url is placeholder
+  const posterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
+    ? movie.poster_url
+    : (tmdbMovie?.poster_path ? `https://image.tmdb.org/t/p/w500${tmdbMovie.poster_path}` : '/placeholder.svg');
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -94,7 +95,7 @@ export const MovieCard = ({ movie, isSelected, onSelect }: MovieCardProps) => {
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                onError={(e) => (e.currentTarget.src = movie.poster_url)}
+                onError={(e) => (e.currentTarget.src = '/placeholder.svg')} // Fallback to generic placeholder on image error
               />
             )}
           </div>
