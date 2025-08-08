@@ -81,7 +81,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <Card
-      className={`relative overflow-hidden transition-all duration-300 ease-in-out group
+      className={`relative transition-all duration-300 ease-in-out
         ${isHovered ? "scale-110 shadow-2xl z-30" : "scale-100 shadow-lg z-10"}
         h-full flex flex-col bg-card`}
       onMouseEnter={() => setIsHovered(true)}
@@ -97,7 +97,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
         </div>
       )}
       
-      <div className="aspect-[2/3] w-full overflow-hidden bg-muted"> {/* Removed rounded-md */}
+      <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
