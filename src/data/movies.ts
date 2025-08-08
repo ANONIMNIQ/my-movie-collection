@@ -25,3 +25,12 @@ export interface TmdbMovieDetail {
   };
   // Add other fields as needed from TMDb API
 }
+
+// New interface for movies stored in Supabase
+export interface Movie {
+  id: number; // Supabase ID
+  user_id: string;
+  title: string;
+  tmdb_id: number; // TMDb ID
+  created_at: string;
+}

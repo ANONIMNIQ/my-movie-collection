@@ -1,33 +1,36 @@
 import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { TmdbMovieSummary } from "@/data/movies";
+import { Movie } from "@/data/movies"; // Import the Supabase Movie type
 import { Skeleton } from "@/components/ui/skeleton";
 import { IMAGE_BASE_URL } from "@/lib/tmdb";
+import { useTmdbMovieDetails } from "@/hooks/useTmdbMovieDetails"; // To get poster path
 
 interface MovieCardProps {
-  movie: TmdbMovieSummary;
+  movie: Movie; // Expect Supabase Movie type
 }
 
 export const MovieCard = ({ movie }: MovieCardProps) => {
-  const posterUrl = movie.poster_path
-    ? `${IMAGE_BASE_URL}w500${movie.poster_path}`
+  // Fetch TMDb details to get the poster path
+  const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovieDetails(movie.tmdb_id);
+
+  const posterUrl = tmdbMovie?.poster_path
+    ? `${IMAGE_BASE_URL}w500${tmdbMovie.poster_path}`
     : "/placeholder.svg"; // Fallback to a local placeholder if no poster
 
-  const releaseYear = movie.release_date ? movie.release_date.substring(0, 4) : "N/A";
+  const releaseYear = tmdbMovie?.release_date ? tmdbMovie.release_date.substring(0, 4) : "N/A";
 
   return (
-    <Link to={`/movie/${movie.id}`} className="block group">
+    <Link to={`/movie/${movie.id}`} className="block group"> {/* Link to Supabase movie ID */}
       <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col bg-card">
         <CardHeader className="p-0 relative">
           <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
-            {movie.poster_path === null ? ( // Show skeleton if poster_path is explicitly null
+            {isLoadingTmdb ? (
               <Skeleton className="w-full h-full" />
             ) : (
               <img
                 src={posterUrl}
                 alt={movie.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                // Use placeholder on error if image fails to load
                 onError={(e) => (e.currentTarget.src = "/placeholder.svg")}
               />
             )}

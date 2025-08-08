@@ -1,8 +1,8 @@
-import { TmdbMovieSummary } from "@/data/movies";
+import { Movie } from "@/data/movies"; // Import the Supabase Movie type
 import { MovieCard } from "./MovieCard";
 
 interface MovieGridProps {
-  movies: TmdbMovieSummary[];
+  movies: Movie[]; // Expect Supabase Movie type
 }
 
 export const MovieGrid = ({ movies }: MovieGridProps) => {
