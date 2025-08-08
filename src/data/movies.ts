@@ -8,7 +8,7 @@ export interface Movie {
   communityRating: number | null; // Allow null for communityRating
   posterUrl: string;
   synopsis: string;
-  cast: string[];
+  movie_cast: string[]; // Changed from 'cast' to 'movie_cast'
   director: string;
 }
 
@@ -23,7 +23,7 @@ export const movies: Movie[] = [
     communityRating: 7.4,
     posterUrl: "/placeholder.svg",
     synopsis: "A television reporter and cameraman follow emergency workers into a dark apartment building and are quickly locked inside with something terrifying.",
-    cast: [],
+    movie_cast: [],
     director: "Jaume Balagueró, Paco Plaza",
   },
   {
@@ -36,7 +36,7 @@ export const movies: Movie[] = [
     communityRating: 6.3,
     posterUrl: "/placeholder.svg",
     synopsis: "The rapid spread of an unknown infection has left an entire city in ungovernable chaos, but one survivor remains alive in isolation. It is his story.",
-    cast: [],
+    movie_cast: [],
     director: "Il Cho",
   },
   {
@@ -49,7 +49,7 @@ export const movies: Movie[] = [
     communityRating: 8.4,
     posterUrl: "/placeholder.svg",
     synopsis: "Two friends are searching for their long lost companion. They revisit their college days and recall the memories of their friend who inspired them to think differently, even as the rest of the world called them 'idiots'.",
-    cast: [],
+    movie_cast: [],
     director: "Rajkumar Hirani",
   },
   {
@@ -62,7 +62,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "A transient young man breaks into empty homes to partake of the vacationing residents' lives for a few days.",
-    cast: [],
+    movie_cast: [],
     director: "Kim Ki-duk",
   },
   {
@@ -75,7 +75,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "A small-time rancher agrees to hold a captured outlaw who's awaiting a train to go to court in Yuma. A battle of wills ensues as the outlaw tries to psych out the rancher.",
-    cast: [],
+    movie_cast: [],
     director: "James Mangold",
   },
   {
@@ -88,7 +88,7 @@ export const movies: Movie[] = [
     communityRating: 7.5,
     posterUrl: "/placeholder.svg",
     synopsis: "Told in three interconnected segments, we follow a young man named Takaki through his life as cruel winters, cold technology, and finally, adult obligations and responsibility converge to test the delicate petals of love.",
-    cast: [],
+    movie_cast: [],
     director: "Makoto Shinkai",
   },
   {
@@ -101,7 +101,7 @@ export const movies: Movie[] = [
     communityRating: 9.0,
     posterUrl: "/placeholder.svg",
     synopsis: "The jury in a New York City murder trial is frustrated by a single member whose skeptical caution forces them to more carefully consider the evidence before jumping to a hasty verdict.",
-    cast: [],
+    movie_cast: [],
     director: "Sidney Lumet",
   },
   {
@@ -114,7 +114,7 @@ export const movies: Movie[] = [
     communityRating: 7.5,
     posterUrl: "/placeholder.svg",
     synopsis: "Four weeks after a mysterious, incurable virus spreads throughout the UK, a handful of survivors try to find sanctuary.",
-    cast: [],
+    movie_cast: [],
     director: "Danny Boyle",
   },
   {
@@ -127,7 +127,7 @@ export const movies: Movie[] = [
     communityRating: 8.3,
     posterUrl: "/placeholder.svg",
     synopsis: "After discovering a mysterious artifact buried beneath the Lunar surface, mankind sets off on a quest to find its origins with the help of H.A.L. 9000, the world's most advanced super computer.",
-    cast: [],
+    movie_cast: [],
     director: "Stanley Kubrick",
   },
   {
@@ -140,7 +140,7 @@ export const movies: Movie[] = [
     communityRating: 7.2,
     posterUrl: "/placeholder.svg",
     synopsis: "A highly advanced robotic boy longs to become 'real' so that he can regain the love of his human mother.",
-    cast: [],
+    movie_cast: [],
     director: "Steven Spielberg",
   },
   {
@@ -153,7 +153,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "At the age of 21, Tim discovers he can travel in time and change what happens and has happened in his own life. His decision to make his world a better place by getting a girlfriend turns out not to be as easy as you might think.",
-    cast: [],
+    movie_cast: [],
     director: "Richard Curtis",
   },
   {
@@ -166,7 +166,7 @@ export const movies: Movie[] = [
     communityRating: 7.5,
     posterUrl: "/placeholder.svg",
     synopsis: "A civilian diving team is enlisted to search for a lost nuclear submarine and faces danger while encountering an alien aquatic species.",
-    cast: [],
+    movie_cast: [],
     director: "James Cameron",
   },
   {
@@ -179,7 +179,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "A lovelorn screenwriter becomes desperate as he tries and fails to adapt 'The Orchid Thief' by Susan Orlean for the screen.",
-    cast: [],
+    movie_cast: [],
     director: "Spike Jonze",
   },
   {
@@ -192,7 +192,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "Sophie reflects on the shared joy and private melancholy of a holiday she took with her father twenty years earlier. Memories real and imagined fill the gaps between as she tries to reconcile the father she knew with the man she didn't.",
-    cast: [],
+    movie_cast: [],
     director: "Charlotte Wells",
   },
   {
@@ -205,7 +205,7 @@ export const movies: Movie[] = [
     communityRating: 7.4,
     posterUrl: "/placeholder.svg",
     synopsis: "Follows the history of shoe salesman Sonny Vaccaro, and how he led Nike in its pursuit of the greatest athlete in the history of sports: Michael Jordan.",
-    cast: [],
+    movie_cast: [],
     director: "Ben Affleck",
   },
   {
@@ -218,7 +218,7 @@ export const movies: Movie[] = [
     communityRating: 8.0,
     posterUrl: "/placeholder.svg",
     synopsis: "A secret military project endangers Neo-Tokyo when it turns a biker gang member into a rampaging psychic psychopath who can only be stopped by two teenagers and a group of psychics.",
-    cast: [],
+    movie_cast: [],
     director: "Katsuhiro Ôtomo",
   },
   {
@@ -231,7 +231,7 @@ export const movies: Movie[] = [
     communityRating: 8.5,
     posterUrl: "/placeholder.svg",
     synopsis: "The crew of a commercial spacecraft encounter a deadly lifeform after investigating an unknown transmission.",
-    cast: [],
+    movie_cast: [],
     director: "Ridley Scott",
   },
   {
@@ -244,7 +244,7 @@ export const movies: Movie[] = [
     communityRating: 8.3,
     posterUrl: "/placeholder.svg",
     synopsis: "Amélie is an innocent and naive girl in Paris with her own sense of justice. She decides to help those around her and, along the way, discovers love.",
-    cast: [],
+    movie_cast: [],
     director: "Jean-Pierre Jeunet",
   },
   {
@@ -257,7 +257,7 @@ export const movies: Movie[] = [
     communityRating: 8.4,
     posterUrl: "/placeholder.svg",
     synopsis: "A sexually frustrated suburban father has a mid-life crisis after becoming infatuated with his daughter's best friend.",
-    cast: [],
+    movie_cast: [],
     director: "Sam Mendes",
   },
   {
@@ -270,7 +270,7 @@ export const movies: Movie[] = [
     communityRating: 7.6,
     posterUrl: "/placeholder.svg",
     synopsis: "A novelist who's fed up with the establishment profiting from 'Black' entertainment uses a pen name to write a book that propels him to the heart of hypocrisy and the madness he claims to disdain.",
-    cast: [],
+    movie_cast: [],
     director: "Cord Jefferson",
   },
   {
@@ -283,7 +283,7 @@ export const movies: Movie[] = [
     communityRating: 8.5,
     posterUrl: "/placeholder.svg",
     synopsis: "A former neo-nazi skinhead tries to prevent his younger brother from going down the same wrong path that he did.",
-    cast: [],
+    movie_cast: [],
     director: "Tony Kaye",
   },
   {
@@ -296,7 +296,7 @@ export const movies: Movie[] = [
     communityRating: 7.6,
     posterUrl: "/placeholder.svg",
     synopsis: "A wealthy New York City investment banking executive, Patrick Bateman, hides his alternate psychopathic ego from his co-workers and friends as he delves deeper into his violent, hedonistic fantasies.",
-    cast: [],
+    movie_cast: [],
     director: "Mary Harron",
   },
   {
@@ -309,7 +309,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "A woman is suspected of her husband's murder, and their blind son faces a moral dilemma as the sole witness.",
-    cast: [],
+    movie_cast: [],
     director: "Justine Triet",
   },
   {
@@ -322,7 +322,7 @@ export const movies: Movie[] = [
     communityRating: 8.2,
     posterUrl: "/placeholder.svg",
     synopsis: "A series of mysterious events change the life of a blind pianist, who must now report a crime that he should technically know nothing of.",
-    cast: [],
+    movie_cast: [],
     director: "Sriram Raghavan",
   },
   {
@@ -335,7 +335,7 @@ export const movies: Movie[] = [
     communityRating: 6.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A biologist signs up for a dangerous, secret expedition into a mysterious zone where the laws of nature don't apply.",
-    cast: [],
+    movie_cast: [],
     director: "Alex Garland",
   },
   {
@@ -348,7 +348,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "Four high school teachers consume alcohol on a daily basis to see how it affects their social and professional lives.",
-    cast: [],
+    movie_cast: [],
     director: "Thomas Vinterberg",
   },
   {
@@ -361,7 +361,7 @@ export const movies: Movie[] = [
     communityRating: 8.5,
     posterUrl: "/placeholder.svg",
     synopsis: "A U.S. Army officer serving in Vietnam is tasked with assassinating a renegade Special Forces Colonel who sees himself as a god.",
-    cast: [],
+    movie_cast: [],
     director: "Francis Ford Coppola",
   },
   {
@@ -374,7 +374,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "As the Mayan kingdom faces its decline, a young man is taken on a perilous journey to a world ruled by fear and oppression.",
-    cast: [],
+    movie_cast: [],
     director: "Mel Gibson",
   },
   {
@@ -387,7 +387,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "A linguist works with the military to communicate with alien lifeforms after twelve mysterious spacecraft appear around the world.",
-    cast: [],
+    movie_cast: [],
     director: "Denis Villeneuve",
   },
   {
@@ -400,7 +400,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "Thirteen-year-old fledgling writer Briony Tallis irrevocably changes the course of several lives when she accuses her older sister's lover of a crime he did not commit.",
-    cast: [],
+    movie_cast: [],
     director: "Joe Wright",
   },
   {
@@ -413,7 +413,7 @@ export const movies: Movie[] = [
     communityRating: 7.5,
     posterUrl: "/placeholder.svg",
     synopsis: "After being coerced into working for a crime boss, a talented getaway driver finds himself in over his head when he falls for the waitress of his dreams.",
-    cast: ["Ansel Elgort", "Kevin Spacey", "Lily James", "Jamie Foxx"],
+    movie_cast: ["Ansel Elgort", "Kevin Spacey", "Lily James", "Jamie Foxx"],
     director: "Edgar Wright",
   },
   {
@@ -426,7 +426,7 @@ export const movies: Movie[] = [
     communityRating: 8.5,
     posterUrl: "/placeholder.svg",
     synopsis: "Marty McFly, a 17-year-old high school student, is accidentally sent 30 years into the past in a time-traveling DeLorean invented by his eccentric scientist friend Doc Brown.",
-    cast: ["Michael J. Fox", "Christopher Lloyd", "Lea Thompson", "Crispin Glover"],
+    movie_cast: ["Michael J. Fox", "Christopher Lloyd", "Lea Thompson", "Crispin Glover"],
     director: "Robert Zemeckis",
   },
   {
@@ -439,7 +439,7 @@ export const movies: Movie[] = [
     communityRating: 7.1,
     posterUrl: "/placeholder.svg",
     synopsis: "The true story of a Long Island school superintendent and his assistant who embezzled millions from the public school system.",
-    cast: ["Hugh Jackman", "Allison Janney", "Ray Romano", "Geraldine Viswanathan"],
+    movie_cast: ["Hugh Jackman", "Allison Janney", "Ray Romano", "Geraldine Viswanathan"],
     director: "Cory Finley",
   },
   {
@@ -452,7 +452,7 @@ export const movies: Movie[] = [
     communityRating: 7.1,
     posterUrl: "/placeholder.svg",
     synopsis: "Seven strangers, each with a secret, meet at Lake Tahoe's El Royale, a rundown hotel with a dark past. Over the course of one fateful night, everyone will have one last shot at redemption - before everything goes to hell.",
-    cast: ["Jeff Bridges", "Cynthia Erivo", "Dakota Johnson", "Jon Hamm"],
+    movie_cast: ["Jeff Bridges", "Cynthia Erivo", "Dakota Johnson", "Jon Hamm"],
     director: "Drew Goddard",
   },
   {
@@ -465,7 +465,7 @@ export const movies: Movie[] = [
     communityRating: 6.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A single mother, plagued by the violent death of her husband, struggles with her son's fear of a monster lurking in the house, but soon discovers a sinister presence all around her.",
-    cast: ["Essie Davis", "Noah Wiseman", "Hayley McElhinney", "Daniel Henshall"],
+    movie_cast: ["Essie Davis", "Noah Wiseman", "Hayley McElhinney", "Daniel Henshall"],
     director: "Jennifer Kent",
   },
   {
@@ -478,7 +478,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "Two lifelong friends find themselves at an impasse when one abruptly ends their relationship, with alarming consequences for both of them.",
-    cast: ["Colin Farrell", "Brendan Gleeson", "Kerry Condon", "Barry Keoghan"],
+    movie_cast: ["Colin Farrell", "Brendan Gleeson", "Kerry Condon", "Barry Keoghan"],
     director: "Martin McDonagh",
   },
   {
@@ -491,7 +491,7 @@ export const movies: Movie[] = [
     communityRating: 7.0,
     posterUrl: "/placeholder.svg",
     synopsis: "A young woman discovers the rental home she booked is already occupied by a strange man. Against her better judgment, she decides to stay the night, but soon discovers there's a lot more to fear than an unexpected house guest.",
-    cast: ["Georgina Campbell", "Bill Skarsgård", "Justin Long", "Matthew Patrick Davis"],
+    movie_cast: ["Georgina Campbell", "Bill Skarsgård", "Justin Long", "Matthew Patrick Davis"],
     director: "Zach Cregger",
   },
   {
@@ -504,7 +504,7 @@ export const movies: Movie[] = [
     communityRating: 8.1,
     posterUrl: "/placeholder.svg",
     synopsis: "An Irish rogue wins the heart of a rich widow and assumes her dead husband's aristocratic position in 18th-century England.",
-    cast: ["Ryan O'Neal", "Marisa Berenson", "Patrick Magee", "Hardy Krüger"],
+    movie_cast: ["Ryan O'Neal", "Marisa Berenson", "Patrick Magee", "Hardy Krüger"],
     director: "Stanley Kubrick",
   },
   {
@@ -517,7 +517,7 @@ export const movies: Movie[] = [
     communityRating: 8.2,
     posterUrl: "/placeholder.svg",
     synopsis: "After training with his mentor, Batman begins his fight to free crime-ridden Gotham City from corruption.",
-    cast: ["Christian Bale", "Michael Caine", "Ken Watanabe", "Liam Neeson"],
+    movie_cast: ["Christian Bale", "Michael Caine", "Ken Watanabe", "Liam Neeson"],
     director: "Christopher Nolan",
   },
   {
@@ -530,7 +530,7 @@ export const movies: Movie[] = [
     communityRating: 6.7,
     posterUrl: "/placeholder.svg",
     synopsis: "Following the sudden death of his mother, a mild-mannered but anxiety-ridden man embarks on an epic, Kafkaesque odyssey back home.",
-    cast: ["Joaquin Phoenix", "Patti LuPone", "Amy Ryan", "Nathan Lane"],
+    movie_cast: ["Joaquin Phoenix", "Patti LuPone", "Amy Ryan", "Nathan Lane"],
     director: "Ari Aster",
   },
   {
@@ -543,7 +543,7 @@ export const movies: Movie[] = [
     communityRating: 8.1,
     posterUrl: "/placeholder.svg",
     synopsis: "A young man and woman meet on a train in Europe, and wind up spending a romantic evening in Vienna. Unfortunately, both know that this will probably be their only night together.",
-    cast: ["Ethan Hawke", "Julie Delpy", "Andrea Eckert", "Hanno Pöschl"],
+    movie_cast: ["Ethan Hawke", "Julie Delpy", "Andrea Eckert", "Hanno Pöschl"],
     director: "Richard Linklater",
   },
   {
@@ -556,7 +556,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A puppeteer discovers a portal that leads literally into the mind of actor John Malkovich.",
-    cast: ["John Cusack", "Cameron Diaz", "Catherine Keener", "Orson Bean"],
+    movie_cast: ["John Cusack", "Cameron Diaz", "Catherine Keener", "Orson Bean"],
     director: "Spike Jonze",
   },
   {
@@ -569,7 +569,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "Jeff 'The Dude' Lebowski, a Los Angeles slacker who loves bowling and White Russians, is mistaken for a millionaire of the same name.",
-    cast: ["Jeff Bridges", "John Goodman", "Julianne Moore", "Steve Buscemi"],
+    movie_cast: ["Jeff Bridges", "John Goodman", "Julianne Moore", "Steve Buscemi"],
     director: "Joel Coen, Ethan Coen",
   },
   {
@@ -582,7 +582,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "A washed-up actor, who once played an iconic superhero, struggles to mount a Broadway play. As opening night approaches, he battles his ego and attempts to recover his family, his career, and himself.",
-    cast: ["Michael Keaton", "Emma Stone", "Edward Norton", "Naomi Watts"],
+    movie_cast: ["Michael Keaton", "Emma Stone", "Edward Norton", "Naomi Watts"],
     director: "Alejandro G. Iñárritu",
   },
   {
@@ -595,7 +595,7 @@ export const movies: Movie[] = [
     communityRating: 8.1,
     posterUrl: "/placeholder.svg",
     synopsis: "A blade runner must pursue and terminate four replicants who stole a ship in space and have returned to Earth to find their creator.",
-    cast: ["Harrison Ford", "Rutger Hauer", "Sean Young", "Edward James Olmos"],
+    movie_cast: ["Harrison Ford", "Rutger Hauer", "Sean Young", "Edward James Olmos"],
     director: "Ridley Scott",
   },
   {
@@ -608,7 +608,7 @@ export const movies: Movie[] = [
     communityRating: 8.0,
     posterUrl: "/placeholder.svg",
     synopsis: "Young Blade Runner K's discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who's been missing for 30 years.",
-    cast: ["Ryan Gosling", "Harrison Ford", "Ana de Armas", "Sylvia Hoeks"],
+    movie_cast: ["Ryan Gosling", "Harrison Ford", "Ana de Armas", "Sylvia Hoeks"],
     director: "Denis Villeneuve",
   },
   {
@@ -621,7 +621,7 @@ export const movies: Movie[] = [
     communityRating: 7.3,
     posterUrl: "/placeholder.svg",
     synopsis: "Collin must make it through his final three days of probation for a chance at a new beginning. He and his best friend, Miles, work as movers, and are forced to confront their rapidly changing neighborhood in Oakland.",
-    cast: ["Daveed Diggs", "Rafael Casal", "Janina Gavankar", "Jasmine Cephas Jones"],
+    movie_cast: ["Daveed Diggs", "Rafael Casal", "Janina Gavankar", "Jasmine Cephas Jones"],
     director: "Carlos López Estrada",
   },
   {
@@ -634,7 +634,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "The discovery of a severed human ear in a field leads a young man on an investigation that takes him deep into the criminal underworld of his hometown.",
-    cast: ["Isabella Rossellini", "Kyle MacLachlan", "Dennis Hopper", "Laura Dern"],
+    movie_cast: ["Isabella Rossellini", "Kyle MacLachlan", "Dennis Hopper", "Laura Dern"],
     director: "David Lynch",
   },
   {
@@ -647,7 +647,7 @@ export const movies: Movie[] = [
     communityRating: 7.1,
     posterUrl: "/placeholder.svg",
     synopsis: "On the eve of their high school graduation, two academic superstars and best friends realize they should have worked less and played more. Determined not to fall short of their peers, the girls try to cram four years of fun into one night.",
-    cast: ["Kaitlyn Dever", "Beanie Feldstein", "Jessica Williams", "Lisa Kudrow"],
+    movie_cast: ["Kaitlyn Dever", "Beanie Feldstein", "Jessica Williams", "Lisa Kudrow"],
     director: "Olivia Wilde",
   },
   {
@@ -660,7 +660,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "The life of Mason, from early childhood to his arrival at college, is chronicled.",
-    cast: ["Ellar Coltrane", "Patricia Arquette", "Ethan Hawke", "Lorelei Linklater"],
+    movie_cast: ["Ellar Coltrane", "Patricia Arquette", "Ethan Hawke", "Lorelei Linklater"],
     director: "Richard Linklater",
   },
   {
@@ -673,7 +673,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "A bureaucrat in a dystopic future tries to correct an administrative error and becomes an enemy of the state.",
-    cast: ["Jonathan Pryce", "Kim Greist", "Robert De Niro", "Katherine Helmond"],
+    movie_cast: ["Jonathan Pryce", "Kim Greist", "Robert De Niro", "Katherine Helmond"],
     director: "Terry Gilliam",
   },
   {
@@ -686,7 +686,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "Five high school students meet in Saturday detention and discover how they have a lot more in common than they thought.",
-    cast: ["Judd Nelson", "Molly Ringwald", "Emilio Estevez", "Ally Sheedy"],
+    movie_cast: ["Judd Nelson", "Molly Ringwald", "Emilio Estevez", "Ally Sheedy"],
     director: "John Hughes",
   },
   {
@@ -699,7 +699,7 @@ export const movies: Movie[] = [
     communityRating: 7.2,
     posterUrl: "/placeholder.svg",
     synopsis: "A teenage loner pushes his way into the underworld of a high school crime ring to investigate the disappearance of his ex-girlfriend.",
-    cast: ["Joseph Gordon-Levitt", "Lukas Haas", "Nora Zehetner", "Matt O'Leary"],
+    movie_cast: ["Joseph Gordon-Levitt", "Lukas Haas", "Nora Zehetner", "Matt O'Leary"],
     director: "Rian Johnson",
   },
   {
@@ -712,7 +712,7 @@ export const movies: Movie[] = [
     communityRating: 7.6,
     posterUrl: "/placeholder.svg",
     synopsis: "During the Cold War, an American lawyer is recruited to negotiate a prisoner exchange between the U.S. and the Soviet Union for a captured American U-2 spy plane pilot.",
-    cast: ["Tom Hanks", "Mark Rylance", "Amy Ryan", "Alan Alda"],
+    movie_cast: ["Tom Hanks", "Mark Rylance", "Amy Ryan", "Alan Alda"],
     director: "Steven Spielberg",
   },
   {
@@ -725,7 +725,7 @@ export const movies: Movie[] = [
     communityRating: 7.5,
     posterUrl: "/placeholder.svg",
     synopsis: "Jong-su, a part-time worker, bumps into Hae-mi, a former neighbor, on a delivery job. She asks him to look after her cat while she's away on a trip. When she returns, she introduces Ben, a mysterious man she met in Africa, who confesses his unusual hobby.",
-    cast: ["Yoo Ah-in", "Steven Yeun", "Jeon Jong-seo", "Kim Soo-kyung"],
+    movie_cast: ["Yoo Ah-in", "Steven Yeun", "Jeon Jong-seo", "Kim Soo-kyung"],
     director: "Lee Chang-dong",
   },
   {
@@ -738,7 +738,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "In 1980s Italy, a romance blossoms between a 17-year-old student and the older man hired as his father's research assistant.",
-    cast: ["Armie Hammer", "Timothée Chalamet", "Michael Stuhlbarg", "Amira Casar"],
+    movie_cast: ["Armie Hammer", "Timothée Chalamet", "Michael Stuhlbarg", "Amira Casar"],
     director: "Luca Guadagnino",
   },
   {
@@ -751,7 +751,7 @@ export const movies: Movie[] = [
     communityRating: 8.4,
     posterUrl: "/placeholder.svg",
     synopsis: "While serving a five-year sentence for a violent crime, a 12-year-old boy sues his parents for neglect.",
-    cast: ["Zain Al Rafeea", "Yordanos Shiferaw", "Boluwatife Treasure Bankole", "Kawthar Al Haddad"],
+    movie_cast: ["Zain Al Rafeea", "Yordanos Shiferaw", "Boluwatife Treasure Bankole", "Kawthar Al Haddad"],
     director: "Nadine Labaki",
   },
   {
@@ -764,7 +764,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "In the forests of the Pacific Northwest, a father devoted to raising his six kids with a rigorous physical and intellectual education is forced to leave his paradise and enter the world, challenging his idea of what it means to be a parent.",
-    cast: ["Viggo Mortensen", "George MacKay", "Samantha Isler", "Annalise Basso"],
+    movie_cast: ["Viggo Mortensen", "George MacKay", "Samantha Isler", "Annalise Basso"],
     director: "Matt Ross",
   },
   {
@@ -777,7 +777,7 @@ export const movies: Movie[] = [
     communityRating: 8.1,
     posterUrl: "/placeholder.svg",
     synopsis: "A true story about Frank Abagnale Jr. who, before his 19th birthday, successfully performed cons worth millions of dollars by posing as a pilot, a doctor, and a legal prosecutor.",
-    cast: ["Leonardo DiCaprio", "Tom Hanks", "Christopher Walken", "Amy Adams"],
+    movie_cast: ["Leonardo DiCaprio", "Tom Hanks", "Christopher Walken", "Amy Adams"],
     director: "Steven Spielberg",
   },
   {
@@ -790,7 +790,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "In 2027, in a chaotic world in which women have become infertile, a former activist agrees to help transport a miraculously pregnant woman to a sanctuary at sea.",
-    cast: ["Clive Owen", "Julianne Moore", "Michael Caine", "Chiwetel Ejiofor"],
+    movie_cast: ["Clive Owen", "Julianne Moore", "Michael Caine", "Chiwetel Ejiofor"],
     director: "Alfonso Cuarón",
   },
   {
@@ -803,7 +803,7 @@ export const movies: Movie[] = [
     communityRating: 8.1,
     posterUrl: "/placeholder.svg",
     synopsis: "A private detective hired to expose an adulterer finds himself caught up in a web of deceit, corruption, and murder.",
-    cast: ["Jack Nicholson", "Faye Dunaway", "John Huston", "Perry Lopez"],
+    movie_cast: ["Jack Nicholson", "Faye Dunaway", "John Huston", "Perry Lopez"],
     director: "Roman Polanski",
   },
   {
@@ -816,7 +816,7 @@ export const movies: Movie[] = [
     communityRating: 8.6,
     posterUrl: "/placeholder.svg",
     synopsis: "In the slums of Rio, two kids' paths diverge as one becomes a photographer and the other a drug dealer.",
-    cast: ["Alexandre Rodrigues", "Leandro Firmino", "Phellipe Haagensen", "Douglas Silva"],
+    movie_cast: ["Alexandre Rodrigues", "Leandro Firmino", "Phellipe Haagensen", "Douglas Silva"],
     director: "Fernando Meirelles, Kátia Lund",
   },
   {
@@ -829,7 +829,7 @@ export const movies: Movie[] = [
     communityRating: 7.0,
     posterUrl: "/placeholder.svg",
     synopsis: "French dancers gather in a remote, empty school building to rehearse for a show. The all-night celebration turns into a hallucinatory nightmare when they discover their sangria is laced with LSD.",
-    cast: ["Sofia Boutella", "Romain Guillermic", "Souheila Yacoub", "Kiddy Smile"],
+    movie_cast: ["Sofia Boutella", "Romain Guillermic", "Souheila Yacoub", "Kiddy Smile"],
     director: "Gaspar Noé",
   },
   {
@@ -842,7 +842,7 @@ export const movies: Movie[] = [
     communityRating: 7.6,
     posterUrl: "/placeholder.svg",
     synopsis: "After an encounter with UFOs, a line worker feels an inescapable urge to seek contact with the extraterrestrial intelligence.",
-    cast: ["Richard Dreyfuss", "François Truffaut", "Teri Garr", "Melinda Dillon"],
+    movie_cast: ["Richard Dreyfuss", "François Truffaut", "Teri Garr", "Melinda Dillon"],
     director: "Steven Spielberg",
   },
   {
@@ -855,7 +855,7 @@ export const movies: Movie[] = [
     communityRating: 8.4,
     posterUrl: "/placeholder.svg",
     synopsis: "Aspiring musician Miguel, confronted with his family's ancestral ban on music, enters the Land of the Dead to find his great-great-grandfather, a legendary singer.",
-    cast: ["Anthony Gonzalez", "Gael García Bernal", "Benjamin Bratt", "Alanna Ubach"],
+    movie_cast: ["Anthony Gonzalez", "Gael García Bernal", "Benjamin Bratt", "Alanna Ubach"],
     director: "Lee Unkrich, Adrian Molina",
   },
   {
@@ -868,7 +868,7 @@ export const movies: Movie[] = [
     communityRating: 7.2,
     posterUrl: "/placeholder.svg",
     synopsis: "Strange things begin to happen when a group of friends gather for a dinner party on an evening when a comet is passing overhead.",
-    cast: ["Emily Baldoni", "Maury Sterling", "Nicholas Brendon", "Lorene Scafaria"],
+    movie_cast: ["Emily Baldoni", "Maury Sterling", "Nicholas Brendon", "Lorene Scafaria"],
     director: "James Ward Byrkit",
   },
   {
@@ -881,7 +881,7 @@ export const movies: Movie[] = [
     communityRating: 8.4,
     posterUrl: "/placeholder.svg",
     synopsis: "After finding an old rifle, a young boy joins the Soviet resistance movement against the invading Nazi forces and witnesses the atrocities of World War II.",
-    cast: ["Aleksey Kravchenko", "Olga Mironova", "Liubomiras Laucevicius", "Vladas Bagdonas"],
+    movie_cast: ["Aleksey Kravchenko", "Olga Mironova", "Liubomiras Laucevicius", "Vladas Bagdonas"],
     director: "Elem Klimov",
   },
   {
@@ -894,7 +894,7 @@ export const movies: Movie[] = [
     communityRating: 6.8,
     posterUrl: "/placeholder.svg",
     synopsis: "Healthcare professionals, government officials, and everyday people find themselves in the midst of a worldwide epidemic as the CDC works to find a cure.",
-    cast: ["Marion Cotillard", "Matt Damon", "Laurence Fishburne", "Jude Law"],
+    movie_cast: ["Marion Cotillard", "Matt Damon", "Laurence Fishburne", "Jude Law"],
     director: "Steven Soderbergh",
   },
   {
@@ -907,7 +907,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A paranoid surveillance expert is hired to secretly record a seemingly innocent conversation between two lovers, but he soon finds himself in a web of murder and deception.",
-    cast: ["Gene Hackman", "John Cazale", "Allen Garfield", "Frederic Forrest"],
+    movie_cast: ["Gene Hackman", "John Cazale", "Allen Garfield", "Frederic Forrest"],
     director: "Francis Ford Coppola",
   },
   {
@@ -920,7 +920,7 @@ export const movies: Movie[] = [
     communityRating: 7.6,
     posterUrl: "/placeholder.svg",
     synopsis: "The wife of an obnoxious gangster begins an affair with a quiet book-lover, and their secret trysts lead to a shocking act of revenge.",
-    cast: ["Richard Bohringer", "Michael Gambon", "Helen Mirren", "Alan Howard"],
+    movie_cast: ["Richard Bohringer", "Michael Gambon", "Helen Mirren", "Alan Howard"],
     director: "Peter Greenaway",
   },
   {
@@ -933,7 +933,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A young Chinese warrior steals a legendary sword and embarks on a heroic quest to recover it, leading to a showdown with a mysterious female warrior.",
-    cast: ["Chow Yun-Fat", "Michelle Yeoh", "Zhang Ziyi", "Chang Chen"],
+    movie_cast: ["Chow Yun-Fat", "Michelle Yeoh", "Zhang Ziyi", "Chang Chen"],
     director: "Ang Lee",
   },
   {
@@ -946,7 +946,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "A Czech immigrant, who is going blind, struggles to save money for an operation to prevent her son from suffering the same fate.",
-    cast: ["Björk", "Catherine Deneuve", "David Morse", "Peter Stormare"],
+    movie_cast: ["Björk", "Catherine Deneuve", "David Morse", "Peter Stormare"],
     director: "Lars von Trier",
   },
   {
@@ -959,7 +959,7 @@ export const movies: Movie[] = [
     communityRating: 9.0,
     posterUrl: "/placeholder.svg",
     synopsis: "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-    cast: ["Christian Bale", "Heath Ledger", "Aaron Eckhart", "Michael Caine"],
+    movie_cast: ["Christian Bale", "Heath Ledger", "Aaron Eckhart", "Michael Caine"],
     director: "Christopher Nolan",
   },
   {
@@ -972,7 +972,7 @@ export const movies: Movie[] = [
     communityRating: 8.4,
     posterUrl: "/placeholder.svg",
     synopsis: "Eight years after the Joker's reign of anarchy, Batman, with the help of the enigmatic Selina Kyle, is forced from his exile to save Gotham City from the brutal guerrilla terrorist Bane.",
-    cast: ["Christian Bale", "Tom Hardy", "Anne Hathaway", "Gary Oldman"],
+    movie_cast: ["Christian Bale", "Tom Hardy", "Anne Hathaway", "Gary Oldman"],
     director: "Christopher Nolan",
   },
   {
@@ -985,7 +985,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A group of survivors take refuge in an abandoned shopping mall during a zombie apocalypse.",
-    cast: ["David Emge", "Ken Foree", "Scott Reiniger", "Gaylen Ross"],
+    movie_cast: ["David Emge", "Ken Foree", "Scott Reiniger", "Gaylen Ross"],
     director: "George A. Romero",
   },
   {
@@ -998,7 +998,7 @@ export const movies: Movie[] = [
     communityRating: 8.1,
     posterUrl: "/placeholder.svg",
     synopsis: "English teacher John Keating inspires his students to a love of poetry and to seize the day.",
-    cast: ["Robin Williams", "Robert Sean Leonard", "Ethan Hawke", "Josh Charles"],
+    movie_cast: ["Robin Williams", "Robert Sean Leonard", "Ethan Hawke", "Josh Charles"],
     director: "Peter Weir",
   },
   {
@@ -1011,7 +1011,7 @@ export const movies: Movie[] = [
     communityRating: 8.1,
     posterUrl: "/placeholder.svg",
     synopsis: "An in-depth examination of the ways in which the Vietnam War impacts and disrupts the lives of people in a small industrial town in Pennsylvania.",
-    cast: ["Robert De Niro", "Christopher Walken", "John Cazale", "John Savage"],
+    movie_cast: ["Robert De Niro", "Christopher Walken", "John Cazale", "John Savage"],
     director: "Michael Cimino",
   },
   {
@@ -1024,7 +1024,7 @@ export const movies: Movie[] = [
     communityRating: 8.0,
     posterUrl: "/placeholder.svg",
     synopsis: "A young man who has lost his job as a cellist in an orchestra finds new meaning in life after he begins working as a 'Nokanshi' - a person who prepares the deceased for burial.",
-    cast: ["Masahiro Motoki", "Ryôko Hirosue", "Tsutomu Yamazaki", "Kazuko Yoshiyuki"],
+    movie_cast: ["Masahiro Motoki", "Ryôko Hirosue", "Tsutomu Yamazaki", "Kazuko Yoshiyuki"],
     director: "Yôjirô Takita",
   },
   {
@@ -1037,7 +1037,7 @@ export const movies: Movie[] = [
     communityRating: 8.5,
     posterUrl: "/placeholder.svg",
     synopsis: "An undercover state cop and a mole in the police force try to identify each other while infiltrating an Irish gang in South Boston.",
-    cast: ["Leonardo DiCaprio", "Matt Damon", "Jack Nicholson", "Mark Wahlberg"],
+    movie_cast: ["Leonardo DiCaprio", "Matt Damon", "Jack Nicholson", "Mark Wahlberg"],
     director: "Martin Scorsese",
   },
   {
@@ -1050,7 +1050,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "An alien race, forced to live in slum-like conditions on Earth, finds a kindred spirit in a government agent who is exposed to their biotechnology.",
-    cast: ["Sharlto Copley", "Jason Cope", "Nathalie Boltt", "Sylvaine Strike"],
+    movie_cast: ["Sharlto Copley", "Jason Cope", "Nathalie Boltt", "Sylvaine Strike"],
     director: "Neill Blomkamp",
   },
   {
@@ -1063,7 +1063,7 @@ export const movies: Movie[] = [
     communityRating: 8.0,
     posterUrl: "/placeholder.svg",
     synopsis: "A man robs a bank to pay for his lover's sex change operation, but the robbery goes wrong and he finds himself in a hostage situation.",
-    cast: ["Al Pacino", "John Cazale", "Charles Durning", "Chris Sarandon"],
+    movie_cast: ["Al Pacino", "John Cazale", "Charles Durning", "Chris Sarandon"],
     director: "Sidney Lumet",
   },
   {
@@ -1076,7 +1076,7 @@ export const movies: Movie[] = [
     communityRating: 8.0,
     posterUrl: "/placeholder.svg",
     synopsis: "A troubled teenager is plagued by visions of a large bunny rabbit that manipulates him to commit a series of crimes, after he narrowly escapes a bizarre accident.",
-    cast: ["Jake Gyllenhaal", "Jena Malone", "Drew Barrymore", "Patrick Swayze"],
+    movie_cast: ["Jake Gyllenhaal", "Jena Malone", "Drew Barrymore", "Patrick Swayze"],
     director: "Richard Kelly",
   },
   {
@@ -1089,7 +1089,7 @@ export const movies: Movie[] = [
     communityRating: 8.2,
     posterUrl: "/placeholder.svg",
     synopsis: "Traudl Junge, Hitler's last secretary, tells of the dictator's final days in his Berlin bunker at the end of WWII.",
-    cast: ["Bruno Ganz", "Alexandra Maria Lara", "Corinna Harfouch", "Ulrich Matthes"],
+    movie_cast: ["Bruno Ganz", "Alexandra Maria Lara", "Corinna Harfouch", "Ulrich Matthes"],
     director: "Oliver Hirschbiegel",
   },
   {
@@ -1102,7 +1102,7 @@ export const movies: Movie[] = [
     communityRating: 8.4,
     posterUrl: "/placeholder.svg",
     synopsis: "An insane American general orders a nuclear attack on the Soviet Union, triggering a series of events that could lead to global annihilation.",
-    cast: ["Peter Sellers", "George C. Scott", "Sterling Hayden", "Slim Pickens"],
+    movie_cast: ["Peter Sellers", "George C. Scott", "Sterling Hayden", "Slim Pickens"],
     director: "Stanley Kubrick",
   },
   {
@@ -1115,7 +1115,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "Allied soldiers from Belgium, the British Empire, and France are surrounded by the German Army and evacuated during a fierce battle in World War II.",
-    cast: ["Fionn Whitehead", "Damien Bonnard", "Aneurin Barnard", "Tom Hardy"],
+    movie_cast: ["Fionn Whitehead", "Damien Bonnard", "Aneurin Barnard", "Tom Hardy"],
     director: "Christopher Nolan",
   },
   {
@@ -1128,7 +1128,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "A soldier fighting aliens gets to relive the same day over and over again, the day restarting every time he dies.",
-    cast: ["Tom Cruise", "Emily Blunt", "Bill Paxton", "Brendan Gleeson"],
+    movie_cast: ["Tom Cruise", "Emily Blunt", "Bill Paxton", "Brendan Gleeson"],
     director: "Doug Liman",
   },
   {
@@ -1141,7 +1141,7 @@ export const movies: Movie[] = [
     communityRating: 7.4,
     posterUrl: "/placeholder.svg",
     synopsis: "An awkward teenage girl tries to survive the last week of her disastrous eighth-grade year before leaving to start high school.",
-    cast: ["Elsie Fisher", "Josh Hamilton", "Emily Robinson", "Jake Ryan"],
+    movie_cast: ["Elsie Fisher", "Josh Hamilton", "Emily Robinson", "Jake Ryan"],
     director: "Bo Burnham",
   },
   {
@@ -1154,7 +1154,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A laundromat owner discovers she can travel through parallel universes and must use her newfound powers to save the multiverse from a powerful evil.",
-    cast: ["Michelle Yeoh", "Stephanie Hsu", "Ke Huy Quan", "Jamie Lee Curtis"],
+    movie_cast: ["Michelle Yeoh", "Stephanie Hsu", "Ke Huy Quan", "Jamie Lee Curtis"],
     director: "Daniel Kwan, Daniel Scheinert",
   },
   {
@@ -1167,7 +1167,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "A young programmer is selected to participate in a groundbreaking experiment in artificial intelligence by evaluating the human qualities of a beautiful humanoid A.I.",
-    cast: ["Domhnall Gleeson", "Alicia Vikander", "Oscar Isaac", "Sonoya Mizuno"],
+    movie_cast: ["Domhnall Gleeson", "Alicia Vikander", "Oscar Isaac", "Sonoya Mizuno"],
     director: "Alex Garland",
   },
   {
@@ -1180,7 +1180,7 @@ export const movies: Movie[] = [
     communityRating: 7.9,
     posterUrl: "/placeholder.svg",
     synopsis: "Jerry Lundegaard, a car salesman, hires two hitmen to kidnap his wife in order to extort money from his wealthy father-in-law. When the plan goes awry, a pregnant police chief investigates the murders.",
-    cast: ["Frances McDormand", "William H. Macy", "Steve Buscemi", "Peter Stormare"],
+    movie_cast: ["Frances McDormand", "William H. Macy", "Steve Buscemi", "Peter Stormare"],
     director: "Joel Coen, Ethan Coen",
   },
   {
@@ -1193,7 +1193,7 @@ export const movies: Movie[] = [
     communityRating: 8.8,
     posterUrl: "/placeholder.svg",
     synopsis: "An insomniac office worker looking for a way to change his life crosses paths with a devil-may-care soap maker and they form an underground fight club that evolves into something much, much more.",
-    cast: ["Brad Pitt", "Edward Norton", "Meat Loaf", "Zach Grenier"],
+    movie_cast: ["Brad Pitt", "Edward Norton", "Meat Loaf", "Zach Grenier"],
     director: "David Fincher",
   },
   {
@@ -1206,7 +1206,7 @@ export const movies: Movie[] = [
     communityRating: 8.2,
     posterUrl: "/placeholder.svg",
     synopsis: "After his son is captured in the Great Barrier Reef and taken to Sydney, a timid clownfish sets out on a journey to bring him home.",
-    cast: ["Albert Brooks", "Ellen DeGeneres", "Alexander Gould", "Willem Dafoe"],
+    movie_cast: ["Albert Brooks", "Ellen DeGeneres", "Alexander Gould", "Willem Dafoe"],
     director: "Andrew Stanton, Lee Unkrich",
   },
   {
@@ -1219,7 +1219,7 @@ export const movies: Movie[] = [
     communityRating: 7.1,
     posterUrl: "/placeholder.svg",
     synopsis: "A minister of a small church in upstate New York is tormented by the death of his son and a crisis of faith.",
-    cast: ["Ethan Hawke", "Amanda Seyfried", "Cedric the Entertainer", "Victoria Hill"],
+    movie_cast: ["Ethan Hawke", "Amanda Seyfried", "Cedric the Entertainer", "Victoria Hill"],
     director: "Paul Schrader",
   },
   {
@@ -1232,7 +1232,7 @@ export const movies: Movie[] = [
     communityRating: 8.8,
     posterUrl: "/placeholder.svg",
     synopsis: "The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.",
-    cast: ["Tom Hanks", "Robin Wright", "Gary Sinise", "Mykelti Williamson"],
+    movie_cast: ["Tom Hanks", "Robin Wright", "Gary Sinise", "Mykelti Williamson"],
     director: "Robert Zemeckis",
   },
   {
@@ -1245,7 +1245,7 @@ export const movies: Movie[] = [
     communityRating: 7.4,
     posterUrl: "/placeholder.svg",
     synopsis: "A young woman living in New York City apprentices for a dance company and is trying to make ends meet.",
-    cast: ["Greta Gerwig", "Mickey Sumner", "Adam Driver", "Michael Zegen"],
+    movie_cast: ["Greta Gerwig", "Mickey Sumner", "Adam Driver", "Michael Zegen"],
     director: "Noah Baumbach",
   },
   {
@@ -1258,7 +1258,7 @@ export const movies: Movie[] = [
     communityRating: 7.1,
     posterUrl: "/placeholder.svg",
     synopsis: "A love letter to journalists set in an outpost of an American newspaper in a fictional 20th-century French city that brings to life a collection of stories published in the final issue of 'The French Dispatch' magazine.",
-    cast: ["Benicio Del Toro", "Adrien Brody", "Tilda Swinton", "Léa Seydoux"],
+    movie_cast: ["Benicio Del Toro", "Adrien Brody", "Tilda Swinton", "Léa Seydoux"],
     director: "Wes Anderson",
   },
   {
@@ -1271,7 +1271,7 @@ export const movies: Movie[] = [
     communityRating: 8.3,
     posterUrl: "/placeholder.svg",
     synopsis: "A two-part story following a group of U.S. Marines through their brutal basic training and the Tet Offensive during the Vietnam War.",
-    cast: ["Matthew Modine", "R. Lee Ermey", "Vincent D'Onofrio", "Adam Baldwin"],
+    movie_cast: ["Matthew Modine", "R. Lee Ermey", "Vincent D'Onofrio", "Adam Baldwin"],
     director: "Stanley Kubrick",
   },
   {
@@ -1284,7 +1284,7 @@ export const movies: Movie[] = [
     communityRating: 7.8,
     posterUrl: "/placeholder.svg",
     synopsis: "A young African-American man visits his white girlfriend's parents for the first time, and soon discovers that there's something sinister about their seemingly perfect suburban community.",
-    cast: ["Daniel Kaluuya", "Allison Williams", "Catherine Keener", "Bradley Whitford"],
+    movie_cast: ["Daniel Kaluuya", "Allison Williams", "Catherine Keener", "Bradley Whitford"],
     director: "Jordan Peele",
   },
   {
@@ -1297,7 +1297,7 @@ export const movies: Movie[] = [
     communityRating: 8.5,
     posterUrl: "/placeholder.svg",
     synopsis: "A Roman general is betrayed and his family murdered by an emperor's ambitious son. Reduced to slavery, he rises through the ranks of the gladiatorial arena to seek revenge.",
-    cast: ["Russell Crowe", "Joaquin Phoenix", "Connie Nielsen", "Oliver Reed"],
+    movie_cast: ["Russell Crowe", "Joaquin Phoenix", "Connie Nielsen", "Oliver Reed"],
     director: "Ridley Scott",
   },
   {
@@ -1310,7 +1310,7 @@ export const movies: Movie[] = [
     communityRating: 7.7,
     posterUrl: "/placeholder.svg",
     synopsis: "A young sheep farmer in rural Yorkshire numbs his daily frustrations with alcohol and casual sex, until the arrival of a Romanian migrant worker ignites an intense relationship that sets him on a new path.",
-    cast: ["Josh O'Connor", "Alec Secareanu", "Gemma Jones", "Ian Hart"],
+    movie_cast: ["Josh O'Connor", "Alec Secareanu", "Gemma Jones", "Ian Hart"],
     director: "Francis Lee",
   }
 ];

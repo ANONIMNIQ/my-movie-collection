@@ -33,7 +33,7 @@ export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<
               communityRating: isNaN(communityRating) ? null : communityRating,
               posterUrl: row.ImagePrimary && row.ImagePrimary !== 'x' ? row.ImagePrimary.trim() : '/placeholder.svg',
               synopsis: "", // Not available in CSV, default to empty
-              cast: [],     // Not available in CSV, default to empty
+              movie_cast: [],     // Changed from 'cast' to 'movie_cast'
               director: "", // Not available in CSV, default to empty
               user_id: adminUserId, // Assign the admin user ID
             };

@@ -37,7 +37,7 @@ const AddMovie = () => {
     communityRating: "",
     posterUrl: "",
     synopsis: "",
-    cast: "",
+    movie_cast: "", // Changed from 'cast' to 'movie_cast'
     director: "",
   });
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ const AddMovie = () => {
       return;
     }
 
-    const { title, year, genres, rating, runtime, communityRating, posterUrl, synopsis, cast, director } = formData;
+    const { title, year, genres, rating, runtime, communityRating, posterUrl, synopsis, movie_cast, director } = formData; // Changed 'cast' to 'movie_cast'
 
     // Safely parse communityRating, setting to null if empty or results in NaN
     const parsedCommunityRating = communityRating ? parseFloat(communityRating) : null;
@@ -74,7 +74,7 @@ const AddMovie = () => {
       community_rating: finalCommunityRating,
       poster_url: posterUrl || "/placeholder.svg",
       synopsis,
-      movie_cast: cast.split(",").map((c) => c.trim()).filter(Boolean),
+      movie_cast: movie_cast.split(",").map((c) => c.trim()).filter(Boolean), // Changed to movie_cast
       director,
       user_id: session?.user?.id, // Add the user_id from the session
     };
@@ -155,8 +155,8 @@ const AddMovie = () => {
                 <Textarea id="synopsis" value={formData.synopsis} onChange={handleChange} rows={5} />
               </div>
               <div>
-                <Label htmlFor="cast">Cast (comma-separated)</Label>
-                <Textarea id="cast" value={formData.cast} onChange={handleChange} rows={3} placeholder="e.g., Actor 1, Actor 2, Actor 3" />
+                <Label htmlFor="movie_cast">Cast (comma-separated)</Label> {/* Changed label htmlFor */}
+                <Textarea id="movie_cast" value={formData.movie_cast} onChange={handleChange} rows={3} placeholder="e.g., Actor 1, Actor 2, Actor 3" /> {/* Changed id and value */}
               </div>
               <div>
                 <Label htmlFor="director">Director</Label>
