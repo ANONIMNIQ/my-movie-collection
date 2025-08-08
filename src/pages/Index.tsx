@@ -2,6 +2,7 @@ import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserMovies } from "@/hooks/useUserMovies";
+import { useAllMovies } from "@/hooks/useAllMovies"; // Import the new hook
 import { useSession } from "@/integrations/supabase/auth";
 import { AddMovieForm } from "@/components/AddMovieForm";
 import { Button } from "@/components/ui/button";
@@ -9,9 +10,15 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   const { session } = useSession();
-  const { data: movies, isLoading, isError } = useUserMovies();
 
-  // Determine if the AddMovieForm should be shown
+  // Conditionally use the appropriate hook based on session
+  const { data: userMovies, isLoading: isLoadingUserMovies, isError: isUserMoviesError } = useUserMovies();
+  const { data: allMovies, isLoading: isLoadingAllMovies, isError: isAllMoviesError } = useAllMovies();
+
+  const moviesToDisplay = session ? userMovies : allMovies;
+  const isLoading = session ? isLoadingUserMovies : isLoadingAllMovies;
+  const isError = session ? isUserMoviesError : isAllMoviesError;
+
   const showAddMovieForm = !!session;
 
   if (isError) {
@@ -45,20 +52,20 @@ const Index = () => {
 
         {showAddMovieForm && <AddMovieForm />}
 
-        {isLoading && showAddMovieForm ? ( // Only show skeleton if logged in and loading
+        {isLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="w-full aspect-[2/3] bg-muted rounded-lg animate-pulse"></div>
             ))}
           </div>
-        ) : movies && movies.length > 0 ? (
-          <MovieGrid movies={movies} />
+        ) : moviesToDisplay && moviesToDisplay.length > 0 ? (
+          <MovieGrid movies={moviesToDisplay} />
         ) : (
           <div className="text-center text-muted-foreground text-lg mt-12">
             {session ? (
               "Your movie list is empty. Search and add some movies above!"
             ) : (
-              "No movies to display. Log in to see your collection or add new movies."
+              "No movies to display. This list is currently empty."
             )}
           </div>
         )}

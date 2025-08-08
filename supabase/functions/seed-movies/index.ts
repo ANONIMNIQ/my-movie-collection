@@ -12,10 +12,17 @@ serve(async (req) => {
   }
 
   try {
-    const { user_id } = await req.json();
+    const { user_id, movies_to_seed } = await req.json();
 
     if (!user_id) {
       return new Response(JSON.stringify({ error: 'User ID is required.' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      });
+    }
+
+    if (!movies_to_seed || !Array.isArray(movies_to_seed) || movies_to_seed.length === 0) {
+      return new Response(JSON.stringify({ error: 'An array of movies (title, tmdb_id) is required.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       });
@@ -31,51 +38,11 @@ serve(async (req) => {
       }
     );
 
-    const TMDB_API_KEY = Deno.env.get('TMDB_API_KEY');
-    if (!TMDB_API_KEY) {
-      return new Response(JSON.stringify({ error: 'TMDb API key not set as a Supabase secret.' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      });
-    }
-
-    const moviesToInsert = [];
-    let page = 1;
-    const maxPages = 5; // Fetch up to 5 pages to get around 100 movies (20 movies per page)
-
-    while (moviesToInsert.length < 100 && page <= maxPages) {
-      const tmdbResponse = await fetch(
-        `https://api.themoviedb.org/3/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`
-      );
-
-      if (!tmdbResponse.ok) {
-        console.error(`TMDb API error: ${tmdbResponse.status} ${tmdbResponse.statusText}`);
-        throw new Error('Failed to fetch popular movies from TMDb.');
-      }
-
-      const tmdbData = await tmdbResponse.json();
-      if (tmdbData.results && tmdbData.results.length > 0) {
-        for (const movie of tmdbData.results) {
-          if (moviesToInsert.length < 100) {
-            moviesToInsert.push({
-              user_id: user_id,
-              title: movie.title,
-              tmdb_id: movie.id,
-            });
-          } else {
-            break;
-          }
-        }
-      }
-      page++;
-    }
-
-    if (moviesToInsert.length === 0) {
-      return new Response(JSON.stringify({ message: 'No movies found to insert.' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      });
-    }
+    const moviesToInsert = movies_to_seed.map((movie: { title: string; tmdb_id: number }) => ({
+      user_id: user_id,
+      title: movie.title,
+      tmdb_id: movie.tmdb_id,
+    }));
 
     const { data, error } = await supabaseClient
       .from('movies')
