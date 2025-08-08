@@ -45,9 +45,9 @@ serve(async (req) => {
     }
 
     if (!movies_to_seed || !Array.isArray(movies_to_seed) || movies_to_seed.length === 0) {
-      return new Response(JSON.stringify({ error: 'An array of movies (tmdb_id, title) is required.' }), {
+      return new Response(JSON.stringify({ message: 'No movies provided for seeding.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
+        status: 200,
       });
     }
 
@@ -75,7 +75,15 @@ serve(async (req) => {
     console.log(`Successfully deleted existing movies for user: ${user_id}`);
 
     const moviesToInsert = [];
+    const seenTmdbIds = new Set(); // To track seen tmdb_ids for deduplication
+
     for (const movieSummary of movies_to_seed) {
+      if (seenTmdbIds.has(movieSummary.tmdb_id)) {
+        console.warn(`Skipping duplicate TMDb ID in input list: ${movieSummary.tmdb_id}`);
+        continue; // Skip this movie if its tmdb_id has already been processed
+      }
+      seenTmdbIds.add(movieSummary.tmdb_id);
+
       const tmdbDetails = await fetchTmdbMovieDetails(movieSummary.tmdb_id);
 
       if (tmdbDetails) {
@@ -98,7 +106,7 @@ serve(async (req) => {
     }
 
     if (moviesToInsert.length === 0) {
-      return new Response(JSON.stringify({ message: 'No movies were successfully prepared for insertion.' }), {
+      return new Response(JSON.stringify({ message: 'No unique movies were successfully prepared for insertion.' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       });
