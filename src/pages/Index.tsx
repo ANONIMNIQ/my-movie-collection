@@ -34,7 +34,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovieIds, setSelectedMovieIds] = new Set<string>();
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set()); // Corrected initialization
   const [isDeleting, setIsDeleting] = useState(false); // New state for deletion in progress
   const queryClient = useQueryClient();
 
