@@ -9,7 +9,8 @@ import MovieDetail from "./pages/MovieDetail";
 import AddMovie from "./pages/AddMovie";
 import Login from "./pages/Login";
 import ImportMovies from "./pages/ImportMovies";
-import EditMovie from "./pages/EditMovie"; // Import the new EditMovie page
+import EditMovie from "./pages/EditMovie";
+import ImportRatings from "./pages/ImportRatings"; // Import the new ImportRatings page
 import { SessionContextProvider } from "./contexts/SessionContext";
 
 const queryClient = new QueryClient();
@@ -27,7 +28,8 @@ const App = () => (
             <Route path="/add-movie" element={<AddMovie />} />
             <Route path="/login" element={<Login />} />
             <Route path="/import-movies" element={<ImportMovies />} />
-            <Route path="/edit-movie/:id" element={<EditMovie />} /> {/* New route for editing movies */}
+            <Route path="/edit-movie/:id" element={<EditMovie />} />
+            <Route path="/import-ratings" element={<ImportRatings />} /> {/* New route for importing ratings */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

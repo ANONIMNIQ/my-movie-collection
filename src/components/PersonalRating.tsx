@@ -10,9 +10,10 @@ interface PersonalRatingProps {
   movieId: string;
   initialRating?: number | null;
   readOnly?: boolean;
+  onRatingChange?: (rating: number | null) => void; // New prop for form integration
 }
 
-const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating, readOnly = false }) => {
+const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating, readOnly = false, onRatingChange }) => {
   const { session } = useSession();
   const userId = session?.user?.id;
   const queryClient = useQueryClient();
@@ -30,6 +31,13 @@ const PersonalRating: React.FC<PersonalRatingProps> = ({ movieId, initialRating,
 
     setLoading(true);
     const newRating = ratingValue === currentRating ? null : ratingValue; // Toggle off if same rating clicked
+
+    if (onRatingChange) {
+      onRatingChange(newRating); // Notify parent component of change
+      setCurrentRating(newRating); // Update local state immediately for responsiveness
+      setLoading(false); // No async operation needed if handled by parent form submission
+      return;
+    }
 
     if (newRating === null) {
       // Delete existing rating

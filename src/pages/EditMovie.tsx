@@ -13,6 +13,8 @@ import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchFromTmdb } from "@/lib/tmdb";
 import { extractTmdbMovieId, getTmdbPosterUrl } from "@/utils/tmdbUtils";
+import PersonalRating from "@/components/PersonalRating"; // Import PersonalRating
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -20,6 +22,8 @@ const EditMovie = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { session, loading: sessionLoading } = useSession();
+  const queryClient = useQueryClient();
+  const userId = session?.user?.id;
 
   const [formData, setFormData] = useState<Omit<Movie, 'id' | 'user_id' | 'created_at'>>({
     title: "",
@@ -33,6 +37,7 @@ const EditMovie = () => {
     movie_cast: "",
     director: "",
   });
+  const [personalRating, setPersonalRating] = useState<number | null>(null); // State for personal rating
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tmdbUrl, setTmdbUrl] = useState("");
@@ -78,6 +83,16 @@ const EditMovie = () => {
         movie_cast: data.movie_cast.join(", "),
         director: data.director,
       });
+      // Fetch personal rating for this movie
+      if (userId) {
+        const { data: personalRatingData } = await supabase
+          .from('user_ratings')
+          .select('rating')
+          .eq('user_id', userId)
+          .eq('movie_id', id)
+          .single();
+        setPersonalRating(personalRatingData?.rating ?? null);
+      }
     } else {
       setError("Movie not found.");
     }
@@ -87,6 +102,10 @@ const EditMovie = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handlePersonalRatingChange = (rating: number | null) => {
+    setPersonalRating(rating);
   };
 
   const handleTmdbUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,7 +201,40 @@ const EditMovie = () => {
       console.error("Error updating movie:", updateError);
       showError("Failed to update movie: " + updateError.message);
     } else {
-      showSuccess("Movie updated successfully!");
+      // Update personal rating if changed
+      if (userId && id) {
+        if (personalRating !== null) {
+          const { error: ratingError } = await supabase
+            .from('user_ratings')
+            .upsert(
+              { user_id: userId, movie_id: id, rating: personalRating },
+              { onConflict: 'user_id, movie_id' }
+            );
+          if (ratingError) {
+            console.error("Error updating personal rating:", ratingError);
+            showError("Movie updated, but failed to save personal rating: " + ratingError.message);
+          } else {
+            showSuccess("Movie and personal rating updated successfully!");
+            queryClient.invalidateQueries({ queryKey: ['user_rating', id, userId] });
+          }
+        } else {
+          // If personal rating is set to null, delete it
+          const { error: deleteRatingError } = await supabase
+            .from('user_ratings')
+            .delete()
+            .eq('user_id', userId)
+            .eq('movie_id', id);
+          if (deleteRatingError && deleteRatingError.code !== 'PGRST116') { // PGRST116 means no rows found, which is fine
+            console.error("Error deleting personal rating:", deleteRatingError);
+            showError("Movie updated, but failed to remove personal rating: " + deleteRatingError.message);
+          } else {
+            showSuccess("Movie updated successfully!");
+            queryClient.invalidateQueries({ queryKey: ['user_rating', id, userId] });
+          }
+        }
+      } else {
+        showSuccess("Movie updated successfully!");
+      }
       navigate("/");
     }
     setLoading(false);
@@ -292,6 +344,13 @@ const EditMovie = () => {
               <div>
                 <Label htmlFor="director">Director</Label>
                 <Input id="director" value={formData.director} onChange={handleChange} />
+              </div>
+              <div>
+                <Label htmlFor="personal-rating">Your Personal Rating</Label>
+                <PersonalRating movieId={id || ""} initialRating={personalRating} onRatingChange={handlePersonalRatingChange} />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Set your personal rating for this movie (1-10).
+                </p>
               </div>
               <Button type="submit" className="w-full" disabled={loading || fetchingTmdb}>
                 {loading ? "Updating Movie..." : "Update Movie"}

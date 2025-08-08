@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "@/contexts/SessionContext";
 import { fetchFromTmdb } from "@/lib/tmdb";
 import { extractTmdbMovieId, getTmdbPosterUrl } from "@/utils/tmdbUtils";
+import PersonalRating from "@/components/PersonalRating"; // Import PersonalRating
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -41,6 +42,7 @@ const AddMovie = () => {
     movie_cast: "",
     director: "",
   });
+  const [personalRating, setPersonalRating] = useState<number | null>(null); // New state for personal rating
   const [loading, setLoading] = useState(false);
   const [tmdbUrl, setTmdbUrl] = useState("");
   const [fetchingTmdb, setFetchingTmdb] = useState(false);
@@ -48,6 +50,10 @@ const AddMovie = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handlePersonalRatingChange = (rating: number | null) => {
+    setPersonalRating(rating);
   };
 
   const handleTmdbUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,13 +141,27 @@ const AddMovie = () => {
       user_id: session?.user?.id,
     };
 
-    const { error } = await supabase.from("movies").insert([movieData]);
+    const { data: insertedMovie, error } = await supabase.from("movies").insert([movieData]).select('id').single();
 
     if (error) {
       console.error("Error adding movie:", error);
       showError("Failed to add movie: " + error.message);
     } else {
-      showSuccess("Movie added successfully!");
+      if (personalRating !== null && insertedMovie?.id) {
+        const { error: ratingError } = await supabase.from('user_ratings').insert({
+          user_id: session.user.id,
+          movie_id: insertedMovie.id,
+          rating: personalRating,
+        });
+        if (ratingError) {
+          console.error("Error adding personal rating:", ratingError);
+          showError("Movie added, but failed to save personal rating: " + ratingError.message);
+        } else {
+          showSuccess("Movie and personal rating added successfully!");
+        }
+      } else {
+        showSuccess("Movie added successfully!");
+      }
       navigate("/");
     }
     setLoading(false);
@@ -241,6 +261,13 @@ const AddMovie = () => {
               <div>
                 <Label htmlFor="director">Director</Label>
                 <Input id="director" value={formData.director} onChange={handleChange} />
+              </div>
+              <div>
+                <Label htmlFor="personal-rating">Your Personal Rating</Label>
+                <PersonalRating movieId="new-movie" initialRating={personalRating} onRatingChange={handlePersonalRatingChange} />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Set your personal rating for this movie (1-10).
+                </p>
               </div>
               <Button type="submit" className="w-full" disabled={loading || fetchingTmdb}>
                 {loading ? "Adding Movie..." : "Add Movie"}

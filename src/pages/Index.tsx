@@ -34,7 +34,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set<string>();
   const [isDeleting, setIsDeleting] = useState(false); // New state for deletion in progress
   const queryClient = useQueryClient();
 
@@ -174,6 +174,9 @@ const Index = () => {
                     <Button variant="secondary">Import Movies (CSV)</Button>
                   </Link>
                 )}
+                <Link to="/import-ratings"> {/* New button for importing ratings */}
+                  <Button variant="outline">Import My Ratings</Button>
+                </Link>
                 <Button variant="outline" onClick={handleLogout}>
                   Logout
                 </Button>
