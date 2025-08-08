@@ -97,7 +97,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
         </div>
       )}
       
-      <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
+      <div className="aspect-[2/3] w-full overflow-hidden bg-muted"> {/* Removed rounded-md */}
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
