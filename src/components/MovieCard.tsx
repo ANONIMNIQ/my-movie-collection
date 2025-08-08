@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import PersonalRating from "./PersonalRating"; // Import PersonalRating
+// import PersonalRating from "./PersonalRating"; // Removed import as it's no longer used here
 
 interface MovieCardProps {
   movie: Movie;
@@ -105,11 +105,12 @@ export const MovieCard = ({ movie, isSelected, onSelect }: MovieCardProps) => {
             {movie.title}
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">{movie.year}</p>
-          {/* Always show admin's rating */}
+          {/* Display admin's rating as a number */}
           <div className="mt-2 flex items-center">
             <span className="text-sm text-muted-foreground mr-1">My Rating:</span>
-            <PersonalRating movieId={movie.id} initialRating={adminPersonalRatingData} readOnly={true} />
-            {adminPersonalRatingData === null && <span className="text-sm text-muted-foreground ml-1">N/A</span>}
+            <span className="text-sm font-medium">
+              {adminPersonalRatingData !== null ? adminPersonalRatingData.toFixed(1) : "N/A"}
+            </span>
           </div>
         </div>
       </Link>
