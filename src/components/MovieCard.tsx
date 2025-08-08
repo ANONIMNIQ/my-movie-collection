@@ -20,14 +20,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox"; // Import Checkbox
 
 interface MovieCardProps {
   movie: Movie;
+  isSelected: boolean; // New prop
+  onSelect: (id: string, isSelected: boolean) => void; // New prop
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
-export const MovieCard = ({ movie }: MovieCardProps) => {
+export const MovieCard = ({ movie, isSelected, onSelect }: MovieCardProps) => {
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
@@ -52,6 +55,15 @@ export const MovieCard = ({ movie }: MovieCardProps) => {
 
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col bg-card relative">
+      {isAdmin && (
+        <div className="absolute top-2 left-2 z-20">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => onSelect(movie.id, !!checked)}
+            className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+          />
+        </div>
+      )}
       <Link to={`/movie/${movie.id}`} className="block group">
         <CardHeader className="p-0 relative">
           <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
