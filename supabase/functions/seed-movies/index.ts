@@ -44,9 +44,12 @@ serve(async (req) => {
       tmdb_id: movie.tmdb_id,
     }));
 
+    // Use onConflict to ignore duplicates based on tmdb_id
     const { data, error } = await supabaseClient
       .from('movies')
       .insert(moviesToInsert)
+      .onConflict('tmdb_id') // Specify the column with the unique constraint
+      .ignoreDuplicates() // Tell Supabase to ignore if a conflict occurs
       .select();
 
     if (error) {
@@ -54,7 +57,7 @@ serve(async (req) => {
       throw new Error(`Failed to insert movies into Supabase: ${error.message}`);
     }
 
-    return new Response(JSON.stringify({ message: `Successfully added ${data.length} movies to your list!`, movies: data }), {
+    return new Response(JSON.stringify({ message: `Successfully added ${data.length} new movies to your list!`, movies: data }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     });
