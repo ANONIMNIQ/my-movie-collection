@@ -138,6 +138,9 @@ const Index = () => {
           <p className="text-muted-foreground mt-2 text-lg">
             A minimalist collection of cinematic gems.
           </p>
+          <p className="text-muted-foreground text-md mt-1">
+            Total movies: {filteredMovies.length}
+          </p>
           <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
             {sessionLoading ? (
               <Skeleton className="w-32 h-10" />
