@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "-ml-4 transition-transform duration-300 ease-out" // Standard styling, removed py-12
+    "-ml-4 transition-transform duration-300 ease-out py-12"
   );
 
   return (
@@ -61,7 +61,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         <Carousel
           opts={{
             align: "start",
-            slidesToScroll: 6, // Changed to 6 as requested
+            slidesToScroll: 6,
           }}
           className="w-full overflow-visible relative"
           viewportClassName="overflow-visible" 
