@@ -24,6 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { CustomCarousel } from "@/components/CustomCarousel";
+import MovieCounter from "@/components/MovieCounter";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
@@ -189,9 +190,9 @@ const Index = () => {
           <p className="text-muted-foreground mt-2 text-lg">
             A minimalist collection of cinematic gems.
           </p>
-          <p className="text-muted-foreground text-md mt-1">
-            Total movies: {filteredMovies.length}
-          </p>
+          <div className="mt-6">
+            <MovieCounter count={filteredMovies.length} />
+          </div>
           <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
             {sessionLoading ? (
               <Skeleton className="w-32 h-10" />

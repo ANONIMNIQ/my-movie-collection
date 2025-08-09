@@ -140,6 +140,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      react-flip-numbers:
+        specifier: ^3.0.9
+        version: 3.0.9(react-dom@18.3.1(react@18.3.1))(react-simple-animate@3.5.3(react-dom@18.3.1(react@18.3.1)))(react@18.3.1)
       react-hook-form:
         specifier: ^7.53.0
         version: 7.62.0(react@18.3.1)
@@ -2197,6 +2200,13 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
+  react-flip-numbers@3.0.9:
+    resolution: {integrity: sha512-ZFpFIz5wxT00rPuMfmCfPOsnC09u9oxYV3zPlfG1X79N58a5bwFvZcfl6BIosowa2tI9t9KyJIYcJICFyr5Y5g==}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+      react-dom: ^16.8.0 || ^17 || ^18 || ^19
+      react-simple-animate: ^3.0.1
+
   react-hook-form@7.62.0:
     resolution: {integrity: sha512-7KWFejc98xqG/F4bAxpL41NB3o1nnvQO1RWZT3TqRZYL8RryQETGfEdVnJN2fy1crCiBLLjkRBVK05j24FxJGA==}
     engines: {node: '>=18.0.0'}
@@ -2247,6 +2257,11 @@ packages:
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
+
+  react-simple-animate@3.5.3:
+    resolution: {integrity: sha512-Ob+SmB5J1tXDEZyOe2Hf950K4M8VaWBBmQ3cS2BUnTORqHjhK0iKG8fB+bo47ZL15t8d3g/Y0roiqH05UBjG7A==}
+    peerDependencies:
+      react-dom: ^16.8.0 || ^17 || ^18 || ^19
 
   react-smooth@4.0.4:
     resolution: {integrity: sha512-gnGKTpYwqL0Iii09gHobNolvX4Kiq4PKx6eWBCYYix+8cdw+cGo3do906l1NBPKkSWx1DghC1dlWG9L2uGd61Q==}
@@ -4469,6 +4484,12 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
+  react-flip-numbers@3.0.9(react-dom@18.3.1(react@18.3.1))(react-simple-animate@3.5.3(react-dom@18.3.1(react@18.3.1)))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-simple-animate: 3.5.3(react-dom@18.3.1(react@18.3.1))
+
   react-hook-form@7.62.0(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -4512,6 +4533,10 @@ snapshots:
     dependencies:
       '@remix-run/router': 1.23.0
       react: 18.3.1
+
+  react-simple-animate@3.5.3(react-dom@18.3.1(react@18.3.1)):
+    dependencies:
+      react-dom: 18.3.1(react@18.3.1)
 
   react-smooth@4.0.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
