@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "-ml-4 py-12 transition-transform duration-300 ease-out"
+    "py-12 transition-transform duration-300 ease-out gap-6" // Removed -ml-4, added gap-6
   );
 
   return (
@@ -64,7 +64,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           align: "start",
           slidesToScroll: 1,
         }}
-        className="w-full overflow-visible relative" // Carousel is now outside the container
+        className="w-full overflow-visible relative px-4" // Added px-4 here to align carousel content
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
@@ -73,9 +73,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             return (
               <CarouselItem
                 key={movie.id}
-                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
+                className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible" // Removed pl-4
               >
-                <div className="p-1">
+                <div className="p-1 overflow-visible"> {/* Added overflow-visible here */}
                   <MovieCard
                     movie={movie}
                     selectedMovieIds={selectedMovieIds}
