@@ -48,12 +48,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "transition-transform duration-300 ease-out py-12"
+    "-ml-4 transition-transform duration-300 ease-out py-12"
   );
 
   return (
     <section className="mb-12 relative group">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-8">
         <h2 className="text-3xl font-bold mb-6">
           {title}
         </h2>
@@ -84,10 +84,10 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             })}
           </CarouselContent>
           {canScrollPrev && (
-            <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+            <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
           )}
           {canScrollNext && (
-            <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+            <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
           )}
 
           {canScrollPrev && (
