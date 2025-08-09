@@ -92,18 +92,18 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, index, total
   const isNearRightEdge = index >= totalMovies - 3; 
 
   return (
-    <div
+    // Moved scaling and hover logic directly to the Link component
+    <Link 
+      to={`/movie/${movie.id}`} 
       className={cn(
-        "relative h-full flex flex-col transition-all duration-300 ease-in-out",
-        isHovered ? "scale-135 z-30" : "scale-100 z-10", // Increased scale to 135%
-        isNearLeftEdge ? "origin-left" : isNearRightEdge ? "origin-right" : "origin-center" // Conditional origin
+        "block h-full relative flex flex-col transition-all duration-300 ease-in-out overflow-visible", // Added overflow-visible
+        isHovered ? "scale-140 z-30" : "scale-100 z-10", // Increased scale to 140%
+        isNearLeftEdge ? "origin-left" : isNearRightEdge ? "origin-right" : "origin-center"
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Wrap the Card with Link to make the entire card clickable */}
-      <Link to={`/movie/${movie.id}`} className="block h-full">
-        <Card className="h-full flex flex-col bg-card border-none rounded-none">
+      <Card className="h-full flex flex-col bg-card border-none rounded-none overflow-visible"> {/* Added overflow-visible */}
           {isAdmin && (
             <div className="absolute top-2 left-2 z-40">
               <Checkbox
@@ -220,6 +220,5 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, index, total
           )}
         </Card>
       </Link>
-    </div>
   );
 };

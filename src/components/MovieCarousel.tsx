@@ -54,22 +54,22 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="px-16 py-24 overflow-visible gap-x-2"> {/* Adjusted padding here */}
+        {/* Increased vertical padding (py-24) and adjusted horizontal padding (px-16) */}
+        <CarouselContent className="px-16 py-24 overflow-visible gap-x-2">
           {movies.map((movie, index) => {
             return (
               <CarouselItem
                 key={movie.id}
                 className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/5 relative overflow-visible"
               >
-                <div>
-                  <MovieCard
-                    movie={movie}
-                    selectedMovieIds={selectedMovieIds}
-                    onSelectMovie={onSelectMovie}
-                    index={index} // Pass the index
-                    totalMovies={movies.length} // Pass total movies for context
-                  />
-                </div>
+                {/* Removed the extra div here, MovieCard will handle its own scaling */}
+                <MovieCard
+                  movie={movie}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={onSelectMovie}
+                  index={index} // Pass the index
+                  totalMovies={movies.length} // Pass total movies for context
+                />
               </CarouselItem>
             );
           })}
