@@ -47,7 +47,6 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  // Added px-10 to create horizontal space for the first and last cards to expand into
   const carouselContentClasses = cn(
     "-ml-4 transition-transform duration-300 ease-out py-12 px-10"
   );
@@ -69,28 +68,26 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             setApi={setApi}
           >
             <CarouselContent className={carouselContentClasses}>
-              {movies.map((movie) => {
-                return (
-                  <CarouselItem
-                    key={movie.id}
-                    className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
-                  >
-                    <MovieCard
-                      movie={movie}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={onSelectMovie}
-                    />
-                  </CarouselItem>
-                );
-              })}
+              {movies.map((movie) => (
+                <CarouselItem
+                  key={movie.id}
+                  className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+                >
+                  <MovieCard
+                    movie={movie}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={onSelectMovie}
+                  />
+                </CarouselItem>
+              ))}
             </CarouselContent>
             
-            {/* Navigation Arrows */}
+            {/* Navigation Arrows - Positioned INSIDE the carousel bounds */}
             {canScrollPrev && (
-              <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+              <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
             )}
             {canScrollNext && (
-              <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+              <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
             )}
           </Carousel>
           
