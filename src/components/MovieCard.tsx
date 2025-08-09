@@ -92,7 +92,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
     >
       {/* Wrap the Card with Link to make the entire card clickable */}
       <Link to={`/movie/${movie.id}`} className="block h-full">
-        <Card className="h-full flex flex-col bg-card rounded-lg overflow-hidden border-none">
+        <Card className="h-full flex flex-col bg-card overflow-hidden border-none"> {/* Removed rounded-lg */}
           {isAdmin && (
             <div className="absolute top-2 left-2 z-40">
               <Checkbox
@@ -105,14 +105,14 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             </div>
           )}
           
-          <div className="aspect-[2/3] w-full overflow-hidden bg-muted rounded-lg">
+          <div className="aspect-[2/3] w-full overflow-hidden bg-muted"> {/* Removed rounded-lg */}
             {isLoading ? (
               <Skeleton className="w-full h-full" />
             ) : (
               <img
                 src={posterUrl}
                 alt={movie.title}
-                className="w-full h-full object-cover rounded-lg" // Removed invalid comment here
+                className="w-full h-full object-cover" // Removed rounded-lg
                 onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
               />
             )}
@@ -120,7 +120,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
           {/* Hover Overlay */}
           {isHovered && (
-            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-lg overflow-hidden">
+            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 overflow-hidden"> {/* Removed rounded-lg */}
               {/* Top section: Backdrop and Logo */}
               <div
                 className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
