@@ -22,9 +22,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     return null;
   }
 
-  // Add z-10 to ensure the content is layered below the z-50 arrows
+  // Removed z-10 from here to fix the stacking context issue
   const carouselContentClasses = cn(
-    "-ml-4 transition-transform duration-300 ease-out py-12 px-10 z-10"
+    "-ml-4 transition-transform duration-300 ease-out py-12 px-10"
   );
 
   return (
