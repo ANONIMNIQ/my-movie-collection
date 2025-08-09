@@ -91,10 +91,10 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           })}
         </CarouselContent>
         {canScrollPrev && (
-          <CarouselPrevious className="absolute -left-16 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
         {canScrollNext && (
-          <CarouselNext className="absolute -right-16 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
         {canScrollPrev && (
