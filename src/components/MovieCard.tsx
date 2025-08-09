@@ -92,7 +92,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
     >
       {/* Wrap the Card with Link to make the entire card clickable */}
       <Link to={`/movie/${movie.id}`} className="block h-full">
-        <Card className="h-full flex flex-col bg-card rounded-lg overflow-hidden border-none"> {/* Added rounded-lg, overflow-hidden, and border-none */}
+        <Card className="h-full flex flex-col bg-card rounded-lg overflow-hidden border-none">
           {isAdmin && (
             <div className="absolute top-2 left-2 z-40">
               <Checkbox
@@ -105,14 +105,14 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             </div>
           )}
           
-          <div className="aspect-[2/3] w-full overflow-hidden bg-muted rounded-lg"> {/* Added rounded-lg here */}
+          <div className="aspect-[2/3] w-full overflow-hidden bg-muted rounded-lg">
             {isLoading ? (
               <Skeleton className="w-full h-full" />
             ) : (
               <img
                 src={posterUrl}
                 alt={movie.title}
-                className="w-full h-full object-cover rounded-lg" {/* Added rounded-lg here */}
+                className="w-full h-full object-cover rounded-lg" // Removed invalid comment here
                 onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
               />
             )}
