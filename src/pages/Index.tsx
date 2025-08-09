@@ -182,52 +182,52 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
-      <main className="pt-0">
-        <header className="w-full text-center bg-white py-8 shadow-md">
-          <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-headerTitle">
-              Georgi's Movie Collection
-            </h1>
-            <p className="text-headerDescription mt-2 text-lg">
-              A minimalist collection of cinematic gems.
-            </p>
-            <div className="mt-6">
-              <MovieCounter 
-                count={filteredMovies.length} 
-                numberColor="#0F0F0F"
-                labelColor="text-headerDescription"
-              />
-            </div>
-            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-              {sessionLoading ? (
-                <Skeleton className="w-32 h-10" />
-              ) : session ? (
-                <>
-                  <Link to="/add-movie">
-                    <Button>Add New Movie</Button>
-                  </Link>
-                  {isAdmin && (
-                    <Link to="/import-movies">
-                      <Button variant="secondary">Import Movies (CSV)</Button>
-                    </Link>
-                  )}
-                  <Link to="/import-ratings">
-                    <Button variant="outline">Import My Ratings</Button>
-                  </Link>
-                  <Button variant="outline" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                </>
-              ) : (
-                <></>
-              )}
-            </div>
+      <header className="fixed top-0 left-0 w-full text-center bg-white py-8 shadow-md z-50">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-headerTitle">
+            Georgi's Movie Collection
+          </h1>
+          <p className="text-headerDescription mt-2 text-lg">
+            A minimalist collection of cinematic gems.
+          </p>
+          <div className="mt-6">
+            <MovieCounter 
+              count={filteredMovies.length} 
+              numberColor="#0F0F0F"
+              labelColor="text-headerDescription"
+            />
           </div>
-        </header>
+          <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+            {sessionLoading ? (
+              <Skeleton className="w-32 h-10" />
+            ) : session ? (
+              <>
+                <Link to="/add-movie">
+                  <Button>Add New Movie</Button>
+                </Link>
+                {isAdmin && (
+                  <Link to="/import-movies">
+                    <Button variant="secondary">Import Movies (CSV)</Button>
+                  </Link>
+                )}
+                <Link to="/import-ratings">
+                  <Button variant="outline">Import My Ratings</Button>
+                </Link>
+                <Button variant="outline" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
+      </header>
 
-        <div className="pt-8"> {/* Removed container mx-auto px-4 from here */}
+      <main className="pt-[200px]"> {/* Added padding-top to account for fixed header height */}
+        <div className="pt-8"> {/* This pt-8 will now add spacing below the fixed header */}
           {loadingMovies ? (
-            <div className="container mx-auto px-4 mb-12"> {/* Added container back for skeleton loading state */}
+            <div className="container mx-auto px-4 mb-12">
               <h2 className="text-3xl font-bold mb-4">New Movies</h2>
               <div className="flex overflow-hidden gap-4">
                 {Array.from({ length: 6 }).map((_, index) => (
@@ -277,7 +277,7 @@ const Index = () => {
             />
           )}
 
-          <div className="container mx-auto px-4"> {/* Re-added container for search and movie grid */}
+          <div className="container mx-auto px-4"> {/* This container is for search and movie grid */}
             {!loadingMovies && filteredMovies.length > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <h2 className="text-3xl font-bold">All Movies</h2>
