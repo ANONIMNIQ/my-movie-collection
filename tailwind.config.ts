@@ -19,7 +19,7 @@ export default {
     },
     extend: {
       boxShadow: {
-        glow: "0 20px 25px 0px rgb(0 0 0 / 0.9), 0 0 15px 0px hsl(var(--primary) / 0.25)",
+        glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
       },
       colors: {
         border: "hsl(var(--border))",
