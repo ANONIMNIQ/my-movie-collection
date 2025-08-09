@@ -63,8 +63,8 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             align: "start",
             slidesToScroll: 6,
           }}
-          className="w-full relative"
-          viewportClassName="!overflow-visible"
+          className="w-full overflow-visible"
+          viewportClassName="overflow-visible"
           setApi={setApi}
         >
           <CarouselContent className={carouselContentClasses}>
@@ -83,11 +83,21 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
               );
             })}
           </CarouselContent>
+          
+          {/* Gradient Overlays for blur effect */}
           {canScrollPrev && (
-            <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
           )}
           {canScrollNext && (
-            <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
+          )}
+
+          {/* Navigation Arrows */}
+          {canScrollPrev && (
+            <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          )}
+          {canScrollNext && (
+            <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
           )}
         </Carousel>
       </div>
