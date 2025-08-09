@@ -50,9 +50,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   // Determine dynamic transform for the CarouselContent to shift it at edges
   const carouselContentOffsetClass = React.useMemo(() => {
     if (!canScrollPrev && movies.length > 0) { // At the very beginning
-      return "translate-x-[64px]"; // Shift right by 64px
+      return "translate-x-[32px]"; // Shift right by 32px
     } else if (!canScrollNext && movies.length > 0) { // At the very end
-      return "-translate-x-[48px]"; // Shift left by 48px (keeping previous value)
+      return "-translate-x-[48px]"; // Shift left by 48px
     } else { // In the middle
       return "translate-x-0"; // No shift
     }
@@ -68,7 +68,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible px-8"
+        className="w-full overflow-visible px-16" // Increased padding to accommodate scaling
         setApi={setApi}
       >
         <CarouselContent className={cn("-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out", carouselContentOffsetClass)}>
@@ -90,10 +90,10 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           })}
         </CarouselContent>
         {canScrollPrev && (
-          <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
         {canScrollNext && (
-          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
         {canScrollPrev && (
