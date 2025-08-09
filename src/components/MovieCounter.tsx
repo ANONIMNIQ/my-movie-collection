@@ -19,6 +19,7 @@ const MovieCounter: React.FC<MovieCounterProps> = ({ count }) => {
           height={numberHeight}
           width={numberWidth}
           color="hsl(var(--primary))"
+          background="transparent" // This was the missing piece!
           play
           perspective={1000}
           numbers={numberString}
