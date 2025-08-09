@@ -224,8 +224,8 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="pt-[200px]"> {/* Added padding-top to account for fixed header height */}
-        <div className="pt-8"> {/* This pt-8 will now add spacing below the fixed header */}
+      <main className="pt-[280px]"> {/* Increased padding-top to accommodate header height */}
+        <div> {/* Removed pt-8 from here */}
           {loadingMovies ? (
             <div className="container mx-auto px-4 mb-12">
               <h2 className="text-3xl font-bold mb-4">New Movies</h2>
