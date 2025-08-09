@@ -93,7 +93,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
             <div
               key={movie.id}
               className={cn(
-                "flex-shrink-0 w-[42vw] sm:w-[29vw] md:w-[21vw] lg:w-[16vw]",
+                "flex-shrink-0 w-[40vw] sm:w-[26vw] md:w-[19vw] lg:w-[14.5vw]",
                 index === 0 ? "snap-start" : "snap-center",
                 index === movies.length - 1 && "snap-end"
               )}
