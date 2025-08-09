@@ -20,6 +20,7 @@ export default {
     extend: {
       fontFamily: {
         orbitron: ["Orbitron", "sans-serif"],
+        'roboto-mono': ['"Roboto Mono"', 'monospace'],
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
