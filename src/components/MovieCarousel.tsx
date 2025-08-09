@@ -63,6 +63,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             opts={{
               align: "start",
               slidesToScroll: 5.8,
+              loop: true, // Enable looping to fix arrow visibility issue
             }}
             className="w-full group"
             setApi={setApi}
