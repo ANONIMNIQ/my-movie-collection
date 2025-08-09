@@ -87,7 +87,7 @@
   html {
     @apply bg-background text-foreground;
     overflow-x: hidden;
-    scrollbar-gutter: stable;
+    overflow-y: scroll; /* Force vertical scrollbar to prevent layout shift */
   }
 
   body {
