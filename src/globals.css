@@ -115,8 +115,7 @@
 
 /* Style each individual number box */
 .custom-flip-wrapper .ReactFlipNumbers__number {
-  @apply relative rounded-lg shadow-lg border border-white/10;
-  background: #1a1a1a !important; /* Explicitly set background with !important */
+  /* Removed background, border, shadow, and rounded-lg */
   /* Ensure the number is centered within its box */
   display: flex !important;
   align-items: center !important;
@@ -126,10 +125,9 @@
   width: var(--number-width) !important;   /* Use CSS variable with !important */
 }
 
-/* Add the horizontal split line */
+/* Remove the horizontal split line */
 .custom-flip-wrapper .ReactFlipNumbers__number::after {
-  content: '';
-  @apply absolute top-1/2 left-0 right-0 h-[2px] bg-black/40 -translate-y-1/2 z-10;
+  content: none; /* Remove the horizontal line */
 }
 
 /* The library creates inner divs for the animation. We need to make sure they don't have a background. */
