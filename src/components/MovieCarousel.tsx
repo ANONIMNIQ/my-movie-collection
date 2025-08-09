@@ -52,10 +52,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   );
 
   return (
-    <section className="mb-12 relative group container mx-auto px-4">
-      <h2 className="text-3xl font-bold mb-6">
-        {title}
-      </h2>
+    <section className="mb-12 relative group"> {/* Removed container classes from here */}
+      <div className="container mx-auto px-4"> {/* New div to contain title */}
+        <h2 className="text-3xl font-bold mb-6">
+          {title}
+        </h2>
+      </div>
       
       <Carousel
         opts={{
