@@ -26,7 +26,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const leaveTimeout = useRef<number | null>(null);
+  const leaveTimeout = useRef<number | null>(leaveTimeout);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
   const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
@@ -64,7 +64,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   return (
     <section className="mb-12 relative">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold font-raleway">{title}</h2>
+        <h2 className="text-3xl font-bold font-poppins">{title}</h2>
       </div>
       <div className="relative z-10 mt-[-2rem]">
         <div className="relative group/carousel">

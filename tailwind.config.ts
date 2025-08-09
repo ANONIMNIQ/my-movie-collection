@@ -22,7 +22,8 @@ export default {
         orbitron: ["Orbitron", "sans-serif"],
         'roboto-mono': ['"Roboto Mono"', 'monospace'],
         raleway: ['Raleway', 'sans-serif'],
-        outfit: ['Outfit', 'sans-serif'], // Added Outfit font
+        outfit: ['Outfit', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'], // Added Poppins font
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
