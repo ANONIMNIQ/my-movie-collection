@@ -8,7 +8,7 @@ import {
   CarouselPrevious,
   useCarousel,
 } from "@/components/ui/carousel";
-import { MovieCard } => './MovieCard';
+import { MovieCard } from './MovieCard'; // Corrected import syntax
 import { cn } from '@/lib/utils';
 
 interface MovieCarouselProps {
@@ -61,7 +61,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         <Carousel
           opts={{
             align: "start",
-            slidesToScroll: 0.9, // Changed slidesToScroll to 0.9
+            slidesToScroll: 0.9,
           }}
           className="w-full overflow-visible relative"
           viewportClassName="overflow-visible" 
