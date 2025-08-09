@@ -23,6 +23,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
 import React from "react";
+import { cn } from '@/lib/utils'; // Import cn utility
 
 interface MovieCardProps {
   movie: Movie;
@@ -92,9 +93,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, index, total
 
   return (
     <div
-      className={`relative h-full flex flex-col transition-all duration-300 ease-in-out
-        ${isHovered ? "scale-125 z-30" : "scale-100 z-10"}
-        ${isNearRightEdge ? "origin-right" : "origin-center"}`} {/* Apply conditional origin */}
+      className={cn( // Using cn for cleaner class management
+        "relative h-full flex flex-col transition-all duration-300 ease-in-out",
+        isHovered ? "scale-125 z-30" : "scale-100 z-10",
+        isNearRightEdge ? "origin-right" : "origin-center"
+      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
