@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
-import { Skeleton } from "@/components/ui/skeleton"; // Corrected this line
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -182,6 +182,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
+      {/* DEBUGGING ELEMENT: If you see this, the Index component is rendering! */}
+      <div style={{ backgroundColor: 'lime', color: 'black', padding: '20px', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', zIndex: 9999 }}>
+        INDEX COMPONENT IS RENDERING!
+      </div>
+      {/* END DEBUGGING ELEMENT */}
+
       <header className="w-full text-center bg-white py-8 shadow-md z-50">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-headerTitle">
