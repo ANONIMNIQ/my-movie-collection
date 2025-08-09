@@ -92,7 +92,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
     >
       {/* Wrap the Card with Link to make the entire card clickable */}
       <Link to={`/movie/${movie.id}`} className="block h-full">
-        <Card className="h-full flex flex-col bg-card overflow-hidden border-none rounded-none"> {/* Added rounded-none here */}
+        <Card className="h-full flex flex-col bg-card border-none rounded-none"> {/* Removed overflow-hidden here */}
           {isAdmin && (
             <div className="absolute top-2 left-2 z-40">
               <Checkbox
@@ -120,7 +120,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
           {/* Hover Overlay */}
           {isHovered && (
-            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 overflow-hidden rounded-none"> {/* Added rounded-none here */}
+            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 overflow-hidden rounded-none">
               {/* Top section: Backdrop and Logo */}
               <div
                 className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
