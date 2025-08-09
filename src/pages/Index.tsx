@@ -40,7 +40,6 @@ const Index = () => {
   const queryClient = useQueryClient();
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
-  const currentYear = new Date().getFullYear().toString();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -79,24 +78,34 @@ const Index = () => {
     );
   }, [movies, searchQuery]);
 
-  const newMovies = useMemo(() => {
-    return movies.filter(movie => movie.year === currentYear);
-  }, [movies, currentYear]);
+  const categorizedMovies = useMemo(() => {
+    const newMovies: Movie[] = [];
+    const dramaMovies: Movie[] = [];
+    const thrillerMovies: Movie[] = [];
+    const scifiMovies: Movie[] = [];
+    const horrorMovies: Movie[] = [];
 
-  const dramaMovies = useMemo(() => {
-    return movies.filter(movie => movie.genres.includes("Drama"));
-  }, [movies]);
+    const currentYear = new Date().getFullYear().toString();
 
-  const thrillerMovies = useMemo(() => {
-    return movies.filter(movie => movie.genres.includes("Thriller"));
-  }, [movies]);
+    for (const movie of movies) {
+      if (movie.year === currentYear) {
+        newMovies.push(movie);
+      }
+      if (movie.genres.includes("Drama")) {
+        dramaMovies.push(movie);
+      }
+      if (movie.genres.includes("Thriller")) {
+        thrillerMovies.push(movie);
+      }
+      if (movie.genres.includes("Sci-Fi")) {
+        scifiMovies.push(movie);
+      }
+      if (movie.genres.includes("Horror")) {
+        horrorMovies.push(movie);
+      }
+    }
 
-  const scifiMovies = useMemo(() => {
-    return movies.filter(movie => movie.genres.includes("Sci-Fi"));
-  }, [movies]);
-
-  const horrorMovies = useMemo(() => {
-    return movies.filter(movie => movie.genres.includes("Horror"));
+    return { newMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies };
   }, [movies]);
 
   const moviesToShow = filteredMovies.slice(0, visibleCount);
@@ -221,40 +230,40 @@ const Index = () => {
         ) : (
           <CustomCarousel
             title="New Movies"
-            movies={newMovies}
+            movies={categorizedMovies.newMovies}
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
         )}
 
-        {!loadingMovies && dramaMovies.length > 0 && (
+        {!loadingMovies && categorizedMovies.dramaMovies.length > 0 && (
           <CustomCarousel
             title="Drama"
-            movies={dramaMovies}
+            movies={categorizedMovies.dramaMovies}
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
         )}
-        {!loadingMovies && thrillerMovies.length > 0 && (
+        {!loadingMovies && categorizedMovies.thrillerMovies.length > 0 && (
           <CustomCarousel
             title="Thriller"
-            movies={thrillerMovies}
+            movies={categorizedMovies.thrillerMovies}
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
         )}
-        {!loadingMovies && scifiMovies.length > 0 && (
+        {!loadingMovies && categorizedMovies.scifiMovies.length > 0 && (
           <CustomCarousel
             title="Sci-Fi"
-            movies={scifiMovies}
+            movies={categorizedMovies.scifiMovies}
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
         )}
-        {!loadingMovies && horrorMovies.length > 0 && (
+        {!loadingMovies && categorizedMovies.horrorMovies.length > 0 && (
           <CustomCarousel
             title="Horror"
-            movies={horrorMovies}
+            movies={categorizedMovies.horrorMovies}
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
