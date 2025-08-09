@@ -97,7 +97,7 @@ const Index = () => {
       if (movie.genres.includes("Thriller")) {
         thrillerMovies.push(movie);
       }
-      if (movie.genres.includes("Sci-Fi")) {
+      if (movie.genres.includes("Sci-Fi") || movie.genres.includes("Science Fiction")) {
         scifiMovies.push(movie);
       }
       if (movie.genres.includes("Horror")) {
