@@ -54,8 +54,8 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="pl-24 pr-80 overflow-visible py-12 gap-x-2"> {/* Increased pr to pr-80 */}
-          {movies.map((movie) => {
+        <CarouselContent className="pl-24 pr-80 overflow-visible py-12 gap-x-2">
+          {movies.map((movie, index) => {
             return (
               <CarouselItem
                 key={movie.id}
@@ -66,6 +66,8 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
                     movie={movie}
                     selectedMovieIds={selectedMovieIds}
                     onSelectMovie={onSelectMovie}
+                    index={index} // Pass the index
+                    totalMovies={movies.length} // Pass total movies for context
                   />
                 </div>
               </CarouselItem>

@@ -28,11 +28,13 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
+  index: number; // New prop
+  totalMovies: number; // New prop
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
+export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, index, totalMovies }: MovieCardProps) => {
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
@@ -83,10 +85,16 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
+  // Determine if the card is one of the last few, to adjust transform-origin
+  // The '3' here is an estimate for how many cards are typically visible at the end
+  // and might need to scale from the right. This value might need fine-tuning.
+  const isNearRightEdge = index >= totalMovies - 3; 
+
   return (
     <div
       className={`relative h-full flex flex-col transition-all duration-300 ease-in-out
-        ${isHovered ? "scale-125 z-30" : "scale-100 z-10"}`}
+        ${isHovered ? "scale-125 z-30" : "scale-100 z-10"}
+        ${isNearRightEdge ? "origin-right" : "origin-center"}`} {/* Apply conditional origin */}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
