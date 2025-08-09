@@ -84,10 +84,7 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  /* Removed the global border rule */
   body {
     @apply bg-background text-foreground;
   }

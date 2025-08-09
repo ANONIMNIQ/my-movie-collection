@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } from "@/components/ui/skeleton"; // Corrected import
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Play, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
@@ -85,14 +85,14 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <div
-      className={`relative h-full flex flex-col transition-all duration-300 ease-in-out overflow-visible
+      className={`relative h-full flex flex-col transition-all duration-300 ease-in-out
         ${isHovered ? "scale-125 z-30" : "scale-100 z-10"}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Wrap the Card with Link to make the entire card clickable */}
       <Link to={`/movie/${movie.id}`} className="block h-full">
-        <Card className="h-full flex flex-col bg-card overflow-visible">
+        <Card className="h-full flex flex-col bg-card rounded-lg overflow-hidden border-none"> {/* Added rounded-lg, overflow-hidden, and border-none */}
           {isAdmin && (
             <div className="absolute top-2 left-2 z-40">
               <Checkbox
@@ -105,14 +105,14 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             </div>
           )}
           
-          <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
+          <div className="aspect-[2/3] w-full overflow-hidden bg-muted rounded-lg"> {/* Added rounded-lg here */}
             {isLoading ? (
               <Skeleton className="w-full h-full" />
             ) : (
               <img
                 src={posterUrl}
                 alt={movie.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover rounded-lg" {/* Added rounded-lg here */}
                 onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
               />
             )}
