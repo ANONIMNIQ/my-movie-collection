@@ -61,7 +61,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible px-12" {/* Added px-12 here */}
+        className="w-full overflow-visible px-12"
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
