@@ -58,13 +58,13 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           {title}
         </h2>
         
-        <div className="relative">
+        <div className="relative group">
           <Carousel
             opts={{
               align: "start",
               slidesToScroll: 5.8,
             }}
-            className="w-full group"
+            className="w-full"
             setApi={setApi}
           >
             <CarouselContent className={carouselContentClasses}>
