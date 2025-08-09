@@ -9,7 +9,7 @@ import {
   useCarousel,
 } from "@/components/ui/carousel";
 import { MovieCard } from './MovieCard';
-import { cn } from '@/lib/utils'; // Import cn for conditional classes
+import { cn } from '@/lib/utils';
 
 interface MovieCarouselProps {
   title: string;
@@ -38,8 +38,8 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
 
     api.on("select", onSelect);
-    api.on("resize", onSelect); // Update on resize to re-evaluate scroll positions
-    onSelect(); // Initial check
+    api.on("resize", onSelect);
+    onSelect();
 
     return () => {
       api.off("select", onSelect);
@@ -47,29 +47,33 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  // Determine dynamic transform for the CarouselContent to shift it at edges
   const carouselContentOffsetClass = React.useMemo(() => {
-    if (!canScrollPrev && movies.length > 0) { // At the very beginning
-      return "translate-x-[96px]"; // Increased shift right for more space
-    } else if (!canScrollNext && movies.length > 0) { // At the very end
-      return "-translate-x-[96px]"; // Increased shift left for more space
-    } else { // In the middle
-      return "translate-x-0"; // No shift
+    // This offset is to prevent the first/last card from being cut on hover
+    // A card scales to 1.25, so 25% of its width (e.g., 180px * 0.25 = 45px) needs to be accounted for on each side.
+    // 45px * 2 = 90px. Using 96px for a bit of buffer.
+    const offset = 96; 
+    if (!canScrollPrev && movies.length > 0) {
+      return `translate-x-[${offset}px]`; 
+    } else if (!canScrollNext && movies.length > 0) {
+      return `-translate-x-[${offset}px]`;
+    } else {
+      return "translate-x-0";
     }
   }, [canScrollPrev, canScrollNext, movies.length]);
 
 
   return (
-    <section className="mb-12 relative group px-24"> {/* Add generous padding here */}
-      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">
+    <section className="mb-12 relative group"> {/* Removed px-24 */}
+      <h2 className="text-3xl font-bold mb-6 container mx-auto px-4"> {/* Title aligned with main content */}
         {title}
       </h2>
+      
       <Carousel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible" // Removed px-16 here, relying on section padding
-        viewportClassName="overflow-visible" // Crucial: Make the internal viewport visible
+        className="w-full overflow-visible container mx-auto px-4" // Added container mx-auto px-4 here
+        viewportClassName="overflow-visible" 
         setApi={setApi}
       >
         <CarouselContent className={cn("-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out", carouselContentOffsetClass)}>
@@ -90,13 +94,15 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             );
           })}
         </CarouselContent>
+        {/* Buttons positioned relative to the Carousel, which now has px-4 */}
         {canScrollPrev && (
-          <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 z-20 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
         {canScrollNext && (
-          <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 z-20 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
+        {/* Gradient overlays moved inside Carousel and adjusted to match its padding */}
         {canScrollPrev && (
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
         )}
