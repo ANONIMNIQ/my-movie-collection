@@ -45,7 +45,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   return (
-    <section className="mb-12 relative group">
+    <section className="mb-12 relative group px-4"> {/* Added px-4 here */}
       <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
       <Carousel
         opts={{
@@ -54,22 +54,20 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        {/* Increased vertical padding (py-24) and adjusted horizontal padding (px-16) */}
-        <CarouselContent className="px-16 py-24 overflow-visible gap-x-2">
-          {movies.map((movie, index) => {
+        <CarouselContent className="-ml-4 overflow-visible py-12">
+          {movies.map((movie) => {
             return (
               <CarouselItem
                 key={movie.id}
-                className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/5 relative overflow-visible"
+                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
               >
-                {/* MovieCard is now a direct child of CarouselItem */}
-                <MovieCard
-                  movie={movie}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={onSelectMovie}
-                  index={index} // Pass the index
-                  totalMovies={movies.length} // Pass total movies for context
-                />
+                <div className="p-1">
+                  <MovieCard
+                    movie={movie}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={onSelectMovie}
+                  />
+                </div>
               </CarouselItem>
             );
           })}
@@ -78,7 +76,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
         {canScrollNext && (
-          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-20" />
+          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
         {canScrollPrev && (
