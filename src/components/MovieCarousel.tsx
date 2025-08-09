@@ -52,8 +52,8 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   );
 
   return (
-    <section className="mb-12 relative group"> {/* Removed container classes from here */}
-      <div className="container mx-auto px-4"> {/* New div to contain title */}
+    <section className="mb-12 relative group">
+      <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-6">
           {title}
         </h2>
@@ -63,7 +63,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible px-12"
+        className="w-full overflow-visible px-4" {/* Changed from px-12 to px-4 */}
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
