@@ -5,6 +5,7 @@ import { MovieCard } from './MovieCard';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CustomCarouselProps {
   title: string;
@@ -14,10 +15,16 @@ interface CustomCarouselProps {
 }
 
 export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie }) => {
+  const isMobile = useIsMobile();
+
+  // On mobile, scroll fewer items to avoid skipping over cards.
+  // On desktop, scroll more items for faster navigation.
+  const slidesToScroll = isMobile ? 2 : 5;
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'center',
     loop: false,
-    slidesToScroll: 6,
+    slidesToScroll: slidesToScroll,
   });
 
   const [canScrollPrev, setCanScrollPrev] = useState(false);
