@@ -92,7 +92,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           {movies.map((movie) => (
             <div
               key={movie.id}
-              className="flex-shrink-0 w-[45vw] sm:w-[30vw] md:w-[23vw] lg:w-[18vw] xl:w-[15.5vw]"
+              className="flex-shrink-0 w-[45vw] sm:w-[30vw] md:w-[23vw] lg:w-[18vw] xl:w-[15.4vw]"
             >
               <MovieCard
                 movie={movie}
