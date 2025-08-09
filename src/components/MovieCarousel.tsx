@@ -22,8 +22,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     return null;
   }
 
+  // Add z-10 to ensure the content is layered below the z-50 arrows
   const carouselContentClasses = cn(
-    "-ml-4 transition-transform duration-300 ease-out py-12 px-10"
+    "-ml-4 transition-transform duration-300 ease-out py-12 px-10 z-10"
   );
 
   return (
@@ -57,12 +58,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
               ))}
             </CarouselContent>
             
-            {/* Navigation Arrows - Always visible, disabled state is handled by the component */}
+            {/* Navigation Arrows - Always visible, with z-50 to be on top */}
             <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 z-50 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
             <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 z-50 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
           </Carousel>
 
-          {/* Gradient Overlays */}
+          {/* Gradient Overlays - z-20, below arrows but above content */}
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none"></div>
           <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none"></div>
         </div>
