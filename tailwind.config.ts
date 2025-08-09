@@ -21,7 +21,7 @@ export default {
       fontFamily: {
         orbitron: ["Orbitron", "sans-serif"],
         'roboto-mono': ['"Roboto Mono"', 'monospace'],
-        'space-mono': ['"Space Mono"', 'monospace'], // Added Space Mono font
+        'space-mono': ['"Space Mono"', 'monospace'],
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
@@ -70,6 +70,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // New header text colors for white background
+        headerTitle: '#0F0F0F', // Almost black
+        headerDescription: '#4A4A4A', // Dark gray
+        headerNumber: '#0F0F0F', // Almost black
       },
       borderRadius: {
         lg: "var(--radius)",

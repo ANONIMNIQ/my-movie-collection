@@ -27,7 +27,7 @@ const MovieCounter: React.FC<MovieCounterProps> = ({ count, numberColor, labelCo
         <FlipNumbers
           height={numberHeight}
           width={numberWidth}
-          color={numberColor || "hsl(var(--primary))"} // Use numberColor prop or default
+          color={numberColor || "black"} // Use numberColor prop or default to black
           background="transparent"
           play
           perspective={1000}
@@ -36,7 +36,7 @@ const MovieCounter: React.FC<MovieCounterProps> = ({ count, numberColor, labelCo
       </div>
       <h2 className={cn(
         "text-xl md:text-2xl font-semibold tracking-widest mt-4 uppercase",
-        labelColor ? `text-[${labelColor}]` : "text-muted-foreground" // Use labelColor prop or default
+        labelColor // labelColor is now expected to be a Tailwind class string
       )}>
         Movies in Collection
       </h2>

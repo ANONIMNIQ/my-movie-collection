@@ -182,99 +182,101 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
-      <main className="py-8">
-        <header className="container mx-auto px-4 text-center mb-12 bg-white py-8 rounded-lg shadow-md">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--header-title-color)]">
-            Georgi's Movie Collection
-          </h1>
-          <p className="text-[var(--header-description-color)] mt-2 text-lg">
-            A minimalist collection of cinematic gems.
-          </p>
-          <div className="mt-6">
-            <MovieCounter 
-              count={filteredMovies.length} 
-              numberColor="var(--header-number-color)" 
-              labelColor="var(--header-description-color)" 
-            />
-          </div>
-          <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-            {sessionLoading ? (
-              <Skeleton className="w-32 h-10" />
-            ) : session ? (
-              <>
-                <Link to="/add-movie">
-                  <Button>Add New Movie</Button>
-                </Link>
-                {isAdmin && (
-                  <Link to="/import-movies">
-                    <Button variant="secondary">Import Movies (CSV)</Button>
+      <main className="pt-0"> {/* Changed py-8 to pt-0 */}
+        <header className="w-full text-center bg-white py-8 shadow-md"> {/* Removed container, mx-auto, px-4, mb-12, rounded-lg */}
+          <div className="container mx-auto px-4"> {/* Added container for content inside header */}
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-headerTitle">
+              Georgi's Movie Collection
+            </h1>
+            <p className="text-headerDescription mt-2 text-lg">
+              A minimalist collection of cinematic gems.
+            </p>
+            <div className="mt-6">
+              <MovieCounter 
+                count={filteredMovies.length} 
+                numberColor="#0F0F0F" // Direct hex color for FlipNumbers
+                labelColor="text-headerDescription" // Tailwind class for label
+              />
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+              {sessionLoading ? (
+                <Skeleton className="w-32 h-10" />
+              ) : session ? (
+                <>
+                  <Link to="/add-movie">
+                    <Button>Add New Movie</Button>
                   </Link>
-                )}
-                <Link to="/import-ratings">
-                  <Button variant="outline">Import My Ratings</Button>
-                </Link>
-                <Button variant="outline" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <></>
-            )}
+                  {isAdmin && (
+                    <Link to="/import-movies">
+                      <Button variant="secondary">Import Movies (CSV)</Button>
+                    </Link>
+                  )}
+                  <Link to="/import-ratings">
+                    <Button variant="outline">Import My Ratings</Button>
+                  </Link>
+                  <Button variant="outline" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
         </header>
 
-        {loadingMovies ? (
-          <div className="container mx-auto px-4 mb-12">
-            <h2 className="text-3xl font-bold mb-4">New Movies</h2>
-            <div className="flex overflow-hidden gap-4">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
-              ))}
+        <div className="container mx-auto px-4 pt-8"> {/* Added pt-8 here to push content down */}
+          {loadingMovies ? (
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold mb-4">New Movies</h2>
+              <div className="flex overflow-hidden gap-4">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
+                ))}
+              </div>
             </div>
-          </div>
-        ) : (
-          <CustomCarousel
-            title="New Movies"
-            movies={categorizedMovies.newMovies}
-            selectedMovieIds={selectedMovieIds}
-            onSelectMovie={handleSelectMovie}
-          />
-        )}
+          ) : (
+            <CustomCarousel
+              title="New Movies"
+              movies={categorizedMovies.newMovies}
+              selectedMovieIds={selectedMovieIds}
+              onSelectMovie={handleSelectMovie}
+            />
+          )}
 
-        {!loadingMovies && categorizedMovies.dramaMovies.length > 0 && (
-          <CustomCarousel
-            title="Drama"
-            movies={categorizedMovies.dramaMovies}
-            selectedMovieIds={selectedMovieIds}
-            onSelectMovie={handleSelectMovie}
-          />
-        )}
-        {!loadingMovies && categorizedMovies.thrillerMovies.length > 0 && (
-          <CustomCarousel
-            title="Thriller"
-            movies={categorizedMovies.thrillerMovies}
-            selectedMovieIds={selectedMovieIds}
-            onSelectMovie={handleSelectMovie}
-          />
-        )}
-        {!loadingMovies && categorizedMovies.scifiMovies.length > 0 && (
-          <CustomCarousel
-            title="Sci-Fi"
-            movies={categorizedMovies.scifiMovies}
-            selectedMovieIds={selectedMovieIds}
-            onSelectMovie={handleSelectMovie}
-          />
-        )}
-        {!loadingMovies && categorizedMovies.horrorMovies.length > 0 && (
-          <CustomCarousel
-            title="Horror"
-            movies={categorizedMovies.horrorMovies}
-            selectedMovieIds={selectedMovieIds}
-            onSelectMovie={handleSelectMovie}
-          />
-        )}
+          {!loadingMovies && categorizedMovies.dramaMovies.length > 0 && (
+            <CustomCarousel
+              title="Drama"
+              movies={categorizedMovies.dramaMovies}
+              selectedMovieIds={selectedMovieIds}
+              onSelectMovie={handleSelectMovie}
+            />
+          )}
+          {!loadingMovies && categorizedMovies.thrillerMovies.length > 0 && (
+            <CustomCarousel
+              title="Thriller"
+              movies={categorizedMovies.thrillerMovies}
+              selectedMovieIds={selectedMovieIds}
+              onSelectMovie={handleSelectMovie}
+            />
+          )}
+          {!loadingMovies && categorizedMovies.scifiMovies.length > 0 && (
+            <CustomCarousel
+              title="Sci-Fi"
+              movies={categorizedMovies.scifiMovies}
+              selectedMovieIds={selectedMovieIds}
+              onSelectMovie={handleSelectMovie}
+            />
+          )}
+          {!loadingMovies && categorizedMovies.horrorMovies.length > 0 && (
+            <CustomCarousel
+              title="Horror"
+              movies={categorizedMovies.horrorMovies}
+              selectedMovieIds={selectedMovieIds}
+              onSelectMovie={handleSelectMovie}
+            />
+          )}
 
-        <div className="container mx-auto px-4">
           {!loadingMovies && filteredMovies.length > 0 && (
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <h2 className="text-3xl font-bold">All Movies</h2>
