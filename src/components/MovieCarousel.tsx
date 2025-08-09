@@ -47,9 +47,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  // Use a larger negative margin (-ml-14) to counteract the px-10 padding
+  // Added px-10 to create horizontal space for the first and last cards to expand into
   const carouselContentClasses = cn(
-    "-ml-14 transition-transform duration-300 ease-out py-12 px-10"
+    "-ml-4 transition-transform duration-300 ease-out py-12 px-10"
   );
 
   return (
@@ -63,7 +63,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           <Carousel
             opts={{
               align: "start",
-              slidesToScroll: 6,
+              slidesToScroll: 5.6,
             }}
             className="w-full"
             setApi={setApi}
@@ -73,7 +73,6 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
                 return (
                   <CarouselItem
                     key={movie.id}
-                    // Use pl-4 for the gap, which is accounted for in the -ml-14 margin
                     className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
                   >
                     <MovieCard
