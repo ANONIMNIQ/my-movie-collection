@@ -2,9 +2,15 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = "https://khdgcwkbfeakmqbuzahf.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoZGdjd2tiZmVha21xYnV6YWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2NDQ5NjUsImV4cCI6MjA3MDIyMDk2NX0.tLkvZKz1pn3aTk5kC_8pYPQJlXf0xYuoMUFjDDu4gHo";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsImtpZCI6IjJ6T0NYQ1c2T3pTVmFKRV…xzZX0.H3hm00a49RJkfi9Ngjk8dxfKQj_SNLHs6mgl0_6qmww";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    persistSession: true, // Ensure session persistence across browser sessions
+    autoRefreshToken: true, // Automatically refresh expired tokens
+    detectSessionInUrl: true, // Detect session from URL for OAuth callbacks
+  }
+});
