@@ -50,9 +50,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   // Determine dynamic transform for the CarouselContent to shift it at edges
   const carouselContentOffsetClass = React.useMemo(() => {
     if (!canScrollPrev && movies.length > 0) { // At the very beginning
-      return "translate-x-[48px]"; // Shift right by 48px
+      return "translate-x-[64px]"; // Shift right by 64px
     } else if (!canScrollNext && movies.length > 0) { // At the very end
-      return "-translate-x-[48px]"; // Shift left by 48px
+      return "-translate-x-[48px]"; // Shift left by 48px (keeping previous value)
     } else { // In the middle
       return "translate-x-0"; // No shift
     }
