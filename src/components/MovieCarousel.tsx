@@ -62,7 +62,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
                 key={movie.id}
                 className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/5 relative overflow-visible"
               >
-                {/* Removed the extra div here, MovieCard will handle its own scaling */}
+                {/* MovieCard is now a direct child of CarouselItem */}
                 <MovieCard
                   movie={movie}
                   selectedMovieIds={selectedMovieIds}
@@ -78,7 +78,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
         {canScrollNext && (
-          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-20" />
         )}
 
         {canScrollPrev && (
