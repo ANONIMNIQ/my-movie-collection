@@ -54,12 +54,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="pl-20 pr-20 overflow-visible py-12">
+        <CarouselContent className="pl-20 pr-40 overflow-visible py-12">
           {movies.map((movie) => {
             return (
               <CarouselItem
                 key={movie.id}
-                className="px-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/4 xl:basis-1/5 relative overflow-visible"
+                className="px-8 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/4 xl:basis-1/5 relative overflow-visible"
               >
                 <div>
                   <MovieCard
