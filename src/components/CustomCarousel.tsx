@@ -59,7 +59,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-6">{title}</h2>
       </div>
-      <div className="relative group">
+      <div className="relative group overflow-x-hidden">
         {/* Left Gradient */}
         <div
           className={cn(
