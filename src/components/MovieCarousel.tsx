@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "px-4 overflow-visible py-12 transition-transform duration-300 ease-out" // Changed from -ml-4 to px-4
+    "px-4 overflow-visible py-12 transition-transform duration-300 ease-out"
   );
 
   return (
@@ -62,8 +62,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
       <Carousel
         opts={{
           align: "start",
+          slidesToScroll: 1, // This will make it scroll one item at a time
         }}
-        className="w-full overflow-visible" // Removed px-4 from here
+        className="w-full overflow-visible"
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
