@@ -74,7 +74,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           className={cn(
             "absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
             "opacity-0 group-hover:opacity-100",
-            !canScrollPrev && "hidden"
+            !canScrollPrev && "invisible"
           )}
           onClick={scrollPrev}
           disabled={!canScrollPrev}
@@ -105,7 +105,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           className={cn(
             "absolute right-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
             "opacity-0 group-hover:opacity-100",
-            !canScrollNext && "hidden"
+            !canScrollNext && "invisible"
           )}
           onClick={scrollNext}
           disabled={!canScrollNext}
