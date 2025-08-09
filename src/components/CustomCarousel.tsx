@@ -83,7 +83,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
         </Button>
 
         <div className="embla px-12" ref={emblaRef}>
-          <div className="embla__container flex gap-4">
+          <div className="embla__container flex gap-4 py-12">
             {movies.map((movie) => (
               <div
                 key={movie.id}
