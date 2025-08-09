@@ -60,6 +60,14 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
         <h2 className="text-3xl font-bold mb-6">{title}</h2>
       </div>
       <div className="relative group">
+        {/* Left Gradient */}
+        <div
+          className={cn(
+            "absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none transition-opacity",
+            canScrollPrev ? "opacity-100" : "opacity-0"
+          )}
+        />
+
         <Button
           variant="ghost"
           size="icon"
@@ -104,6 +112,14 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
         >
           <ChevronRight className="h-8 w-8" />
         </Button>
+
+        {/* Right Gradient */}
+        <div
+          className={cn(
+            "absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none transition-opacity",
+            canScrollNext ? "opacity-100" : "opacity-0"
+          )}
+        />
       </div>
     </section>
   );
