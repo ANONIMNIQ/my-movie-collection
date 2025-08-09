@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } => "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -182,7 +182,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
-      <header className="fixed top-0 left-0 w-full text-center bg-white py-8 shadow-md z-50">
+      <header className="w-full text-center bg-white py-8 shadow-md z-50"> {/* Removed fixed positioning */}
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-headerTitle">
             Georgi's Movie Collection
@@ -224,8 +224,8 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="pt-[280px]"> {/* Increased padding-top to accommodate header height */}
-        <div> {/* Removed pt-8 from here */}
+      <main className="pt-0"> {/* Removed padding-top from main */}
+        <div className="pt-8"> {/* This pt-8 will now add spacing below the header */}
           {loadingMovies ? (
             <div className="container mx-auto px-4 mb-12">
               <h2 className="text-3xl font-bold mb-4">New Movies</h2>
