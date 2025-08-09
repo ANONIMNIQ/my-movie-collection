@@ -6,7 +6,6 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  useCarousel,
 } from "@/components/ui/carousel";
 import { MovieCard } from './MovieCard';
 import { cn } from '@/lib/utils';
@@ -22,30 +21,6 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   if (movies.length === 0) {
     return null;
   }
-
-  const [api, setApi] = React.useState<ReturnType<typeof useCarousel>[0] | null>(null);
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-  const [canScrollNext, setCanScrollNext] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    const onSelect = () => {
-      setCanScrollPrev(api.canScrollPrev());
-      setCanScrollNext(api.canScrollNext());
-    };
-
-    api.on("select", onSelect);
-    api.on("resize", onSelect);
-    onSelect();
-
-    return () => {
-      api.off("select", onSelect);
-      api.off("resize", onSelect);
-    };
-  }, [api]);
 
   const carouselContentClasses = cn(
     "-ml-4 transition-transform duration-300 ease-out py-12 px-10"
@@ -63,10 +38,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             opts={{
               align: "start",
               slidesToScroll: 5.8,
-              loop: true, // Enable looping to fix arrow visibility issue
+              loop: true,
             }}
-            className="w-full group"
-            setApi={setApi}
+            className="w-full"
           >
             <CarouselContent className={carouselContentClasses}>
               {movies.map((movie) => (
@@ -83,16 +57,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
               ))}
             </CarouselContent>
             
-            {/* Navigation Arrows - Appear on group hover */}
-            {canScrollPrev && (
-              <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
-            )}
-            {canScrollNext && (
-              <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
-            )}
+            {/* Navigation Arrows - Always visible, disabled state is handled by the component */}
+            <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 z-50 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+            <CarouselNext className="absolute right-8 top-1/2 -translate-y-1/2 z-50 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
           </Carousel>
 
-          {/* Gradient Overlays - Moved outside the Carousel component to prevent hover interference */}
+          {/* Gradient Overlays */}
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none"></div>
           <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none"></div>
         </div>
