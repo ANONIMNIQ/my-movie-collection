@@ -22,6 +22,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
+  const [isAnyCardHovered, setIsAnyCardHovered] = useState(false);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -59,7 +60,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-6">{title}</h2>
       </div>
-      <div className="relative group overflow-x-hidden">
+      <div className="relative group">
         {/* Left Gradient */}
         <div
           className={cn(
@@ -82,7 +83,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           <ChevronLeft className="h-8 w-8" />
         </Button>
 
-        <div className="embla px-12" ref={emblaRef}>
+        <div className={cn("embla px-12", isAnyCardHovered ? "!overflow-visible" : "")} ref={emblaRef}>
           <div className="embla__container flex gap-4 py-12">
             {movies.map((movie) => (
               <div
@@ -93,6 +94,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
                   movie={movie}
                   selectedMovieIds={selectedMovieIds}
                   onSelectMovie={onSelectMovie}
+                  onHoverChange={setIsAnyCardHovered}
                 />
               </div>
             ))}

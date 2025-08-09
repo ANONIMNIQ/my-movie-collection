@@ -28,11 +28,12 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
+  onHoverChange?: (isHovered: boolean) => void;
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
+export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, onHoverChange }: MovieCardProps) => {
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
@@ -83,11 +84,21 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    onHoverChange?.(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    onHoverChange?.(false);
+  };
+
   return (
     <div
       className={`relative h-full ${isHovered ? 'z-30' : ''}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div
         className={`h-full w-full transition-transform duration-300 ease-in-out transform-gpu ${
