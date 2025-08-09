@@ -8,7 +8,7 @@ import {
   CarouselPrevious,
   useCarousel,
 } from "@/components/ui/carousel";
-import { MovieCard } from './MovieCard'; // Corrected import syntax
+import { MovieCard } from './MovieCard';
 import { cn } from '@/lib/utils';
 
 interface MovieCarouselProps {
@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "-ml-4 py-12 transition-transform duration-300 ease-out"
+    "transition-transform duration-300 ease-out" // Removed -ml-4 and py-12
   );
 
   return (
