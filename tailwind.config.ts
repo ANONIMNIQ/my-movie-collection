@@ -21,7 +21,7 @@ export default {
       fontFamily: {
         orbitron: ["Orbitron", "sans-serif"],
         'roboto-mono': ['"Roboto Mono"', 'monospace'],
-        oswald: ['Oswald', 'sans-serif'], // Added Oswald font
+        'space-mono': ['"Space Mono"', 'monospace'], // Added Space Mono font
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
