@@ -47,9 +47,13 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  // Temporarily force the initial offset for debugging
-  // We will revert this to conditional logic once confirmed working
-  const carouselContentOffsetClass = "translate-x-[150px]"; 
+  // Dynamic padding for CarouselContent to handle edge hover effects
+  // We use 96px (equivalent to px-24) as a buffer for the 1.25x scale on hover.
+  const carouselContentClasses = cn(
+    "-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out",
+    !canScrollPrev && "pl-[96px]", // Add padding-left if at the start
+    !canScrollNext && "pr-[96px]"  // Add padding-right if at the end
+  );
 
   return (
     <section className="mb-12 relative group">
@@ -65,7 +69,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
-        <CarouselContent className={cn("-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out", carouselContentOffsetClass)}>
+        <CarouselContent className={carouselContentClasses}>
           {movies.map((movie) => {
             return (
               <CarouselItem
