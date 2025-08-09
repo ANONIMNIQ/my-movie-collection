@@ -15,7 +15,7 @@ export const MovieGrid = ({ movies, selectedMovieIds, onSelectMovie }: MovieGrid
         return (
           <div
             key={movie.id}
-            className="relative overflow-visible"
+            className="relative overflow-visible group/slide"
           >
             <MovieCard
               movie={movie}
