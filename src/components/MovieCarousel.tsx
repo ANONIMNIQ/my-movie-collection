@@ -49,7 +49,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
 
   // Temporarily force the initial offset for debugging
   // We will revert this to conditional logic once confirmed working
-  const carouselContentOffsetClass = "translate-x-[96px]"; 
+  const carouselContentOffsetClass = "translate-x-[150px]"; 
 
   return (
     <section className="mb-12 relative group">
