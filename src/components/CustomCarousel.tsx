@@ -23,8 +23,19 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollPrev = useCallback(() => {
+    if (!emblaApi) return;
+    const currentIndex = emblaApi.selectedScrollSnap();
+    const targetIndex = Math.max(0, currentIndex - 6);
+    emblaApi.scrollTo(targetIndex);
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (!emblaApi) return;
+    const currentIndex = emblaApi.selectedScrollSnap();
+    const targetIndex = Math.min(emblaApi.scrollSnapList().length - 1, currentIndex + 6);
+    emblaApi.scrollTo(targetIndex);
+  }, [emblaApi]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
