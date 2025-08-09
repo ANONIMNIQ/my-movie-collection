@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Movie } from '@/data/movies';
 import { MovieCard } from './MovieCard';
@@ -17,12 +17,13 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'center',
     loop: false,
-    slidesToScroll: 6, // Scroll by a page of 6 movies
+    slidesToScroll: 6,
   });
 
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
-  const [isAnyCardHovered, setIsAnyCardHovered] = useState(false);
+  const [isOverflowVisible, setIsOverflowVisible] = useState(false);
+  const leaveTimeout = useRef<number | null>(null);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -37,6 +38,19 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     setCanScrollPrev(emblaApi.canScrollPrev());
     setCanScrollNext(emblaApi.canScrollNext());
   }, [emblaApi]);
+
+  const handleSlideMouseEnter = () => {
+    if (leaveTimeout.current) {
+      clearTimeout(leaveTimeout.current);
+    }
+    setIsOverflowVisible(true);
+  };
+
+  const handleSlideMouseLeave = () => {
+    leaveTimeout.current = window.setTimeout(() => {
+      setIsOverflowVisible(false);
+    }, 100); // Delay to prevent flicker when moving between cards
+  };
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -60,8 +74,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-6">{title}</h2>
       </div>
-      <div className="relative">
-        {/* Left Gradient */}
+      <div className="relative group">
         <div
           className={cn(
             "absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none transition-opacity",
@@ -74,7 +87,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           size="icon"
           className={cn(
             "absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
-            "opacity-0 hover:opacity-100",
+            "opacity-0 group-hover:opacity-100",
             !canScrollPrev && "invisible"
           )}
           onClick={scrollPrev}
@@ -83,14 +96,14 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           <ChevronLeft className="h-8 w-8" />
         </Button>
 
-        <div className={cn("embla px-12", isAnyCardHovered ? "!overflow-visible" : "")} ref={emblaRef}>
+        <div className={cn("embla px-12", isOverflowVisible && "!overflow-visible")} ref={emblaRef}>
           <div className="embla__container flex gap-4 py-12">
             {movies.map((movie) => (
               <div
                 key={movie.id}
                 className="embla__slide group w-[45vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]"
-                onMouseEnter={() => setIsAnyCardHovered(true)}
-                onMouseLeave={() => setIsAnyCardHovered(false)}
+                onMouseEnter={handleSlideMouseEnter}
+                onMouseLeave={handleSlideMouseLeave}
               >
                 <MovieCard
                   movie={movie}
@@ -107,7 +120,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           size="icon"
           className={cn(
             "absolute right-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
-            "opacity-0 hover:opacity-100",
+            "opacity-0 group-hover:opacity-100",
             !canScrollNext && "invisible"
           )}
           onClick={scrollNext}
@@ -116,7 +129,6 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           <ChevronRight className="h-8 w-8" />
         </Button>
 
-        {/* Right Gradient */}
         <div
           className={cn(
             "absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none transition-opacity",
