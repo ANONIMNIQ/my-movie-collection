@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "-ml-2 py-12 transition-transform duration-300 ease-out" // Changed from -ml-4 to -ml-2
+    "-ml-4 py-12 transition-transform duration-300 ease-out" // Reverted to -ml-4
   );
 
   return (
@@ -72,15 +72,14 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
               return (
                 <CarouselItem
                   key={movie.id}
-                  className="pl-2 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible" // Changed from pl-4 to pl-2
+                  className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible" // Reverted to pl-4
                 >
-                  <div className="p-1">
-                    <MovieCard
-                      movie={movie}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={onSelectMovie}
-                    />
-                  </div>
+                  {/* Removed the inner div with p-1 */}
+                  <MovieCard
+                    movie={movie}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={onSelectMovie}
+                  />
                 </CarouselItem>
               );
             })}
