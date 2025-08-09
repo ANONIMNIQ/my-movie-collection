@@ -28,7 +28,7 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
-  onHoverChange?: (isHovered: boolean) => void;
+  onHoverChange?: (id: string, isHovered: boolean) => void;
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
@@ -86,12 +86,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, onHoverChang
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    onHoverChange?.(true);
+    onHoverChange?.(movie.id, true);
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    onHoverChange?.(false);
+    onHoverChange?.(movie.id, false);
   };
 
   return (

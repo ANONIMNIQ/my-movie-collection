@@ -22,7 +22,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
-  const [isAnyCardHovered, setIsAnyCardHovered] = useState(false);
+  const [hoveredCardIds, setHoveredCardIds] = useState(new Set<string>());
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -37,6 +37,20 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     setCanScrollPrev(emblaApi.canScrollPrev());
     setCanScrollNext(emblaApi.canScrollNext());
   }, [emblaApi]);
+
+  const handleCardHoverChange = useCallback((movieId: string, isHovered: boolean) => {
+    setHoveredCardIds(prev => {
+      const newSet = new Set(prev);
+      if (isHovered) {
+        newSet.add(movieId);
+      } else {
+        newSet.delete(movieId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const isAnyCardHovered = hoveredCardIds.size > 0;
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -94,7 +108,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
                   movie={movie}
                   selectedMovieIds={selectedMovieIds}
                   onSelectMovie={onSelectMovie}
-                  onHoverChange={setIsAnyCardHovered}
+                  onHoverChange={handleCardHoverChange}
                 />
               </div>
             ))}
