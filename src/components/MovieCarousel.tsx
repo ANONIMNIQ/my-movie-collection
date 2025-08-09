@@ -9,6 +9,7 @@ import {
   useCarousel,
 } from "@/components/ui/carousel";
 import { MovieCard } from './MovieCard';
+import { cn } from '@/lib/utils'; // Import cn for conditional classes
 
 interface MovieCarouselProps {
   title: string;
@@ -37,16 +38,38 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
 
     api.on("select", onSelect);
+    api.on("resize", onSelect); // Update on resize to re-evaluate scroll positions
     onSelect(); // Initial check
 
     return () => {
       api.off("select", onSelect);
+      api.off("resize", onSelect);
     };
   }, [api]);
 
+  // Determine dynamic padding for the section based on scroll position
+  const sectionPaddingClass = React.useMemo(() => {
+    if (movies.length === 0) return "px-4"; // Default if no movies
+    
+    const allItemsFit = !canScrollPrev && !canScrollNext && movies.length > 0;
+
+    if (allItemsFit) {
+      return "px-12"; // Apply generous padding on both sides if all items fit
+    } else if (!canScrollPrev && movies.length > 0) { // At the very beginning
+      return "pl-12 pr-4"; // More padding on left, normal on right
+    } else if (!canScrollNext && movies.length > 0) { // At the very end
+      return "pl-4 pr-12"; // Normal padding on left, more on right
+    } else { // In the middle
+      return "px-4";
+    }
+  }, [canScrollPrev, canScrollNext, movies.length]);
+
+
   return (
-    <section className="mb-12 relative group px-4"> {/* Added px-4 here */}
-      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
+    <section className={cn(sectionPaddingClass, "mb-12 relative group transition-all duration-300 ease-in-out")}>
+      <h2 className="text-3xl font-bold mb-6"> {/* Removed px-4 md:px-0 */}
+        {title}
+      </h2>
       <Carousel
         opts={{
           align: "start",
