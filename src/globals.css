@@ -87,6 +87,7 @@
   /* Removed the global border rule */
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
 
   /* Embla Carousel Styles */
