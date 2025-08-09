@@ -59,7 +59,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             return (
               <CarouselItem
                 key={movie.id}
-                className="px-2 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
+                className="px-12 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
               >
                 <div>
                   <MovieCard
