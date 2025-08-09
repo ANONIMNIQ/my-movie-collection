@@ -47,24 +47,13 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  const carouselContentOffsetClass = React.useMemo(() => {
-    // This offset is to prevent the first/last card from being cut on hover
-    // A card scales to 1.25, so 25% of its width (e.g., 180px * 0.25 = 45px) needs to be accounted for on each side.
-    // 45px * 2 = 90px. Using 96px for a bit of buffer.
-    const offset = 96; 
-    if (!canScrollPrev && movies.length > 0) {
-      return `translate-x-[${offset}px]`; 
-    } else if (!canScrollNext && movies.length > 0) {
-      return `-translate-x-[${offset}px]`;
-    } else {
-      return "translate-x-0";
-    }
-  }, [canScrollPrev, canScrollNext, movies.length]);
-
+  // Temporarily force the initial offset for debugging
+  // We will revert this to conditional logic once confirmed working
+  const carouselContentOffsetClass = "translate-x-[96px]"; 
 
   return (
-    <section className="mb-12 relative group"> {/* Removed px-24 */}
-      <h2 className="text-3xl font-bold mb-6 container mx-auto px-4"> {/* Title aligned with main content */}
+    <section className="mb-12 relative group">
+      <h2 className="text-3xl font-bold mb-6 container mx-auto px-4">
         {title}
       </h2>
       
@@ -72,7 +61,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible container mx-auto px-4" // Added container mx-auto px-4 here
+        className="w-full overflow-visible container mx-auto px-4"
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
@@ -94,7 +83,6 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             );
           })}
         </CarouselContent>
-        {/* Buttons positioned relative to the Carousel, which now has px-4 */}
         {canScrollPrev && (
           <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
@@ -102,7 +90,6 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
-        {/* Gradient overlays moved inside Carousel and adjusted to match its padding */}
         {canScrollPrev && (
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
         )}
