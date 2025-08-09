@@ -1,5 +1,5 @@
 import React from 'react';
-import { Movie } from '@/data/movies';
+import { Movie } => '@/data/movies';
 import {
   Carousel,
   CarouselContent,
@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "px-4 overflow-visible py-12 transition-transform duration-300 ease-out" // Changed from -ml-4 to px-4
+    "-ml-4 pr-4 overflow-visible py-12 transition-transform duration-300 ease-out" // Adjusted for left and right alignment
   );
 
   return (
@@ -63,7 +63,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible" // Removed px-4 from here
+        className="w-full overflow-visible px-4" // Added px-4 to the Carousel component itself
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
