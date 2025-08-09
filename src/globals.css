@@ -42,6 +42,11 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* New header text colors for white background */
+    --header-title-color: 0 0% 5%; /* Almost black */
+    --header-description-color: 215 20.2% 35%; /* Dark gray */
+    --header-number-color: 0 0% 5%; /* Almost black */
   }
 
   .dark {
@@ -80,6 +85,11 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* New header text colors for white background (same for dark mode, as header is explicitly white) */
+    --header-title-color: 0 0% 5%;
+    --header-description-color: 215 20.2% 35%;
+    --header-number-color: 0 0% 5%;
   }
 }
 

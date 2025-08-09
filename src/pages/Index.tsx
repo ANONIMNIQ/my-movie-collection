@@ -36,7 +36,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set<string>();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
@@ -183,15 +183,19 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
       <main className="py-8">
-        <header className="container mx-auto px-4 text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+        <header className="container mx-auto px-4 text-center mb-12 bg-white py-8 rounded-lg shadow-md">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--header-title-color)]">
             Georgi's Movie Collection
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">
+          <p className="text-[var(--header-description-color)] mt-2 text-lg">
             A minimalist collection of cinematic gems.
           </p>
           <div className="mt-6">
-            <MovieCounter count={filteredMovies.length} />
+            <MovieCounter 
+              count={filteredMovies.length} 
+              numberColor="var(--header-number-color)" 
+              labelColor="var(--header-description-color)" 
+            />
           </div>
           <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
             {sessionLoading ? (
