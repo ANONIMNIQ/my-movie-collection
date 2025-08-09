@@ -155,7 +155,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
       <main className="py-8">
         <header className="container mx-auto px-4 text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
