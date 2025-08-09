@@ -85,13 +85,13 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <div
-      className="relative h-full"
+      className={`relative h-full ${isHovered ? 'z-30' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
         className={`h-full w-full transition-transform duration-300 ease-in-out transform-gpu ${
-          isHovered ? "scale-125 z-30" : "z-10"
+          isHovered ? "scale-125" : ""
         }`}
       >
         <Link to={`/movie/${movie.id}`} className="block h-full">
