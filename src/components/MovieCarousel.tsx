@@ -45,7 +45,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   return (
-    <section className="mb-12 relative group px-4"> {/* Added px-4 here */}
+    <section className="mb-12 relative group px-4">
       <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
       <Carousel
         opts={{
@@ -54,12 +54,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="-ml-4 overflow-visible py-12">
+        <CarouselContent className="-ml-8 overflow-visible py-12"> {/* Increased negative margin */}
           {movies.map((movie) => {
             return (
               <CarouselItem
                 key={movie.id}
-                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
+                className="pl-8 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible" {/* Increased padding-left */}
               >
                 <div className="p-1">
                   <MovieCard
