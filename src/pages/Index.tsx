@@ -208,8 +208,9 @@ const Index = () => {
               A minimalist collection of cinematic gems.
             </p>
             <div className="mt-6">
+              {/* Add key prop here to re-trigger animation */}
               <MovieCounter 
-                key={flipKey} {/* Add key prop here to re-trigger animation */}
+                key={flipKey}
                 count={filteredMovies.length} 
                 numberColor="#0F0F0F"
                 labelColor="text-headerDescription"
@@ -242,9 +243,9 @@ const Index = () => {
           </div>
         </header>
 
-        <div className="pt-8"> {/* This div now correctly wraps the carousels and movie grid without a container class */}
+        <div className="pt-8">
           {loadingMovies ? (
-            <div className="container mx-auto px-4 mb-12"> {/* Added container back for skeleton loading state */}
+            <div className="container mx-auto px-4 mb-12">
               <h2 className="text-3xl font-bold mb-4">New Movies</h2>
               <div className="flex overflow-hidden gap-4">
                 {Array.from({ length: 6 }).map((_, index) => (
@@ -294,7 +295,7 @@ const Index = () => {
             />
           )}
 
-          <div className="container mx-auto px-4"> {/* This container now correctly wraps only the search and movie grid */}
+          <div className="container mx-auto px-4">
             {!loadingMovies && filteredMovies.length > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <h2 className="text-3xl font-bold">All Movies</h2>
