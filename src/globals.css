@@ -121,6 +121,8 @@
   align-items: center !important;
   justify-content: center !important;
   overflow: hidden; /* Prevent any slight overflow from the animation */
+  height: var(--number-height); /* Use CSS variable */
+  width: var(--number-width);   /* Use CSS variable */
 }
 
 /* Add the horizontal split line */

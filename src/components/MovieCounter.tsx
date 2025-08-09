@@ -14,12 +14,18 @@ const MovieCounter: React.FC<MovieCounterProps> = ({ count }) => {
 
   return (
     <div className="flex flex-col items-center my-4">
-      <div className="font-roboto-mono font-bold text-primary tracking-wider custom-flip-wrapper">
+      <div
+        className="font-roboto-mono font-bold text-primary tracking-wider custom-flip-wrapper"
+        style={{
+          '--number-height': `${numberHeight}px`,
+          '--number-width': `${numberWidth}px`,
+        } as React.CSSProperties}
+      >
         <FlipNumbers
           height={numberHeight}
           width={numberWidth}
           color="hsl(var(--primary))"
-          background="transparent" // This was the missing piece!
+          background="transparent"
           play
           perspective={1000}
           numbers={numberString}
