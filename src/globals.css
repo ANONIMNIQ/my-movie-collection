@@ -84,7 +84,7 @@
 }
 
 @layer base {
-  /* Removed the global border rule */
+  html,
   body {
     @apply bg-background text-foreground;
     overflow-x: hidden;
