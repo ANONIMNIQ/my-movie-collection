@@ -59,13 +59,13 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           {title}
         </h2>
         
-        <div className="relative group">
+        <div className="relative">
           <Carousel
             opts={{
               align: "start",
               slidesToScroll: 5.6,
             }}
-            className="w-full"
+            className="w-full group"
             setApi={setApi}
           >
             <CarouselContent className={carouselContentClasses}>
@@ -87,10 +87,10 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
             
             {/* Navigation Arrows */}
             {canScrollPrev && (
-              <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+              <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
             )}
             {canScrollNext && (
-              <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+              <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
             )}
           </Carousel>
           
