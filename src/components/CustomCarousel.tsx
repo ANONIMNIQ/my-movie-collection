@@ -16,7 +16,6 @@ interface CustomCarouselProps {
 export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'center',
-    containScroll: 'trimSnaps',
     loop: false,
     slidesToScroll: 6, // Scroll by a page of 6 movies
   });
