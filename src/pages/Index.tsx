@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { MovieCarousel } from "@/components/MovieCarousel"; // Import MovieCarousel
+import { CustomCarousel } from "@/components/CustomCarousel"; // Import CustomCarousel
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 const BATCH_SIZE = 50; // Define batch size for bulk operations
@@ -205,7 +205,7 @@ const Index = () => {
             </div>
           </div>
         ) : (
-          <MovieCarousel
+          <CustomCarousel
             title="New Movies"
             movies={newMovies}
             selectedMovieIds={selectedMovieIds}
