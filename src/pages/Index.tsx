@@ -36,7 +36,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set()); // Corrected this line
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
@@ -116,7 +116,22 @@ const Index = () => {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    console.log("Attempting to log out...");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Logout error:", error);
+        showError("Logout failed: " + error.message);
+      } else {
+        console.log("Logout successful.");
+        showSuccess("You have been logged out.");
+        // Invalidate all queries to clear cached data for the logged-out user
+        queryClient.invalidateQueries();
+      }
+    } catch (err: any) {
+      console.error("Unexpected error during logout:", err);
+      showError("An unexpected error occurred during logout: " + err.message);
+    }
   };
 
   const handleSelectMovie = (id: string, isSelected: boolean) => {
