@@ -86,24 +86,24 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, index, total
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  // Determine if the card is one of the last few, to adjust transform-origin
-  // The '3' here is an estimate for how many cards are typically visible at the end
-  // and might need to scale from the right. This value might need fine-tuning.
+  // Determine if the card is one of the first or last few, to adjust transform-origin
+  // '3' is an estimate for how many cards are typically visible at the edges
+  const isNearLeftEdge = index <= 2; 
   const isNearRightEdge = index >= totalMovies - 3; 
 
   return (
     <div
-      className={cn( // Using cn for cleaner class management
+      className={cn(
         "relative h-full flex flex-col transition-all duration-300 ease-in-out",
-        isHovered ? "scale-125 z-30" : "scale-100 z-10",
-        isNearRightEdge ? "origin-right" : "origin-center"
+        isHovered ? "scale-135 z-30" : "scale-100 z-10", // Increased scale to 135%
+        isNearLeftEdge ? "origin-left" : isNearRightEdge ? "origin-right" : "origin-center" // Conditional origin
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Wrap the Card with Link to make the entire card clickable */}
       <Link to={`/movie/${movie.id}`} className="block h-full">
-        <Card className="h-full flex flex-col bg-card border-none rounded-none"> {/* Removed overflow-hidden here */}
+        <Card className="h-full flex flex-col bg-card border-none rounded-none">
           {isAdmin && (
             <div className="absolute top-2 left-2 z-40">
               <Checkbox
