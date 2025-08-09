@@ -47,27 +47,25 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  // Determine dynamic padding for the section based on scroll position
-  const sectionPaddingClass = React.useMemo(() => {
-    if (movies.length === 0) return "px-4"; // Default if no movies
-    
-    const allItemsFit = !canScrollPrev && !canScrollNext && movies.length > 0;
+  // Determine dynamic padding for the CarouselContent to allow hover expansion
+  const carouselContentPaddingClasses = React.useMemo(() => {
+    const hoverBuffer = "pl-8 pr-8"; // Extra padding for hover effect (e.g., 32px)
+    let classes = "-ml-8 overflow-visible py-12"; // Base classes, -ml-8 to compensate for pl-8 on CarouselItem
 
-    if (allItemsFit) {
-      return "px-12"; // Apply generous padding on both sides if all items fit
-    } else if (!canScrollPrev && movies.length > 0) { // At the very beginning
-      return "pl-12 pr-4"; // More padding on left, normal on right
-    } else if (!canScrollNext && movies.length > 0) { // At the very end
-      return "pl-4 pr-12"; // Normal padding on left, more on right
-    } else { // In the middle
-      return "px-4";
+    if (!canScrollPrev) { // At the very beginning, add extra left padding
+      classes = cn(classes, "pl-8");
+    } else if (!canScrollNext) { // At the very end, add extra right padding
+      classes = cn(classes, "pr-8");
     }
-  }, [canScrollPrev, canScrollNext, movies.length]);
+    // No specific class for "middle" as it defaults to the base -ml-8 and no extra pl/pr
+
+    return classes;
+  }, [canScrollPrev, canScrollNext]);
 
 
   return (
-    <section className={cn(sectionPaddingClass, "mb-12 relative group transition-all duration-300 ease-in-out")}>
-      <h2 className="text-3xl font-bold mb-6"> {/* Removed px-4 md:px-0 */}
+    <section className="px-4 mb-12 relative group transition-all duration-300 ease-in-out">
+      <h2 className="text-3xl font-bold mb-6">
         {title}
       </h2>
       <Carousel
@@ -77,12 +75,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="-ml-4 overflow-visible py-12">
+        <CarouselContent className={carouselContentPaddingClasses}>
           {movies.map((movie) => {
             return (
               <CarouselItem
                 key={movie.id}
-                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
+                className="pl-8 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
               >
                 <div className="p-1">
                   <MovieCard
