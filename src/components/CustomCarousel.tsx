@@ -18,23 +18,18 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     align: 'center',
     containScroll: 'trimSnaps',
     loop: false,
+    slidesToScroll: 6, // Scroll by a page of 6 movies
   });
 
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
   const scrollPrev = useCallback(() => {
-    if (!emblaApi) return;
-    const currentIndex = emblaApi.selectedScrollSnap();
-    const targetIndex = Math.max(0, currentIndex - 6);
-    emblaApi.scrollTo(targetIndex);
+    if (emblaApi) emblaApi.scrollPrev();
   }, [emblaApi]);
 
   const scrollNext = useCallback(() => {
-    if (!emblaApi) return;
-    const currentIndex = emblaApi.selectedScrollSnap();
-    const targetIndex = Math.min(emblaApi.scrollSnapList().length - 1, currentIndex + 6);
-    emblaApi.scrollTo(targetIndex);
+    if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
   const onSelect = useCallback(() => {
