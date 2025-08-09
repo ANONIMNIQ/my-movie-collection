@@ -26,7 +26,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const leaveTimeout = useRef<number | null>(null); // Fixed: Initialized with null
+  const leaveTimeout = useRef<number | null>(null);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
   const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
@@ -64,7 +64,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   return (
     <section className="mb-12 relative">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold font-poppins">{title}</h2>
+        <h2 className="text-3xl font-bold">{title}</h2>
       </div>
       <div className="relative z-10 mt-[-2rem]">
         <div className="relative group/carousel">
@@ -72,7 +72,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           <Button variant="ghost" size="icon" className={cn("absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity", "opacity-0 group-hover/carousel:opacity-100", !canScrollPrev && "invisible")} onClick={scrollPrev} disabled={!canScrollPrev}>
             <ChevronLeft className="h-8 w-8" />
           </Button>
-          <div className="embla px-12" ref={emblaRef}>
+          <div className={cn("embla px-12", isOverflowVisible && "!overflow-visible")} ref={emblaRef}>
             <div className="embla__container flex gap-4 py-12">
               {movies.map((movie) => (
                 <div key={movie.id} className="embla__slide group/slide w-[45vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]" onMouseEnter={handleSlideMouseEnter} onMouseLeave={handleSlideMouseLeave}>
