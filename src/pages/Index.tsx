@@ -156,8 +156,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <main className="container mx-auto px-4 py-8">
-        <header className="text-center mb-12">
+      <main className="py-8">
+        <header className="text-center mb-12 container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
             Georgi's Movie Collection
           </h1>
@@ -194,11 +194,11 @@ const Index = () => {
         </header>
 
         {loadingMovies ? (
-          <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">New Movies</h2>
+          <div className="mb-12 container mx-auto px-4">
+            <h2 className="text-3xl font-bold mb-6">New Movies</h2>
             <div className="flex overflow-hidden gap-4">
               {Array.from({ length: 6 }).map((_, index) => (
-                <Skeleton key={index} className="aspect-[2/3] w-[180px] flex-shrink-0 rounded-lg" />
+                <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
               ))}
             </div>
           </div>
@@ -206,94 +206,98 @@ const Index = () => {
           <CustomCarousel
             title="New Movies"
             movies={newMovies}
-          />
-        )}
-
-        {!loadingMovies && filteredMovies.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 px-4 md:px-0 gap-4">
-            <h2 className="text-3xl font-bold">All Movies</h2>
-            <div className="w-full sm:w-auto sm:max-w-xs">
-              <Input
-                type="text"
-                placeholder="Search movies..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full"
-              />
-            </div>
-          </div>
-        )}
-
-        {isAdmin && (
-          <div className="flex items-center justify-between mb-6 px-4 md:px-0">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="select-all"
-                checked={selectedMovieIds.size === filteredMovies.length && filteredMovies.length > 0}
-                onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                disabled={filteredMovies.length === 0 || isDeleting}
-              />
-              <label
-                htmlFor="select-all"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Select All ({selectedMovieIds.size} selected)
-              </label>
-            </div>
-            {selectedMovieIds.size > 0 && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="gap-2" disabled={isDeleting}>
-                    <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{" "}
-                      <span className="font-bold">{selectedMovieIds.size}</span> selected movies
-                      from your collection.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
-                      {isDeleting ? "Deleting..." : "Delete All"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
-        )}
-
-        {loadingMovies ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4 md:px-0">
-            {Array.from({ length: 18 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
-            ))}
-          </div>
-        ) : error ? (
-          <div className="text-center text-destructive">{error}</div>
-        ) : filteredMovies.length === 0 ? (
-          <div className="text-center text-muted-foreground text-lg">
-            No movies found matching your search.
-          </div>
-        ) : (
-          <MovieGrid
-            movies={moviesToShow}
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
         )}
-        {visibleCount < filteredMovies.length && (
-          <div className="text-center mt-12">
-            <Button onClick={handleLoadMore} size="lg">
-              Load More
-            </Button>
-          </div>
-        )}
+
+        <div className="container mx-auto px-4">
+          {!loadingMovies && filteredMovies.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+              <h2 className="text-3xl font-bold">All Movies</h2>
+              <div className="w-full sm:w-auto sm:max-w-xs">
+                <Input
+                  type="text"
+                  placeholder="Search movies..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          )}
+
+          {isAdmin && (
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="select-all"
+                  checked={selectedMovieIds.size === filteredMovies.length && filteredMovies.length > 0}
+                  onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                  disabled={filteredMovies.length === 0 || isDeleting}
+                />
+                <label
+                  htmlFor="select-all"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Select All ({selectedMovieIds.size} selected)
+                </label>
+              </div>
+              {selectedMovieIds.size > 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="gap-2" disabled={isDeleting}>
+                      <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete{" "}
+                        <span className="font-bold">{selectedMovieIds.size}</span> selected movies
+                        from your collection.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
+                        {isDeleting ? "Deleting..." : "Delete All"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
+          )}
+
+          {loadingMovies ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {Array.from({ length: 18 }).map((_, index) => (
+                <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center text-destructive">{error}</div>
+          ) : filteredMovies.length === 0 ? (
+            <div className="text-center text-muted-foreground text-lg">
+              No movies found matching your search.
+            </div>
+          ) : (
+            <MovieGrid
+              movies={moviesToShow}
+              selectedMovieIds={selectedMovieIds}
+              onSelectMovie={handleSelectMovie}
+            />
+          )}
+          {visibleCount < filteredMovies.length && (
+            <div className="text-center mt-12">
+              <Button onClick={handleLoadMore} size="lg">
+                Load More
+              </Button>
+            </div>
+          )}
+        </div>
       </main>
       <footer className="py-8">
         <MadeWithDyad />

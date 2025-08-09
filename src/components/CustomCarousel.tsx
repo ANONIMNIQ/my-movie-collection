@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Movie } from '@/data/movies';
-import { CarouselMovieCard } from './CarouselMovieCard';
+import { MovieCard } from './MovieCard';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -8,9 +8,11 @@ import { cn } from '@/lib/utils';
 interface CustomCarouselProps {
   title: string;
   movies: Movie[];
+  selectedMovieIds: Set<string>;
+  onSelectMovie: (id: string, isSelected: boolean) => void;
 }
 
-export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies }) => {
+export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -72,7 +74,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies })
             variant="outline"
             size="icon"
             className={cn(
-              "absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-40 h-10 w-10 rounded-full bg-background/80 hover:bg-background transition-opacity",
+              "absolute left-4 top-1/2 -translate-y-1/2 z-40 h-10 w-10 rounded-full bg-background/80 hover:bg-background transition-opacity",
               "opacity-0 group-hover:opacity-100",
               !canScrollLeft && "opacity-0 group-hover:opacity-0 cursor-not-allowed"
             )}
@@ -84,14 +86,22 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies })
 
           <div
             ref={scrollContainerRef}
-            className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide"
+            className="flex overflow-x-auto space-x-4 py-12 scrollbar-hide -mx-4 px-4"
           >
-            {movies.map((movie) => (
+            {movies.map((movie, index) => (
               <div
                 key={movie.id}
-                className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4"
+                className={cn(
+                  "flex-shrink-0 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6",
+                  index === 0 && "ml-4", // Add margin to the first item
+                  index === movies.length - 1 && "mr-4" // Add margin to the last item
+                )}
               >
-                <CarouselMovieCard movie={movie} />
+                <MovieCard
+                  movie={movie}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={onSelectMovie}
+                />
               </div>
             ))}
           </div>
@@ -100,7 +110,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies })
             variant="outline"
             size="icon"
             className={cn(
-              "absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-40 h-10 w-10 rounded-full bg-background/80 hover:bg-background transition-opacity",
+              "absolute right-4 top-1/2 -translate-y-1/2 z-40 h-10 w-10 rounded-full bg-background/80 hover:bg-background transition-opacity",
               "opacity-0 group-hover:opacity-100",
               !canScrollRight && "opacity-0 group-hover:opacity-0 cursor-not-allowed"
             )}
@@ -109,9 +119,6 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies })
           >
             <ChevronRight className="h-6 w-6" />
           </Button>
-          
-          <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none"></div>
-          <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none"></div>
         </div>
       </div>
     </section>
