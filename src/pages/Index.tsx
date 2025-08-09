@@ -182,12 +182,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
-      {/* DEBUGGING ELEMENT: If you see this, the Index component is rendering! */}
-      <div style={{ backgroundColor: 'lime', color: 'black', padding: '20px', fontSize: '24px', fontWeight: 'bold', textAlign: 'center', zIndex: 9999 }}>
-        INDEX COMPONENT IS RENDERING!
-      </div>
-      {/* END DEBUGGING ELEMENT */}
-
       <header className="w-full text-center bg-white py-8 shadow-md z-50">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-headerTitle">
