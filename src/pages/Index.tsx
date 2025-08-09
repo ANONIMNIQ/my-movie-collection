@@ -36,7 +36,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set<string>();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
@@ -184,7 +184,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
       <main className="py-8">
         <header className="container mx-auto px-4 text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-raleway">
             Georgi's Movie Collection
           </h1>
           <p className="text-muted-foreground mt-2 text-lg">
@@ -221,7 +221,7 @@ const Index = () => {
 
         {loadingMovies ? (
           <div className="container mx-auto px-4 mb-12">
-            <h2 className="text-3xl font-bold mb-4">New Movies</h2>
+            <h2 className="text-3xl font-bold mb-4 font-raleway">New Movies</h2>
             <div className="flex overflow-hidden gap-4">
               {Array.from({ length: 6 }).map((_, index) => (
                 <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
@@ -273,7 +273,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           {!loadingMovies && filteredMovies.length > 0 && (
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-              <h2 className="text-3xl font-bold">All Movies</h2>
+              <h2 className="text-3xl font-bold font-raleway">All Movies</h2>
               <div className="w-full sm:w-auto sm:max-w-xs">
                 <Input
                   type="text"

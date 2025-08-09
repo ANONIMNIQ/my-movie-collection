@@ -21,6 +21,7 @@ export default {
       fontFamily: {
         orbitron: ["Orbitron", "sans-serif"],
         'roboto-mono': ['"Roboto Mono"', 'monospace'],
+        raleway: ['Raleway', 'sans-serif'], // Added Raleway font
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
