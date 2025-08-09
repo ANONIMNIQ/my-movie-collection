@@ -9,7 +9,6 @@ import {
   useCarousel,
 } from "@/components/ui/carousel";
 import { MovieCard } from './MovieCard';
-import { cn } from '@/lib/utils'; // Import cn for conditional classes
 
 interface MovieCarouselProps {
   title: string;
@@ -38,36 +37,16 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
 
     api.on("select", onSelect);
-    api.on("resize", onSelect); // Update on resize to re-evaluate scroll positions
     onSelect(); // Initial check
 
     return () => {
       api.off("select", onSelect);
-      api.off("resize", onSelect);
     };
   }, [api]);
 
-  // Determine dynamic padding for the CarouselContent to allow hover expansion
-  const carouselContentPaddingClasses = React.useMemo(() => {
-    const hoverBuffer = "pl-8 pr-8"; // Extra padding for hover effect (e.g., 32px)
-    let classes = "-ml-8 overflow-visible py-12"; // Base classes, -ml-8 to compensate for pl-8 on CarouselItem
-
-    if (!canScrollPrev) { // At the very beginning, add extra left padding
-      classes = cn(classes, "pl-8");
-    } else if (!canScrollNext) { // At the very end, add extra right padding
-      classes = cn(classes, "pr-8");
-    }
-    // No specific class for "middle" as it defaults to the base -ml-8 and no extra pl/pr
-
-    return classes;
-  }, [canScrollPrev, canScrollNext]);
-
-
   return (
-    <section className="px-4 mb-12 relative group transition-all duration-300 ease-in-out">
-      <h2 className="text-3xl font-bold mb-6">
-        {title}
-      </h2>
+    <section className="mb-12 relative group px-4"> {/* Added px-4 here */}
+      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
       <Carousel
         opts={{
           align: "start",
@@ -75,12 +54,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className={carouselContentPaddingClasses}>
+        <CarouselContent className="-ml-4 overflow-visible py-12">
           {movies.map((movie) => {
             return (
               <CarouselItem
                 key={movie.id}
-                className="pl-8 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
+                className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6 relative overflow-visible"
               >
                 <div className="p-1">
                   <MovieCard
