@@ -47,17 +47,14 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  // Dynamic padding for CarouselContent to handle edge hover effects
-  // We use 96px (equivalent to px-24) as a buffer for the 1.25x scale on hover.
+  // Revert to original carouselContentClasses, relying on overflow-visible
   const carouselContentClasses = cn(
-    "-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out",
-    !canScrollPrev && "pl-[96px]", // Add padding-left if at the start
-    !canScrollNext && "pr-[96px]"  // Add padding-right if at the end
+    "-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out"
   );
 
   return (
-    <section className="mb-12 relative group">
-      <h2 className="text-3xl font-bold mb-6 container mx-auto px-4">
+    <section className="mb-12 relative group container mx-auto px-4"> {/* Moved container classes here */}
+      <h2 className="text-3xl font-bold mb-6">
         {title}
       </h2>
       
@@ -65,7 +62,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible container mx-auto px-4"
+        className="w-full overflow-visible" // Removed container classes from here
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
