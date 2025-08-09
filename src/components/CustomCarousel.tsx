@@ -89,10 +89,14 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           ref={scrollContainerRef}
           className="flex overflow-x-auto space-x-4 scrollbar-hide px-4 md:px-8 lg:px-12 py-4 snap-x snap-mandatory scroll-smooth"
         >
-          {movies.map((movie) => (
+          {movies.map((movie, index) => (
             <div
               key={movie.id}
-              className="flex-shrink-0 w-[42vw] sm:w-[29vw] md:w-[21vw] lg:w-[16vw] snap-center"
+              className={cn(
+                "flex-shrink-0 w-[42vw] sm:w-[29vw] md:w-[21vw] lg:w-[16vw]",
+                index === 0 ? "snap-start" : "snap-center",
+                index === movies.length - 1 && "snap-end"
+              )}
             >
               <MovieCard
                 movie={movie}
