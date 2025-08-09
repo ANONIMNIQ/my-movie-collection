@@ -47,13 +47,12 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
   }, [api]);
 
-  // Revert to original carouselContentClasses, relying on overflow-visible
   const carouselContentClasses = cn(
     "-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out"
   );
 
   return (
-    <section className="mb-12 relative group container mx-auto px-4"> {/* Moved container classes here */}
+    <section className="mb-12 relative group container mx-auto px-4">
       <h2 className="text-3xl font-bold mb-6">
         {title}
       </h2>
@@ -62,7 +61,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible" // Removed container classes from here
+        className="w-full overflow-visible px-12" {/* Added px-12 here */}
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
