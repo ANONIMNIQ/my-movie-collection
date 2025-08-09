@@ -50,9 +50,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   // Determine dynamic transform for the CarouselContent to shift it at edges
   const carouselContentOffsetClass = React.useMemo(() => {
     if (!canScrollPrev && movies.length > 0) { // At the very beginning
-      return "translate-x-[16px]"; // Shift right by 16px
+      return "translate-x-[32px]"; // Shift right by 32px
     } else if (!canScrollNext && movies.length > 0) { // At the very end
-      return "-translate-x-[16px]"; // Shift left by 16px
+      return "-translate-x-[32px]"; // Shift left by 32px
     } else { // In the middle
       return "translate-x-0"; // No shift
     }
@@ -60,15 +60,15 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
 
 
   return (
-    <section className="mb-12 relative group"> {/* Removed px-4 from here */}
-      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0"> {/* Kept px-4 md:px-0 for title alignment */}
+    <section className="mb-12 relative group">
+      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">
         {title}
       </h2>
       <Carousel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible px-8" // Added px-8 here for overall carousel padding
+        className="w-full overflow-visible px-8"
         setApi={setApi}
       >
         <CarouselContent className={cn("-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out", carouselContentOffsetClass)}>
