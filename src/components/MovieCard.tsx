@@ -84,7 +84,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <div className="relative h-full group-hover/slide:z-30">
-      <div className="h-full w-full transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-2xl group-hover/slide:shadow-glow">
+      <div className="h-full w-full transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow">
         <Link to={`/movie/${movie.id}`} className="block h-full">
           <Card className="h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden">
             {isAdmin && (
