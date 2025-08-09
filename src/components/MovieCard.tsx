@@ -28,16 +28,14 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
-  onHoverChange?: (id: string, isHovered: boolean) => void;
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, onHoverChange }: MovieCardProps) => {
+export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
-  const [isHovered, setIsHovered] = React.useState(false);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -84,29 +82,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, onHoverChang
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    onHoverChange?.(movie.id, true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    onHoverChange?.(movie.id, false);
-  };
-
   return (
-    <div
-      className={`relative h-full ${isHovered ? 'z-30' : ''}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div
-        className={`h-full w-full transition-transform duration-300 ease-in-out transform-gpu ${
-          isHovered ? "scale-125" : ""
-        }`}
-      >
+    <div className="relative h-full group-hover:z-30">
+      <div className="h-full w-full transition-transform duration-300 ease-in-out transform-gpu group-hover:scale-125">
         <Link to={`/movie/${movie.id}`} className="block h-full">
-          <Card className="h-full flex flex-col bg-card border-none rounded-none shadow-lg">
+          <Card className="h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden">
             {isAdmin && (
               <div className="absolute top-2 left-2 z-40">
                 <Checkbox
@@ -118,7 +98,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, onHoverChang
               </div>
             )}
 
-            <div className="aspect-[2/3] w-full overflow-hidden bg-muted">
+            <div className="aspect-[2/3] w-full bg-muted">
               {isLoading ? (
                 <Skeleton className="w-full h-full" />
               ) : (
@@ -131,55 +111,53 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, onHoverChang
               )}
             </div>
 
-            {isHovered && (
-              <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none">
-                <div
-                  className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
-                  style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
-                >
-                  {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-                  {logoUrl && (
-                    <img
-                      src={logoUrl}
-                      alt={`${movie.title} logo`}
-                      className="max-h-full max-w-full object-contain z-10"
-                      onError={(e) => (e.currentTarget.style.display = 'none')}
-                    />
-                  )}
-                  {!backdropUrl && !logoUrl && (
-                    <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
-                  )}
-                </div>
+            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover:opacity-100 pointer-events-none">
+              <div
+                className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
+                style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
+              >
+                {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+                {logoUrl && (
+                  <img
+                    src={logoUrl}
+                    alt={`${movie.title} logo`}
+                    className="max-h-full max-w-full object-contain z-10"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                )}
+                {!backdropUrl && !logoUrl && (
+                  <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
+                )}
+              </div>
 
-                <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
-                  <div>
-                    <h3 className="text-lg font-bold line-clamp-1">
-                      {movie.title}
-                    </h3>
-                    <p className="text-xs text-gray-300 line-clamp-2 mb-1">
-                      {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-                    </p>
-                    <div className="text-xs text-gray-400">
-                      <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-                      <div className="flex items-center mt-1">
-                        <Star className="text-yellow-400 h-3 w-3 mr-1" />
-                        <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
-                      </div>
+              <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
+                <div>
+                  <h3 className="text-lg font-bold line-clamp-1">
+                    {movie.title}
+                  </h3>
+                  <p className="text-xs text-gray-300 line-clamp-2 mb-1">
+                    {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+                  </p>
+                  <div className="text-xs text-gray-400">
+                    <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+                    <div className="flex items-center mt-1">
+                      <Star className="text-yellow-400 h-3 w-3 mr-1" />
+                      <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
                     </div>
                   </div>
-                  <div className="flex flex-row gap-1 mt-2">
-                    {trailerUrl && (
-                      <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1"
-                         onClick={(e) => e.stopPropagation()}>
-                        <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
-                          <Youtube className="h-3 w-3" /> Trailer
-                        </Button>
-                      </a>
-                    )}
-                  </div>
+                </div>
+                <div className="flex flex-row gap-1 mt-2 pointer-events-auto">
+                  {trailerUrl && (
+                    <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1"
+                       onClick={(e) => e.stopPropagation()}>
+                      <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
+                        <Youtube className="h-3 w-3" /> Trailer
+                      </Button>
+                    </a>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
 
             {isAdmin && (
               <div className="absolute top-2 right-2 flex gap-2 z-40">
