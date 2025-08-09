@@ -23,10 +23,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CustomCarousel } from "@/components/CustomCarousel"; // Import CustomCarousel
+import { CustomCarousel } from "@/components/CustomCarousel";
 
-const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
-const BATCH_SIZE = 50; // Define batch size for bulk operations
+const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
+const BATCH_SIZE = 50;
 
 const Index = () => {
   const { session, loading: sessionLoading } = useSession();
@@ -149,8 +149,8 @@ const Index = () => {
       showError(`Failed to delete ${failedDeletions} movies. Errors: ${errors.join("; ")}`);
     }
     
-    setSelectedMovieIds(new Set()); // Clear selection
-    queryClient.invalidateQueries({ queryKey: ["movies"] }); // Invalidate cache to refetch movie list
+    setSelectedMovieIds(new Set());
+    queryClient.invalidateQueries({ queryKey: ["movies"] });
     setIsDeleting(false);
   };
 
@@ -188,13 +188,11 @@ const Index = () => {
                 </Button>
               </>
             ) : (
-              // Removed the login button here
               <></>
             )}
           </div>
         </header>
 
-        {/* New Movies Carousel */}
         {loadingMovies ? (
           <div className="mb-12">
             <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">New Movies</h2>
@@ -208,16 +206,13 @@ const Index = () => {
           <CustomCarousel
             title="New Movies"
             movies={newMovies}
-            selectedMovieIds={selectedMovieIds}
-            onSelectMovie={handleSelectMovie}
           />
         )}
 
-        {/* All Movies Title and Search Bar on the same row */}
         {!loadingMovies && filteredMovies.length > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 px-4 md:px-0 gap-4"> {/* Added flex container and gap */}
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 px-4 md:px-0 gap-4">
             <h2 className="text-3xl font-bold">All Movies</h2>
-            <div className="w-full sm:w-auto sm:max-w-xs"> {/* Adjusted width for search input */}
+            <div className="w-full sm:w-auto sm:max-w-xs">
               <Input
                 type="text"
                 placeholder="Search movies..."
@@ -229,7 +224,6 @@ const Index = () => {
           </div>
         )}
 
-        {/* Admin Bulk Actions */}
         {isAdmin && (
           <div className="flex items-center justify-between mb-6 px-4 md:px-0">
             <div className="flex items-center space-x-2">
@@ -275,7 +269,7 @@ const Index = () => {
         )}
 
         {loadingMovies ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4 md:px-0"> {/* Added px-4 md:px-0 for consistency */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 px-4 md:px-0">
             {Array.from({ length: 18 }).map((_, index) => (
               <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
             ))}
