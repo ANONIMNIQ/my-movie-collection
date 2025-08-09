@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "transition-transform duration-300 ease-out" // Removed -ml-4 and py-12
+    "-ml-4 py-12 transition-transform duration-300 ease-out" // Re-added -ml-4 and py-12
   );
 
   return (
