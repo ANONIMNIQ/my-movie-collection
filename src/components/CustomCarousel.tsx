@@ -85,7 +85,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
             {movies.map((movie) => (
               <div
                 key={movie.id}
-                className="embla__slide w-[40vw] sm:w-[26vw] md:w-[19vw] lg:w-[14.5vw]"
+                className="embla__slide w-[40vw] sm:w-[26vw] md:w-[16vw] lg:w-[14.5vw]"
               >
                 <MovieCard
                   movie={movie}
