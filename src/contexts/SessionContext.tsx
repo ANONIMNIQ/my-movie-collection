@@ -17,20 +17,30 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
   const location = useLocation(); // Get current location
 
   useEffect(() => {
+    console.log("SessionContext: useEffect running.");
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("SessionContext: onAuthStateChange event:", _event, "session:", session);
       setSession(session);
       setLoading(false); // Session state is now known
 
+      const currentPath = location.pathname;
+      console.log("SessionContext: Current path before redirect logic:", currentPath);
+
       // Redirect logic after auth state change
       if (session) {
+        console.log("SessionContext: User is authenticated.");
         // If signed in and on the login page, redirect to home
-        if (location.pathname === '/login') {
+        if (currentPath === '/login') {
+          console.log("SessionContext: Redirecting from /login to /");
           navigate('/');
         }
       } else {
+        console.log("SessionContext: User is NOT authenticated.");
         // If not signed in and trying to access protected routes, redirect to login
         const protectedRoutes = ['/add-movie', '/edit-movie', '/import-movies', '/import-ratings'];
-        if (protectedRoutes.some(route => location.pathname.startsWith(route))) {
+        if (protectedRoutes.some(route => currentPath.startsWith(route))) {
+          console.log("SessionContext: Redirecting from protected route to /login");
           navigate('/login');
         }
       }
@@ -38,25 +48,38 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
 
     // Initial session check on component mount
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("SessionContext: Initial getSession data:", session);
       setSession(session);
       setLoading(false); // Initial session loaded
+
+      const currentPath = location.pathname;
+      console.log("SessionContext: Initial check - Current path before redirect logic:", currentPath);
+
       // Apply redirect logic immediately after initial session check
       if (session) {
-        if (location.pathname === '/login') {
+        console.log("SessionContext: Initial check - User is authenticated.");
+        if (currentPath === '/login') {
+          console.log("SessionContext: Initial check - Redirecting from /login to /");
           navigate('/');
         }
       } else {
+        console.log("SessionContext: Initial check - User is NOT authenticated.");
         const protectedRoutes = ['/add-movie', '/edit-movie', '/import-movies', '/import-ratings'];
-        if (protectedRoutes.some(route => location.pathname.startsWith(route))) {
+        if (protectedRoutes.some(route => currentPath.startsWith(route))) {
+          console.log("SessionContext: Initial check - Redirecting from protected route to /login");
           navigate('/login');
         }
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log("SessionContext: Unsubscribing from auth state changes.");
+      subscription.unsubscribe();
+    };
   }, [navigate, location.pathname]); // Add location.pathname to dependencies
 
   if (loading) {
+    console.log("SessionContext: Rendering loading screen.");
     // Render a global loading indicator while session is being determined
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
@@ -65,6 +88,7 @@ export const SessionContextProvider: React.FC<{ children: React.ReactNode }> = (
     );
   }
 
+  console.log("SessionContext: Rendering children with session:", session);
   return (
     <SessionContext.Provider value={{ session, loading }}>
       {children}
