@@ -9,7 +9,8 @@ interface MovieCounterProps {
 const MovieCounter: React.FC<MovieCounterProps> = ({ count }) => {
   const isMobile = useIsMobile();
   const numberHeight = isMobile ? 60 : 90;
-  const numberWidth = isMobile ? 40 : 60;
+  // Increased width to give the font more space
+  const numberWidth = isMobile ? 50 : 70;
   // Pad the number to always have at least 4 digits for a consistent look
   const numberString = String(count).padStart(4, '0');
 
