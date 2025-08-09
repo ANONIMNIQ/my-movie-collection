@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { Movie } from '@/data/movies';
-import { MovieCard } from './MovieCard';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LazyMovieCard } from './LazyMovieCard';
 
 interface CustomCarouselProps {
   title: string;
@@ -76,7 +76,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
             <div className="embla__container flex gap-4 py-12">
               {movies.map((movie) => (
                 <div key={movie.id} className="embla__slide group/slide w-[45vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]" onMouseEnter={handleSlideMouseEnter} onMouseLeave={handleSlideMouseLeave}>
-                  <MovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={onSelectMovie} />
+                  <LazyMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={onSelectMovie} />
                 </div>
               ))}
             </div>

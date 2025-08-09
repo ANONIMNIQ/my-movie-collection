@@ -1,6 +1,6 @@
 import { Movie } from "@/data/movies";
-import { MovieCard } from "./MovieCard";
-import React from "react"; // Import React for useState and event handlers
+import { LazyMovieCard } from "./LazyMovieCard";
+import React from "react";
 
 interface MovieGridProps {
   movies: Movie[];
@@ -17,7 +17,7 @@ export const MovieGrid = ({ movies, selectedMovieIds, onSelectMovie }: MovieGrid
             key={movie.id}
             className="relative overflow-visible group/slide"
           >
-            <MovieCard
+            <LazyMovieCard
               movie={movie}
               selectedMovieIds={selectedMovieIds}
               onSelectMovie={onSelectMovie}
