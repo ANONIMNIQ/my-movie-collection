@@ -48,7 +48,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   const carouselContentClasses = cn(
-    "-ml-4 py-12 transition-transform duration-300 ease-out"
+    "px-4 overflow-visible py-12 transition-transform duration-300 ease-out" // Changed from -ml-4 to px-4
   );
 
   return (
@@ -62,9 +62,8 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
       <Carousel
         opts={{
           align: "start",
-          slidesToScroll: 1,
         }}
-        className="w-full overflow-visible relative" // Carousel is now outside the container
+        className="w-full overflow-visible" // Removed px-4 from here
         viewportClassName="overflow-visible" 
         setApi={setApi}
       >
