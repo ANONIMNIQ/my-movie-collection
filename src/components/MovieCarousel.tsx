@@ -45,16 +45,16 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
   }, [api]);
 
   return (
-    <section className="mb-12 relative group px-4">
-      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
+    <section className="mb-12 relative group"> {/* Removed px-4 from here */}
+      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2> {/* Added px-4 md:px-0 here */}
       <Carousel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible" // <--- Added overflow-visible here
+        className="w-full overflow-visible"
         setApi={setApi}
       >
-        <CarouselContent className="pl-4 pr-20 overflow-visible py-6 gap-x-4">
+        <CarouselContent className="pl-16 pr-40 overflow-visible py-6 gap-x-2"> {/* Adjusted padding and gap-x */}
           {movies.map((movie) => {
             return (
               <CarouselItem
