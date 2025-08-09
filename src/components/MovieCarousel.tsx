@@ -58,13 +58,13 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           {title}
         </h2>
         
-        <div className="relative group">
+        <div className="relative">
           <Carousel
             opts={{
               align: "start",
               slidesToScroll: 5.8,
             }}
-            className="w-full"
+            className="w-full group"
             setApi={setApi}
           >
             <CarouselContent className={carouselContentClasses}>
@@ -82,11 +82,9 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
               ))}
             </CarouselContent>
             
-            {/* Gradient Overlays - Moved inside Carousel */}
             <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none"></div>
             <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none"></div>
 
-            {/* Navigation Arrows - Appear on group hover */}
             {canScrollPrev && (
               <CarouselPrevious className="absolute left-8 top-1/2 -translate-y-1/2 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
             )}
