@@ -91,7 +91,7 @@
 
   /* Embla Carousel Styles */
   .embla {
-    @apply overflow-hidden;
+    overflow-x: hidden;
   }
   .embla__container {
     @apply flex;
