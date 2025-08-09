@@ -62,7 +62,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           <Carousel
             opts={{
               align: "start",
-              slidesToScroll: 5, // Adjusted for smoother scrolling
+              slidesToScroll: 5.8,
             }}
             className="w-full group"
             setApi={setApi}
