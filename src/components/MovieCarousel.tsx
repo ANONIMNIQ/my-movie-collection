@@ -61,7 +61,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         <Carousel
           opts={{
             align: "start",
-            slidesToScroll: 5.9, // Changed to 5.9 as requested
+            slidesToScroll: 1, // Changed back to 1 for stability
           }}
           className="w-full overflow-visible relative"
           viewportClassName="overflow-visible" 
