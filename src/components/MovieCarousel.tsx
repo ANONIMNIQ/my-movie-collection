@@ -9,6 +9,7 @@ import {
   useCarousel,
 } from "@/components/ui/carousel";
 import { MovieCard } from './MovieCard';
+import { cn } from '@/lib/utils'; // Import cn for conditional classes
 
 interface MovieCarouselProps {
   title: string;
@@ -37,24 +38,41 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
     };
 
     api.on("select", onSelect);
+    api.on("resize", onSelect); // Update on resize to re-evaluate scroll positions
     onSelect(); // Initial check
 
     return () => {
       api.off("select", onSelect);
+      api.off("resize", onSelect);
     };
   }, [api]);
 
+  // Determine dynamic transform for the CarouselContent to shift it at edges
+  const carouselContentOffsetClass = React.useMemo(() => {
+    if (!canScrollPrev && movies.length > 0) { // At the very beginning
+      return "translate-x-[96px]"; // Increased shift right for more space
+    } else if (!canScrollNext && movies.length > 0) { // At the very end
+      return "-translate-x-[96px]"; // Increased shift left for more space
+    } else { // In the middle
+      return "translate-x-0"; // No shift
+    }
+  }, [canScrollPrev, canScrollNext, movies.length]);
+
+
   return (
-    <section className="mb-12 relative group px-4"> {/* Added px-4 here */}
-      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">{title}</h2>
+    <section className="mb-12 relative group px-24"> {/* Add generous padding here */}
+      <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">
+        {title}
+      </h2>
       <Carousel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible"
+        className="w-full overflow-visible" // Removed px-16 here, relying on section padding
+        viewportClassName="overflow-visible" // Crucial: Make the internal viewport visible
         setApi={setApi}
       >
-        <CarouselContent className="-ml-4 overflow-visible py-12">
+        <CarouselContent className={cn("-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out", carouselContentOffsetClass)}>
           {movies.map((movie) => {
             return (
               <CarouselItem
@@ -73,10 +91,10 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           })}
         </CarouselContent>
         {canScrollPrev && (
-          <CarouselPrevious className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselPrevious className="absolute -left-8 top-1/2 -translate-y-1/2 z-20 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
         {canScrollNext && (
-          <CarouselNext className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselNext className="absolute -right-8 top-1/2 -translate-y-1/2 z-20 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
         {canScrollPrev && (
