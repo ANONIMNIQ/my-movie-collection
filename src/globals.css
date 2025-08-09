@@ -106,3 +106,17 @@
     @apply relative flex-shrink-0;
   }
 }
+
+/* Custom styles for the flip counter */
+.custom-flip-wrapper .ReactFlipNumbers__container {
+  gap: 0.5rem; /* 8px, matches gap-2 in MovieCounter.tsx */
+  justify-content: center;
+  height: 100%;
+}
+
+.custom-flip-wrapper .ReactFlipNumbers__number {
+  /* Ensure the number is centered within its box */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
