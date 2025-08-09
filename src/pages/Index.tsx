@@ -83,6 +83,22 @@ const Index = () => {
     return movies.filter(movie => movie.year === currentYear);
   }, [movies, currentYear]);
 
+  const dramaMovies = useMemo(() => {
+    return movies.filter(movie => movie.genres.includes("Drama"));
+  }, [movies]);
+
+  const thrillerMovies = useMemo(() => {
+    return movies.filter(movie => movie.genres.includes("Thriller"));
+  }, [movies]);
+
+  const scifiMovies = useMemo(() => {
+    return movies.filter(movie => movie.genres.includes("Sci-Fi"));
+  }, [movies]);
+
+  const horrorMovies = useMemo(() => {
+    return movies.filter(movie => movie.genres.includes("Horror"));
+  }, [movies]);
+
   const moviesToShow = filteredMovies.slice(0, visibleCount);
 
   const handleLoadMore = () => {
@@ -206,6 +222,39 @@ const Index = () => {
           <CustomCarousel
             title="New Movies"
             movies={newMovies}
+            selectedMovieIds={selectedMovieIds}
+            onSelectMovie={handleSelectMovie}
+          />
+        )}
+
+        {!loadingMovies && dramaMovies.length > 0 && (
+          <CustomCarousel
+            title="Drama"
+            movies={dramaMovies}
+            selectedMovieIds={selectedMovieIds}
+            onSelectMovie={handleSelectMovie}
+          />
+        )}
+        {!loadingMovies && thrillerMovies.length > 0 && (
+          <CustomCarousel
+            title="Thriller"
+            movies={thrillerMovies}
+            selectedMovieIds={selectedMovieIds}
+            onSelectMovie={handleSelectMovie}
+          />
+        )}
+        {!loadingMovies && scifiMovies.length > 0 && (
+          <CustomCarousel
+            title="Sci-Fi"
+            movies={scifiMovies}
+            selectedMovieIds={selectedMovieIds}
+            onSelectMovie={handleSelectMovie}
+          />
+        )}
+        {!loadingMovies && horrorMovies.length > 0 && (
+          <CustomCarousel
+            title="Horror"
+            movies={horrorMovies}
             selectedMovieIds={selectedMovieIds}
             onSelectMovie={handleSelectMovie}
           />
