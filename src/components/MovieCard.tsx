@@ -83,8 +83,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
   return (
-    <div className="relative h-full group-hover:z-30">
-      <div className="h-full w-full transition-transform duration-300 ease-in-out transform-gpu group-hover:scale-125">
+    <div className="relative h-full group-hover/slide:z-30">
+      <div className="h-full w-full transition-transform duration-300 ease-in-out transform-gpu group-hover/slide:scale-125">
         <Link to={`/movie/${movie.id}`} className="block h-full">
           <Card className="h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden">
             {isAdmin && (
@@ -111,7 +111,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
               )}
             </div>
 
-            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover:opacity-100 pointer-events-none">
+            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none">
               <div
                 className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
                 style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}

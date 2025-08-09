@@ -74,7 +74,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-6">{title}</h2>
       </div>
-      <div className="relative group">
+      <div className="relative group/carousel">
         <div
           className={cn(
             "absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none transition-opacity",
@@ -87,7 +87,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           size="icon"
           className={cn(
             "absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
-            "opacity-0 group-hover:opacity-100",
+            "opacity-0 group-hover/carousel:opacity-100",
             !canScrollPrev && "invisible"
           )}
           onClick={scrollPrev}
@@ -101,7 +101,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
             {movies.map((movie) => (
               <div
                 key={movie.id}
-                className="embla__slide group w-[45vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]"
+                className="embla__slide group/slide w-[45vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]"
                 onMouseEnter={handleSlideMouseEnter}
                 onMouseLeave={handleSlideMouseLeave}
               >
@@ -120,7 +120,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           size="icon"
           className={cn(
             "absolute right-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
-            "opacity-0 group-hover:opacity-100",
+            "opacity-0 group-hover/carousel:opacity-100",
             !canScrollNext && "invisible"
           )}
           onClick={scrollNext}
