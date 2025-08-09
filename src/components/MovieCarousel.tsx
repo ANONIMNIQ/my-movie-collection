@@ -60,7 +60,7 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
 
 
   return (
-    <section className="mb-12 relative group">
+    <section className="mb-12 relative group px-24"> {/* Add generous padding here */}
       <h2 className="text-3xl font-bold mb-6 px-4 md:px-0">
         {title}
       </h2>
@@ -68,7 +68,8 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
         opts={{
           align: "start",
         }}
-        className="w-full overflow-visible px-16" // Keep px-16 for overall padding
+        className="w-full overflow-visible" // Removed px-16 here, relying on section padding
+        viewportClassName="overflow-visible" // Crucial: Make the internal viewport visible
         setApi={setApi}
       >
         <CarouselContent className={cn("-ml-4 overflow-visible py-12 transition-transform duration-300 ease-out", carouselContentOffsetClass)}>
@@ -90,10 +91,10 @@ export const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies, sel
           })}
         </CarouselContent>
         {canScrollPrev && (
-          <CarouselPrevious className="absolute -left-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselPrevious className="absolute -left-16 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
         {canScrollNext && (
-          <CarouselNext className="absolute -right-12 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
+          <CarouselNext className="absolute -right-16 top-1/2 -translate-y-1/2 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-background/80 hover:bg-background rounded-full h-10 w-10 flex items-center justify-center" />
         )}
 
         {canScrollPrev && (
