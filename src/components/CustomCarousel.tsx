@@ -1,4 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
 import { Movie } from '@/data/movies';
 import { MovieCard } from './MovieCard';
 import { Button } from '@/components/ui/button';
@@ -13,57 +14,40 @@ interface CustomCarouselProps {
 }
 
 export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie }) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: 'center',
+    containScroll: 'trimSnaps',
+    loop: false,
+  });
+
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on('select', onSelect);
+    emblaApi.on('reInit', onSelect);
+    return () => {
+      if (emblaApi) {
+        emblaApi.off('select', onSelect);
+        emblaApi.off('reInit', onSelect);
+      }
+    };
+  }, [emblaApi, onSelect]);
 
   if (movies.length === 0) {
     return null;
   }
-
-  const checkForScrollability = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setCanScrollLeft(scrollLeft > 5); // Add a small buffer
-      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5); // Add a small buffer
-    }
-  };
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      checkForScrollability();
-      container.addEventListener('scroll', checkForScrollability);
-      window.addEventListener('resize', checkForScrollability);
-      return () => {
-        container.removeEventListener('scroll', checkForScrollability);
-        window.removeEventListener('resize', checkForScrollability);
-      };
-    }
-  }, [movies]);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const { clientWidth } = scrollContainerRef.current;
-      const scrollAmount = clientWidth * 0.9; // Scroll by 90% of the visible width
-      scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .scrollbar-hide::-webkit-scrollbar { display: none; }
-      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
 
   return (
     <section className="mb-12">
@@ -77,34 +61,29 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           className={cn(
             "absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
             "opacity-0 group-hover:opacity-100",
-            !canScrollLeft && "hidden"
+            !canScrollPrev && "hidden"
           )}
-          onClick={() => scroll('left')}
-          disabled={!canScrollLeft}
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
         >
           <ChevronLeft className="h-8 w-8" />
         </Button>
 
-        <div
-          ref={scrollContainerRef}
-          className="flex overflow-x-auto space-x-4 scrollbar-hide px-4 md:px-8 lg:px-12 py-4 snap-x snap-mandatory scroll-smooth"
-        >
-          {movies.map((movie, index) => (
-            <div
-              key={movie.id}
-              className={cn(
-                "flex-shrink-0 w-[40vw] sm:w-[26vw] md:w-[19vw] lg:w-[14.5vw]",
-                index === 0 ? "snap-start" : "snap-center",
-                index === movies.length - 1 && "snap-end"
-              )}
-            >
-              <MovieCard
-                movie={movie}
-                selectedMovieIds={selectedMovieIds}
-                onSelectMovie={onSelectMovie}
-              />
-            </div>
-          ))}
+        <div className="embla container mx-auto" ref={emblaRef}>
+          <div className="embla__container flex gap-4">
+            {movies.map((movie) => (
+              <div
+                key={movie.id}
+                className="embla__slide w-[40vw] sm:w-[26vw] md:w-[19vw] lg:w-[14.5vw]"
+              >
+                <MovieCard
+                  movie={movie}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={onSelectMovie}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         <Button
@@ -113,10 +92,10 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           className={cn(
             "absolute right-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity",
             "opacity-0 group-hover:opacity-100",
-            !canScrollRight && "hidden"
+            !canScrollNext && "hidden"
           )}
-          onClick={() => scroll('right')}
-          disabled={!canScrollRight}
+          onClick={scrollNext}
+          disabled={!canScrollNext}
         >
           <ChevronRight className="h-8 w-8" />
         </Button>

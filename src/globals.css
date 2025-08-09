@@ -88,4 +88,15 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Embla Carousel Styles */
+  .embla {
+    @apply overflow-hidden;
+  }
+  .embla__container {
+    @apply flex;
+  }
+  .embla__slide {
+    @apply relative flex-shrink-0;
+  }
 }
