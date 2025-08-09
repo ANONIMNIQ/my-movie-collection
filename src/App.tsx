@@ -12,19 +12,9 @@ import ImportMovies from "./pages/ImportMovies";
 import EditMovie from "./pages/EditMovie";
 import ImportRatings from "./pages/ImportRatings";
 import { SessionContextProvider } from "./contexts/SessionContext";
-import React from "react"; // Import React
+import React from "react";
 
 const queryClient = new QueryClient();
-
-// Temporary Test Component
-const HelloWorld = () => {
-  console.log("HelloWorld component is rendering.");
-  return (
-    <div style={{ backgroundColor: 'blue', color: 'white', padding: '50px', fontSize: '36px', textAlign: 'center', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      Hello World!
-    </div>
-  );
-};
 
 const App = () => {
   console.log("App component is rendering.");
@@ -36,8 +26,14 @@ const App = () => {
         <BrowserRouter>
           <SessionContextProvider>
             <Routes>
-              {/* Temporarily render Hello World on all paths */}
-              <Route path="*" element={<HelloWorld />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/movie/:id" element={<MovieDetail />} />
+              <Route path="/add-movie" element={<AddMovie />} />
+              <Route path="/edit-movie/:id" element={<EditMovie />} />
+              <Route path="/import-movies" element={<ImportMovies />} />
+              <Route path="/import-ratings" element={<ImportRatings />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </SessionContextProvider>
         </BrowserRouter>
