@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
@@ -36,15 +36,11 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMovieIds, setSelectedMovieIds] = useState(new Set<string>());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set<string>();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
-
-  // State and ref for flip counter animation
-  const [flipKey, setFlipKey] = useState(0);
-  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -66,18 +62,6 @@ const Index = () => {
     };
 
     fetchMovies();
-
-    // Scroll listener for flip counter
-    const handleScroll = () => {
-      if (window.scrollY === 0 && lastScrollY.current > 0) {
-        // Only flip if we just reached the top from a scrolled position
-        setFlipKey(prev => prev + 1);
-      }
-      lastScrollY.current = window.scrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const filteredMovies = useMemo(() => {
@@ -208,9 +192,7 @@ const Index = () => {
               A minimalist collection of cinematic gems.
             </p>
             <div className="mt-6">
-              {/* Add key prop here to re-trigger animation */}
               <MovieCounter 
-                key={flipKey}
                 count={filteredMovies.length} 
                 numberColor="#0F0F0F"
                 labelColor="text-headerDescription"
@@ -243,9 +225,9 @@ const Index = () => {
           </div>
         </header>
 
-        <div className="pt-8">
+        <div className="pt-8"> {/* Removed container mx-auto px-4 from here */}
           {loadingMovies ? (
-            <div className="container mx-auto px-4 mb-12">
+            <div className="container mx-auto px-4 mb-12"> {/* Added container back for skeleton loading state */}
               <h2 className="text-3xl font-bold mb-4">New Movies</h2>
               <div className="flex overflow-hidden gap-4">
                 {Array.from({ length: 6 }).map((_, index) => (
@@ -295,7 +277,7 @@ const Index = () => {
             />
           )}
 
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4"> {/* Re-added container for search and movie grid */}
             {!loadingMovies && filteredMovies.length > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <h2 className="text-3xl font-bold">All Movies</h2>
