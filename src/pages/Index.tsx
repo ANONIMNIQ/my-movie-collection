@@ -88,8 +88,8 @@ const Index = () => {
   const allCountries = useMemo(() => {
     const countries = new Set<string>();
     movies.forEach((movie) => {
-      if (movie.origin_country) {
-        countries.add(movie.origin_country);
+      if (Array.isArray(movie.origin_country)) {
+        movie.origin_country.forEach((country) => countries.add(country));
       }
     });
     return Array.from(countries).sort();
@@ -116,7 +116,7 @@ const Index = () => {
       result = result.filter((movie) => movie.genres.includes(sortAndFilter));
       result.sort((a, b) => a.title.localeCompare(b.title));
     } else if (allCountries.includes(sortAndFilter)) {
-      result = result.filter((movie) => movie.origin_country === sortAndFilter);
+      result = result.filter((movie) => movie.origin_country && movie.origin_country.includes(sortAndFilter));
       result.sort((a, b) => a.title.localeCompare(b.title));
     } else {
       switch (sortAndFilter) {

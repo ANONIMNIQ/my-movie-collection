@@ -25,13 +25,13 @@ export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<
               .map(async (row) => {
                 const communityRating = parseFloat(row.CommunityRating);
                 
-                let origin_country = "";
+                let origin_country: string[] = [];
                 try {
                   const searchResults = await fetchFromTmdb("/search/movie", { query: row.Name, primary_release_year: row.Year });
                   if (searchResults && searchResults.results.length > 0) {
                       const movieDetails = await fetchFromTmdb(`/movie/${searchResults.results[0].id}`);
                       if (movieDetails && movieDetails.production_countries && movieDetails.production_countries.length > 0) {
-                          origin_country = movieDetails.production_countries[0].name;
+                          origin_country = movieDetails.production_countries.map((c: any) => c.name);
                       }
                   }
                 } catch (e) {

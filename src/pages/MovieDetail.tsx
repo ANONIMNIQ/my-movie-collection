@@ -149,7 +149,10 @@ const MovieDetail = () => {
     : (tmdbMovie?.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "");
   
   const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
-  const originCountry = movie.origin_country || tmdbMovie?.production_countries?.[0]?.name || "";
+  
+  const originCountry = Array.isArray(movie.origin_country) && movie.origin_country.length > 0
+    ? movie.origin_country.join(', ')
+    : (tmdbMovie?.production_countries?.map((c: any) => c.name).join(', ') || "");
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">

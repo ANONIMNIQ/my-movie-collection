@@ -90,7 +90,7 @@ const AddMovie = () => {
       const cast = details.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "";
       const usRelease = details.release_dates?.results.find((r: any) => r.iso_3166_1 === "US");
       const rating = usRelease?.release_dates[0]?.certification || "";
-      const country = details.production_countries?.[0]?.name || "";
+      const country = details.production_countries?.map((c: any) => c.name).join(", ") || "";
 
       setFormData({
         title: details.title || "",
@@ -141,7 +141,7 @@ const AddMovie = () => {
       synopsis,
       movie_cast: movie_cast.split(",").map((c) => c.trim()).filter(Boolean),
       director,
-      origin_country,
+      origin_country: origin_country.split(",").map((c) => c.trim()).filter(Boolean),
       user_id: session?.user?.id,
     };
 
@@ -267,7 +267,7 @@ const AddMovie = () => {
                 <Input id="director" value={formData.director} onChange={handleChange} />
               </div>
               <div>
-                <Label htmlFor="origin_country">Origin Country</Label>
+                <Label htmlFor="origin_country">Origin Country (comma-separated)</Label>
                 <Input id="origin_country" value={formData.origin_country} onChange={handleChange} />
               </div>
               <div>
