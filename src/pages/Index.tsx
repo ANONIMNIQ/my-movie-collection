@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } => "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -51,7 +51,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = new Set();
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -415,7 +415,8 @@ const Index = () => {
             </>
           )}
 
-          <motion.div initial="hidden" animate="visible" variants={sectionVariants} transition={{ delay: 1.5 }} className="px-4 overflow-x-visible">
+          {/* Removed motion.div wrapper from this section */}
+          <div className="px-4 overflow-x-visible">
             {!loadingMovies && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
                 <h2 className="text-3xl font-bold ml-3">All Movies</h2>
@@ -518,7 +519,7 @@ const Index = () => {
                 onSelectMovie={handleSelectMovie}
               />
             )}
-          </motion.div>
+          </div>
         </div>
 
         {/* Mobile View */}
@@ -587,7 +588,7 @@ const Index = () => {
                 </div>
               ) : (
                 moviesToShow.map(movie => (
-                  <motion.div key={movie.id} variants={sectionVariants}>
+                  <motion.div key={movie.id} initial="hidden" animate="visible" variants={sectionVariants} transition={{ delay: 1.2 }}>
                     <MobileMovieCard 
                       movie={movie}
                       selectedMovieIds={selectedMovieIds}
