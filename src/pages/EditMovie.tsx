@@ -25,7 +25,7 @@ const EditMovie = () => {
   const queryClient = useQueryClient();
   const userId = session?.user?.id;
 
-  const [formData, setFormData] = useState<Omit<Movie, 'id' | 'user_id' | 'created_at'>>({
+  const [formData, setFormData] = useState({
     title: "",
     year: "",
     genres: "",
@@ -36,6 +36,7 @@ const EditMovie = () => {
     synopsis: "",
     movie_cast: "",
     director: "",
+    origin_country: "",
   });
   const [personalRating, setPersonalRating] = useState<number | null>(null); // State for personal rating
   const [loading, setLoading] = useState(true);
@@ -98,14 +99,15 @@ const EditMovie = () => {
         setFormData({
           title: movieData.title,
           year: movieData.year,
-          genres: movieData.genres?.join(", ") || "",
+          genres: Array.isArray(movieData.genres) ? movieData.genres.join(", ") : "",
           rating: movieData.rating,
           runtime: movieData.runtime,
           community_rating: movieData.community_rating,
           poster_url: movieData.poster_url,
           synopsis: movieData.synopsis,
-          movie_cast: movieData.movie_cast?.join(", ") || "",
+          movie_cast: Array.isArray(movieData.movie_cast) ? movieData.movie_cast.join(", ") : "",
           director: movieData.director,
+          origin_country: movieData.origin_country || "",
         });
         setLoading(false);
       }
@@ -158,6 +160,7 @@ const EditMovie = () => {
       const cast = details.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "";
       const usRelease = details.release_dates?.results.find((r: any) => r.iso_3166_1 === "US");
       const rating = usRelease?.release_dates[0]?.certification || "";
+      const country = details.production_countries?.[0]?.name || "";
 
       setFormData({
         title: details.title || "",
@@ -170,6 +173,7 @@ const EditMovie = () => {
         synopsis: details.overview || "",
         movie_cast: cast,
         director: director,
+        origin_country: country,
       });
       showSuccess("Movie details fetched from TMDb!");
     } catch (error: any) {
@@ -191,7 +195,7 @@ const EditMovie = () => {
       return;
     }
 
-    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director } = formData;
+    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director, origin_country } = formData;
 
     const parsedCommunityRating = community_rating ? parseFloat(String(community_rating)) : null;
     const finalCommunityRating = isNaN(parsedCommunityRating as number) ? null : parsedCommunityRating;
@@ -207,6 +211,7 @@ const EditMovie = () => {
       synopsis,
       movie_cast: movie_cast.split(",").map((c) => c.trim()).filter(Boolean),
       director,
+      origin_country,
     };
 
     const { error: updateError } = await supabase
@@ -372,6 +377,10 @@ const EditMovie = () => {
               <div>
                 <Label htmlFor="director">Director</Label>
                 <Input id="director" value={formData.director} onChange={handleChange} />
+              </div>
+              <div>
+                <Label htmlFor="origin_country">Origin Country</Label>
+                <Input id="origin_country" value={formData.origin_country} onChange={handleChange} />
               </div>
               <div>
                 <Label htmlFor="personal-rating">Your Personal Rating</Label>

@@ -1,5 +1,6 @@
 import Papa from 'papaparse';
 import { Movie } from '@/data/movies';
+import { fetchFromTmdb } from '@/lib/tmdb';
 
 interface CsvMovieRow {
   Name: string;
@@ -9,8 +10,6 @@ interface CsvMovieRow {
   CommunityRating: string;
   Runtime: string;
   ImagePrimary: string;
-  // Add other fields from your CSV if needed, even if not directly mapped to Movie interface
-  // For example, 'Path' is in your CSV but not in Movie interface, so it's omitted here.
 }
 
 export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<Movie[]> => {
@@ -18,27 +17,47 @@ export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<
     Papa.parse<CsvMovieRow>(csvString, {
       header: true,
       skipEmptyLines: true,
-      complete: (results) => {
-        const movies: Movie[] = results.data
-          .filter(row => row.Name && row.Year) // Ensure basic data exists
-          .map((row) => { // Removed index as it's no longer needed for ID generation
-            const communityRating = parseFloat(row.CommunityRating);
-            return {
-              // Removed 'id' field here to let Supabase generate it automatically
-              title: row.Name.trim(),
-              year: row.Year.toString().trim(),
-              genres: row.Genres ? row.Genres.split(';').map(g => g.trim()).filter(Boolean) : [],
-              rating: row.ParentalRating ? row.ParentalRating.trim() : 'N/A',
-              runtime: row.Runtime ? row.Runtime.toString().trim() : 'N/A',
-              community_rating: isNaN(communityRating) ? null : communityRating,
-              poster_url: row.ImagePrimary && row.ImagePrimary !== 'x' ? row.ImagePrimary.trim() : '/placeholder.svg',
-              synopsis: "", // Not available in CSV, default to empty
-              movie_cast: [],
-              director: "", // Not available in CSV, default to empty
-              user_id: adminUserId, // Assign the admin user ID
-            };
-          });
-        resolve(movies);
+      complete: async (results) => {
+        try {
+          const movies: Movie[] = await Promise.all(
+            results.data
+              .filter(row => row.Name && row.Year)
+              .map(async (row) => {
+                const communityRating = parseFloat(row.CommunityRating);
+                
+                let origin_country = "";
+                try {
+                  const searchResults = await fetchFromTmdb("/search/movie", { query: row.Name, primary_release_year: row.Year });
+                  if (searchResults && searchResults.results.length > 0) {
+                      const movieDetails = await fetchFromTmdb(`/movie/${searchResults.results[0].id}`);
+                      if (movieDetails && movieDetails.production_countries && movieDetails.production_countries.length > 0) {
+                          origin_country = movieDetails.production_countries[0].name;
+                      }
+                  }
+                } catch (e) {
+                    console.warn(`Could not fetch country for movie: ${row.Name}`, e);
+                }
+
+                return {
+                  title: row.Name.trim(),
+                  year: row.Year.toString().trim(),
+                  genres: row.Genres ? row.Genres.split(';').map(g => g.trim()).filter(Boolean) : [],
+                  rating: row.ParentalRating ? row.ParentalRating.trim() : 'N/A',
+                  runtime: row.Runtime ? row.Runtime.toString().trim() : 'N/A',
+                  community_rating: isNaN(communityRating) ? null : communityRating,
+                  poster_url: row.ImagePrimary && row.ImagePrimary !== 'x' ? row.ImagePrimary.trim() : '/placeholder.svg',
+                  synopsis: "",
+                  movie_cast: [],
+                  director: "",
+                  user_id: adminUserId,
+                  origin_country: origin_country,
+                } as Movie;
+              })
+          );
+          resolve(movies);
+        } catch (error) {
+          reject(error);
+        }
       },
       error: (error) => {
         reject(error);

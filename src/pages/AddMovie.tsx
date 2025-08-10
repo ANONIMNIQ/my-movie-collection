@@ -30,6 +30,7 @@ const AddMovie = () => {
     synopsis: "",
     movie_cast: "",
     director: "",
+    origin_country: "",
   });
   const [personalRating, setPersonalRating] = useState<number | null>(null); // New state for personal rating
   const [loading, setLoading] = useState(false);
@@ -89,6 +90,7 @@ const AddMovie = () => {
       const cast = details.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "";
       const usRelease = details.release_dates?.results.find((r: any) => r.iso_3166_1 === "US");
       const rating = usRelease?.release_dates[0]?.certification || "";
+      const country = details.production_countries?.[0]?.name || "";
 
       setFormData({
         title: details.title || "",
@@ -101,6 +103,7 @@ const AddMovie = () => {
         synopsis: details.overview || "",
         movie_cast: cast,
         director: director,
+        origin_country: country,
       });
       showSuccess("Movie details fetched from TMDb!");
     } catch (error: any) {
@@ -122,7 +125,7 @@ const AddMovie = () => {
       return;
     }
 
-    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director } = formData;
+    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director, origin_country } = formData;
 
     const parsedCommunityRating = community_rating ? parseFloat(community_rating) : null;
     const finalCommunityRating = isNaN(parsedCommunityRating as number) ? null : parsedCommunityRating;
@@ -138,6 +141,7 @@ const AddMovie = () => {
       synopsis,
       movie_cast: movie_cast.split(",").map((c) => c.trim()).filter(Boolean),
       director,
+      origin_country,
       user_id: session?.user?.id,
     };
 
@@ -261,6 +265,10 @@ const AddMovie = () => {
               <div>
                 <Label htmlFor="director">Director</Label>
                 <Input id="director" value={formData.director} onChange={handleChange} />
+              </div>
+              <div>
+                <Label htmlFor="origin_country">Origin Country</Label>
+                <Input id="origin_country" value={formData.origin_country} onChange={handleChange} />
               </div>
               <div>
                 <Label htmlFor="personal-rating">Your Personal Rating</Label>

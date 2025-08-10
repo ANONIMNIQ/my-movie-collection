@@ -78,9 +78,21 @@ const Index = () => {
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
     movies.forEach((movie) => {
-      movie.genres.forEach((genre) => genres.add(genre));
+      if (Array.isArray(movie.genres)) {
+        movie.genres.forEach((genre) => genres.add(genre));
+      }
     });
     return Array.from(genres).sort();
+  }, [movies]);
+
+  const allCountries = useMemo(() => {
+    const countries = new Set<string>();
+    movies.forEach((movie) => {
+      if (movie.origin_country) {
+        countries.add(movie.origin_country);
+      }
+    });
+    return Array.from(countries).sort();
   }, [movies]);
 
   const filteredAndSortedMovies = useMemo(() => {
@@ -92,17 +104,19 @@ const Index = () => {
       result = result.filter(
         (movie) =>
           movie.title.toLowerCase().includes(lowerCaseQuery) ||
-          movie.director.toLowerCase().includes(lowerCaseQuery) ||
-          movie.genres.some((genre) => genre.toLowerCase().includes(lowerCaseQuery)) ||
-          movie.movie_cast.some((actor) => actor.toLowerCase().includes(lowerCaseQuery)) ||
+          (movie.director && movie.director.toLowerCase().includes(lowerCaseQuery)) ||
+          (Array.isArray(movie.genres) && movie.genres.some((genre) => genre.toLowerCase().includes(lowerCaseQuery))) ||
+          (Array.isArray(movie.movie_cast) && movie.movie_cast.some((actor) => actor.toLowerCase().includes(lowerCaseQuery))) ||
           movie.year.includes(lowerCaseQuery)
       );
     }
 
-    // 2. Filter by genre or sort
+    // 2. Filter by genre, country or sort
     if (allGenres.includes(sortAndFilter)) {
       result = result.filter((movie) => movie.genres.includes(sortAndFilter));
-      // Default sort by title when filtering by genre
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (allCountries.includes(sortAndFilter)) {
+      result = result.filter((movie) => movie.origin_country === sortAndFilter);
       result.sort((a, b) => a.title.localeCompare(b.title));
     } else {
       switch (sortAndFilter) {
@@ -125,7 +139,7 @@ const Index = () => {
     }
 
     return result;
-  }, [movies, searchQuery, sortAndFilter, allGenres]);
+  }, [movies, searchQuery, sortAndFilter, allGenres, allCountries]);
 
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
@@ -371,6 +385,15 @@ const Index = () => {
                           {allGenres.map((genre) => (
                             <SelectItem key={genre} value={genre}>
                               {genre}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                        {allCountries.length > 0 && <Separator className="my-1" />}
+                        <SelectGroup>
+                          <SelectLabel>Filter by Country</SelectLabel>
+                          {allCountries.map((country) => (
+                            <SelectItem key={country} value={country}>
+                              {country}
                             </SelectItem>
                           ))}
                         </SelectGroup>

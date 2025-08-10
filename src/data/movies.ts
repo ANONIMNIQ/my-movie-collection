@@ -10,6 +10,8 @@ export interface Movie {
   synopsis: string;
   movie_cast: string[];
   director: string;
+  origin_country?: string;
+  user_id?: string | null;
 }
 
 export const movies: Movie[] = [
