@@ -46,6 +46,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const userId = session?.user?.id;
 
   const [isClicked, setIsClicked] = useState(false);
+  const [isForcedHover, setIsForcedHover] = useState(false); // New state to force hover styles
   const cardRef = useRef<HTMLDivElement>(null);
   const [initialRect, setInitialRect] = useState<DOMRect | null>(null); // Stores the calculated hovered rect
 
@@ -103,19 +104,21 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     e.preventDefault();
 
     if (cardRef.current) {
-      const unscaledRect = cardRef.current.getBoundingClientRect();
-      
-      // Calculate the dimensions and position if the card were scaled by HOVER_SCALE_FACTOR
-      const scaledWidth = unscaledRect.width * HOVER_SCALE_FACTOR;
-      const scaledHeight = unscaledRect.height * HOVER_SCALE_FACTOR;
-      const scaledLeft = unscaledRect.left - (scaledWidth - unscaledRect.width) / 2;
-      const scaledTop = unscaledRect.top - (scaledHeight - unscaledRect.height) / 2;
+      // 1. Force the hover state visually
+      setIsForcedHover(true);
 
-      setInitialRect(new DOMRect(scaledLeft, scaledTop, scaledWidth, scaledHeight));
+      // 2. Wait for the browser to render the forced hover state
+      requestAnimationFrame(() => {
+        if (cardRef.current) {
+          // 3. Get the actual bounding rect of the now-scaled card
+          const rect = cardRef.current.getBoundingClientRect();
+          setInitialRect(rect);
+          setIsClicked(true); // Trigger the animation
+        }
+      });
     }
 
     document.body.style.overflow = 'hidden';
-    setIsClicked(true);
 
     const movieId = movie.id;
 
@@ -223,7 +226,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       <div
         className={cn(
           "absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none pointer-events-none",
-          isAnimatingClone ? "opacity-0" : "opacity-0 group-hover/slide:opacity-100" // Hide overlay on animating clone
+          isAnimatingClone ? "opacity-0" : (isForcedHover || "opacity-0 group-hover/slide:opacity-100") // Hide overlay on animating clone, or force visible
         )}
       >
         {/* Top part of overlay (backdrop) */}
@@ -329,7 +332,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow",
+            "transition-all duration-300 ease-in-out transform-gpu",
+            isForcedHover ? "scale-125 shadow-glow" : "group-hover/slide:scale-125 group-hover/slide:shadow-glow", // Apply forced hover or normal hover
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
           onClick={handleCardClick}
