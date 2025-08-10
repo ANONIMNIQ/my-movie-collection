@@ -446,7 +446,7 @@ const Index = () => {
             </>
           )}
 
-          <motion.div variants={contentVariants} className="px-4 overflow-x-visible">
+          <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-white md:text-black">
             {!loadingMovies && (
               <>
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
@@ -457,10 +457,10 @@ const Index = () => {
                       placeholder="Search movies..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full sm:w-auto"
+                      className="w-full sm:w-auto md:bg-white md:text-black md:border-gray-300"
                     />
                     <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                      <SelectTrigger className="w-[220px]">
+                      <SelectTrigger className="w-[220px] md:bg-white md:text-black md:border-gray-300">
                         <SelectValue placeholder="Sort & Filter" />
                       </SelectTrigger>
                       <SelectContent>
