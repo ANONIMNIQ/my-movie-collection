@@ -183,11 +183,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
       document.body.style.overflow = '';
-      // No need to reset isAnimating here, as the component will unmount/re-render
     }, 800); // Match animation duration
   };
 
-  const renderCardContent = (isAnimatingClone = false) => (
+  // Added forceOverlayVisible prop
+  const renderCardContent = (isAnimatingClone = false, forceOverlayVisible = false) => (
     <>
       {isAdmin && (
         <div className={`absolute top-2 left-2 z-40 ${isAnimatingClone ? 'opacity-0' : ''}`}>
@@ -217,7 +217,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       <div
         className={cn(
           "absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none pointer-events-none",
-          isAnimatingClone ? "opacity-0" : "opacity-0 group-hover/slide:opacity-100" // Hide overlay on animating clone
+          forceOverlayVisible ? "opacity-100" : "opacity-0 group-hover/slide:opacity-100" // Use forceOverlayVisible here
         )}
       >
         {/* Top part of overlay (backdrop) */}
@@ -328,7 +328,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           )}
           onClick={handleCardClick}
         >
-          {renderCardContent(false)}
+          {renderCardContent(false, false)} {/* Original card: no forceOverlayVisible */}
         </Card>
       </div>
 
@@ -379,7 +379,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
                 }}
                 className="w-full h-full"
               >
-                {renderCardContent(true)}
+                {renderCardContent(true, true)} {/* Animating clone: forceOverlayVisible true */}
               </motion.div>
             </motion.div>
           )}
