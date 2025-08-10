@@ -85,11 +85,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    // Only navigate if the click didn't originate from a child interactive element
-    if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG' || (e.target as HTMLElement).tagName === 'H3' || (e.target as HTMLElement).tagName === 'P' || (e.target as HTMLElement).tagName === 'SPAN') {
-      navigate(`/movie/${movie.id}`);
-    }
+  const handleCardClick = () => {
+    // All interactive child elements (buttons, checkbox) use `e.stopPropagation()`
+    // to prevent this handler from being called. Therefore, any click that reaches this
+    // point should trigger navigation to the movie detail page.
+    navigate(`/movie/${movie.id}`);
   };
 
   return (
