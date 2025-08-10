@@ -5,9 +5,11 @@ const MovieDetailSkeleton: React.FC = () => {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       {/* Backdrop Skeleton */}
-      <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900 opacity-50 md:opacity-70"></div> {/* Re-added absolute positioning and fixed height */}
+      <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900 opacity-50 md:opacity-70 overflow-hidden"> {/* Added overflow-hidden */}
+        <Skeleton className="w-full h-full" /> {/* Skeleton for the covering element */}
+      </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12"> {/* Re-added md:pt-[60vh] */}
+      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
         {/* Back button skeleton */}
         <Skeleton className="h-6 w-32 mb-8" />
 

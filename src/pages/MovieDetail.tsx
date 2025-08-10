@@ -145,9 +145,13 @@ const MovieDetail = () => {
         <YouTubePlayerBackground videoId={trailerKey} delay={3000} />
       ) : backdropUrl ? (
         <div
-          className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center" // Re-added absolute positioning and fixed height
-          style={{ backgroundImage: `url(${backdropUrl})` }}
+          className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden" // Added overflow-hidden
         >
+          <img
+            src={backdropUrl}
+            alt={`${movie.title} backdrop`}
+            className="w-full h-full object-cover" // Ensures image covers the area
+          />
           {/* Dark overlay to make text readable */}
           <div className="absolute inset-0 bg-black opacity-70"></div>
           {/* Gradient overlay for bottom fade */}
@@ -155,12 +159,12 @@ const MovieDetail = () => {
         </div>
       ) : (
         // Fallback if no trailer and no backdrop image
-        <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900"> {/* Re-added absolute positioning and fixed height */}
+        <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900">
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
       )}
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12"> {/* Re-added md:pt-[60vh] */}
+      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"

@@ -137,13 +137,16 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
 
   return (
     <div
-      className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden" // Re-added absolute positioning and fixed height
+      className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 flex items-center justify-center">
         {/* This div will be replaced by the iframe */}
-        <div ref={iframeContainerRef} className="w-full h-full"></div>
+        <div
+          ref={iframeContainerRef}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full" // Ensures video covers the area
+        ></div>
       </div>
 
       {/* Dark overlay */}
