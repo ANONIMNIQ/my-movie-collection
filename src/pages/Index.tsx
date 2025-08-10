@@ -35,6 +35,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import { MobileMovieCard } from "@/components/MobileMovieCard";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
@@ -50,6 +53,7 @@ const Index = () => {
   const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -102,7 +106,6 @@ const Index = () => {
   const filteredAndSortedMovies = useMemo(() => {
     let result = [...movies];
 
-    // 1. Filter by search query
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
       result = result.filter(
@@ -115,7 +118,6 @@ const Index = () => {
       );
     }
 
-    // 2. Filter by genre, country or sort
     if (allGenres.includes(sortAndFilter)) {
       result = result.filter((movie) => movie.genres.includes(sortAndFilter));
       result.sort((a, b) => a.title.localeCompare(b.title));
@@ -182,21 +184,12 @@ const Index = () => {
   };
 
   const handleLogout = async () => {
-    console.log("Attempting to log out...");
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Logout error:", error);
-        showError("Logout failed: " + error.message);
-      } else {
-        console.log("Logout successful.");
-        showSuccess("You have been logged out.");
-        // Invalidate all queries to clear cached data for the logged-out user
-        queryClient.invalidateQueries();
-      }
-    } catch (err: any) {
-      console.error("Unexpected error during logout:", err);
-      showError("An unexpected error occurred during logout: " + err.message);
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      showError("Logout failed: " + error.message);
+    } else {
+      showSuccess("You have been logged out.");
+      queryClient.invalidateQueries();
     }
   };
 
@@ -241,7 +234,6 @@ const Index = () => {
         .in("id", batch);
 
       if (deleteError) {
-        console.error("Error deleting batch:", deleteError);
         errors.push(deleteError.message);
         failedDeletions += batch.length;
       } else {
@@ -262,20 +254,20 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
-      <header className="w-full text-center bg-white py-8 shadow-md z-50">
+    <div className={cn("min-h-screen w-full overflow-x-hidden", isMobile ? "bg-white text-black" : "bg-background text-foreground")}>
+      <header className={cn("w-full text-center py-8 shadow-md z-50", isMobile ? "bg-background" : "bg-white")}>
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-headerTitle">
+          <h1 className={cn("text-4xl md:text-5xl font-bold tracking-tight", isMobile ? "text-foreground" : "text-headerTitle")}>
             Georgi's Movie Collection
           </h1>
-          <p className="text-headerDescription mt-2 text-lg">
+          <p className={cn("mt-2 text-lg", isMobile ? "text-muted-foreground" : "text-headerDescription")}>
             A minimalist collection of cinematic gems.
           </p>
           <div className="mt-6">
             <MovieCounter 
               count={filteredAndSortedMovies.length} 
-              numberColor="#0F0F0F"
-              labelColor="text-headerDescription"
+              numberColor={isMobile ? "white" : "#0F0F0F"}
+              labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
             />
           </div>
           <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -306,7 +298,8 @@ const Index = () => {
       </header>
 
       <main className="pt-0">
-        <div className="pt-8">
+        {/* Desktop View */}
+        <div className="hidden md:block pt-8">
           {loadingMovies ? (
             <div className="container mx-auto px-4 mb-12">
               <h2 className="text-3xl font-bold mb-4">New Movies</h2>
@@ -317,45 +310,46 @@ const Index = () => {
               </div>
             </div>
           ) : (
-            <CustomCarousel
-              title="New Movies"
-              movies={categorizedMovies.newMovies}
-              selectedMovieIds={selectedMovieIds}
-              onSelectMovie={handleSelectMovie}
-            />
-          )}
-
-          {!loadingMovies && categorizedMovies.dramaMovies.length > 0 && (
-            <CustomCarousel
-              title="Drama"
-              movies={categorizedMovies.dramaMovies}
-              selectedMovieIds={selectedMovieIds}
-              onSelectMovie={handleSelectMovie}
-            />
-          )}
-          {!loadingMovies && categorizedMovies.thrillerMovies.length > 0 && (
-            <CustomCarousel
-              title="Thriller"
-              movies={categorizedMovies.thrillerMovies}
-              selectedMovieIds={selectedMovieIds}
-              onSelectMovie={handleSelectMovie}
-            />
-          )}
-          {!loadingMovies && categorizedMovies.scifiMovies.length > 0 && (
-            <CustomCarousel
-              title="Sci-Fi"
-              movies={categorizedMovies.scifiMovies}
-              selectedMovieIds={selectedMovieIds}
-              onSelectMovie={handleSelectMovie}
-            />
-          )}
-          {!loadingMovies && categorizedMovies.horrorMovies.length > 0 && (
-            <CustomCarousel
-              title="Horror"
-              movies={categorizedMovies.horrorMovies}
-              selectedMovieIds={selectedMovieIds}
-              onSelectMovie={handleSelectMovie}
-            />
+            <>
+              <CustomCarousel
+                title="New Movies"
+                movies={categorizedMovies.newMovies}
+                selectedMovieIds={selectedMovieIds}
+                onSelectMovie={handleSelectMovie}
+              />
+              {categorizedMovies.dramaMovies.length > 0 && (
+                <CustomCarousel
+                  title="Drama"
+                  movies={categorizedMovies.dramaMovies}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={handleSelectMovie}
+                />
+              )}
+              {categorizedMovies.thrillerMovies.length > 0 && (
+                <CustomCarousel
+                  title="Thriller"
+                  movies={categorizedMovies.thrillerMovies}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={handleSelectMovie}
+                />
+              )}
+              {categorizedMovies.scifiMovies.length > 0 && (
+                <CustomCarousel
+                  title="Sci-Fi"
+                  movies={categorizedMovies.scifiMovies}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={handleSelectMovie}
+                />
+              )}
+              {categorizedMovies.horrorMovies.length > 0 && (
+                <CustomCarousel
+                  title="Horror"
+                  movies={categorizedMovies.horrorMovies}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={handleSelectMovie}
+                />
+              )}
+            </>
           )}
 
           <div className="px-4 overflow-x-visible">
@@ -370,40 +364,34 @@ const Index = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full sm:w-auto"
                   />
-                  <div className="hidden md:block">
-                    <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                      <SelectTrigger className="w-[220px]">
-                        <SelectValue placeholder="Sort & Filter" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Sort by</SelectLabel>
-                          <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-                          <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-                          <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
-                          <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
-                        </SelectGroup>
-                        {allGenres.length > 0 && <Separator className="my-1" />}
-                        <SelectGroup>
-                          <SelectLabel>Filter by Genre</SelectLabel>
-                          {allGenres.map((genre) => (
-                            <SelectItem key={genre} value={genre}>
-                              {genre}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                        {allCountries.length > 0 && <Separator className="my-1" />}
-                        <SelectGroup>
-                          <SelectLabel>Filter by Country</SelectLabel>
-                          {allCountries.map((country) => (
-                            <SelectItem key={country} value={country}>
-                              {country}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
+                    <SelectTrigger className="w-[220px]">
+                      <SelectValue placeholder="Sort & Filter" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Sort by</SelectLabel>
+                        <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                        <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                        <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                        <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                      </SelectGroup>
+                      {allGenres.length > 0 && <Separator className="my-1" />}
+                      <SelectGroup>
+                        <SelectLabel>Filter by Genre</SelectLabel>
+                        {allGenres.map((genre) => (
+                          <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                      {allCountries.length > 0 && <Separator className="my-1" />}
+                      <SelectGroup>
+                        <SelectLabel>Filter by Country</SelectLabel>
+                        {allCountries.map((country) => (
+                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             )}
@@ -417,10 +405,7 @@ const Index = () => {
                     onCheckedChange={(checked) => handleSelectAll(!!checked)}
                     disabled={filteredAndSortedMovies.length === 0 || isDeleting}
                   />
-                  <label
-                    htmlFor="select-all"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
+                  <label htmlFor="select-all" className="text-sm font-medium">
                     Select All ({selectedMovieIds.size} selected)
                   </label>
                 </div>
@@ -436,8 +421,7 @@ const Index = () => {
                         <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action cannot be undone. This will permanently delete{" "}
-                          <span className="font-bold">{selectedMovieIds.size}</span> selected movies
-                          from your collection.
+                          <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -471,15 +455,93 @@ const Index = () => {
                 onSelectMovie={handleSelectMovie}
               />
             )}
-            {visibleCount < filteredAndSortedMovies.length && (
-              <div className="text-center mt-12">
-                <Button onClick={handleLoadMore} size="lg">
-                  Load More
-                </Button>
+          </div>
+        </div>
+
+        {/* Mobile View */}
+        <div className="md:hidden pt-8 px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <h2 className="text-3xl font-bold">All Movies</h2>
+            <Input
+              type="text"
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-auto bg-gray-100 border-gray-300"
+            />
+          </div>
+          
+          {isAdmin && !loadingMovies && (
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="select-all-mobile"
+                    checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                    disabled={filteredAndSortedMovies.length === 0 || isDeleting}
+                  />
+                  <label htmlFor="select-all-mobile" className="text-sm font-medium">
+                    Select All ({selectedMovieIds.size} selected)
+                  </label>
+                </div>
+                {selectedMovieIds.size > 0 && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="gap-2" disabled={isDeleting}>
+                        <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete{" "}
+                          <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
+                          {isDeleting ? "Deleting..." : "Delete All"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
               </div>
+            )}
+
+          <div className="flex flex-col gap-4">
+            {loadingMovies ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="w-full h-80 rounded-lg" />
+              ))
+            ) : error ? (
+              <div className="text-center text-destructive">{error}</div>
+            ) : filteredAndSortedMovies.length === 0 ? (
+              <div className="text-center text-gray-500 text-lg py-16">
+                No movies found matching your search.
+              </div>
+            ) : (
+              moviesToShow.map(movie => (
+                <MobileMovieCard 
+                  key={movie.id}
+                  movie={movie}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={handleSelectMovie}
+                />
+              ))
             )}
           </div>
         </div>
+
+        {visibleCount < filteredAndSortedMovies.length && (
+          <div className="text-center mt-12">
+            <Button onClick={handleLoadMore} size="lg">
+              Load More
+            </Button>
+          </div>
+        )}
       </main>
       <footer className="py-8">
         <MadeWithDyad />
