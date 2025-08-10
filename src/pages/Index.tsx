@@ -446,7 +446,7 @@ const Index = () => {
             </>
           )}
 
-          <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-100 md:text-black">
+          <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
             {!loadingMovies && (
               <>
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8"> {/* Added pt-8 for spacing */}
