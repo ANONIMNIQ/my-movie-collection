@@ -145,7 +145,7 @@ const MovieDetail = () => {
         <YouTubePlayerBackground videoId={trailerKey} delay={3000} />
       ) : backdropUrl ? (
         <div
-          className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center"
+          className="w-full aspect-video bg-cover bg-center" // Removed absolute, inset-x-0, top-0, h-[60vh]
           style={{ backgroundImage: `url(${backdropUrl})` }}
         >
           {/* Dark overlay to make text readable */}
@@ -155,12 +155,12 @@ const MovieDetail = () => {
         </div>
       ) : (
         // Fallback if no trailer and no backdrop image
-        <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900">
+        <div className="w-full aspect-video bg-gray-900"> {/* Removed absolute, inset-x-0, top-0, h-[60vh] */}
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
       )}
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[40vh] md:pb-12">
+      <div className="relative z-10 container mx-auto px-4 py-8 md:pb-12"> {/* Removed md:pt-[40vh] */}
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
@@ -185,7 +185,6 @@ const MovieDetail = () => {
             <span>{movie.year}</span>
           </div>
 
-          {/* Original Watch Trailer Button (now for full screen if needed, or can be removed) */}
           {trailerKey && (
             <a href={`https://www.youtube.com/watch?v=${trailerKey}`} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="mb-8">
