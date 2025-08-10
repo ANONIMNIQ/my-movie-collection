@@ -1,9 +1,9 @@
 import React from "react";
-import { useNavigate } => "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Corrected '=>' to 'from'
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } from "@/components/ui/skeleton"; // Corrected '=>' to 'from'
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
