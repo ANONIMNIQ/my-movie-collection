@@ -5,7 +5,7 @@ import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Star, Youtube } from "lucide-react";
+import { Edit, Trash2, Star, Youtube, Info } from "lucide-react"; // Import Info icon
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
-import { cn } from "@/lib/utils"; // Import cn utility
+import { cn } from "@/lib/utils";
 
 interface MovieCardProps {
   movie: Movie;
@@ -93,7 +93,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <div className="relative h-full group-hover/slide:z-30">
-      <Card
+      <Card 
         className={cn(
           "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
           "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow"
@@ -144,6 +144,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
           </div>
 
           <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
+            {/* Info icon for navigation */}
+            <div className="absolute top-2 right-2 pointer-events-auto" onClick={(e) => { e.stopPropagation(); navigate(`/movie/${movie.id}`); }}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-white/80 hover:text-white">
+                <Info className="h-4 w-4" />
+              </Button>
+            </div>
             <div>
               <h3 className="text-lg font-bold line-clamp-1">
                 {movie.title}
