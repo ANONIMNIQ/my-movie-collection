@@ -120,6 +120,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           ) : (
             <motion.img
               layoutId={`movie-poster-${movie.id}`}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
               src={posterUrl}
               alt={movie.title}
               className="w-full h-full object-cover"

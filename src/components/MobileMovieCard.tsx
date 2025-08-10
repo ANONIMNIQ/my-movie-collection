@@ -122,6 +122,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
 
       <motion.div
         layoutId={`movie-poster-${movie.id}`}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
         className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
         style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >

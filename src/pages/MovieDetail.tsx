@@ -22,11 +22,6 @@ const MovieDetail = () => {
   const userId = session?.user?.id;
   const [showTrailer, setShowTrailer] = useState(false);
 
-  // Scroll to top on component mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   // Fetch main movie data using useQuery
   const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie, error: movieError } = useQuery<Movie, Error>({
     queryKey: ["movie", id],
@@ -163,6 +158,7 @@ const MovieDetail = () => {
       ) : backdropUrl ? (
         <motion.div
           layoutId={`movie-poster-${id}`}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
           className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"
         >
           <img

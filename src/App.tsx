@@ -14,6 +14,7 @@ import ImportRatings from "./pages/ImportRatings";
 import { SessionContextProvider } from "./contexts/SessionContext";
 import React from "react";
 import { AnimatePresence } from "framer-motion";
+import ScrollManager from "./components/ScrollManager";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollManager />
           <SessionContextProvider>
             <AppRoutes />
           </SessionContextProvider>
