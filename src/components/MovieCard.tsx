@@ -9,7 +9,7 @@ import { Edit, Trash2, Star, Youtube, Info } from "lucide-react"; // Import Info
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
-import { useQueryClient, useQuery } => "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query"; // Corrected '=>' to 'from'
 import {
   AlertDialog,
   AlertDialogAction,
