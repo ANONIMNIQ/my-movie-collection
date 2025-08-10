@@ -1,10 +1,10 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Star, Info } from "lucide-react";
+import { Edit, Trash2, Star, Info, Loader2 } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
+import { fetchFromTmdb } from "@/lib/tmdb";
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -33,9 +34,11 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
 export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MobileMovieCardProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
-  const queryClient = useQueryClient();
+  const userId = session?.user?.id;
+  const [isPrefetching, setIsPrefetching] = useState(false);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -71,12 +74,69 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
   const handleInteraction = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
   };
 
+  const handleCardClick = async (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, a, input[type="checkbox"]')) {
+      return;
+    }
+    e.preventDefault();
+    setIsPrefetching(true);
+
+    try {
+      const prefetchPromises = [
+        queryClient.prefetchQuery({
+          queryKey: ["movie", movie.id],
+          queryFn: async () => {
+            const { data, error } = await supabase.from("movies").select("*").eq("id", movie.id).single();
+            if (error) throw new Error("Failed to prefetch movie details.");
+            return data;
+          },
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ["tmdb", movie.title, movie.year],
+          queryFn: async () => {
+            let searchResults = await fetchFromTmdb("/search/movie", { query: movie.title, primary_release_year: movie.year });
+            if (!searchResults || searchResults.results.length === 0) {
+              searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
+            }
+            if (!searchResults || searchResults.results.length === 0) return null;
+            const movieSummary = searchResults.results[0];
+            return await fetchFromTmdb(`/movie/${movieSummary.id}`, { append_to_response: "credits,release_dates,images,videos" });
+          },
+        }),
+        queryClient.prefetchQuery({
+          queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
+          queryFn: async () => {
+            const { data, error } = await supabase.from('user_ratings').select('rating').eq('user_id', ADMIN_USER_ID).eq('movie_id', movie.id).single();
+            return (error || !data) ? null : data.rating;
+          },
+        }),
+      ];
+
+      if (userId) {
+        prefetchPromises.push(
+          queryClient.prefetchQuery({
+            queryKey: ['current_user_rating', movie.id, userId],
+            queryFn: async () => {
+              const { data, error } = await supabase.from('user_ratings').select('rating').eq('user_id', userId).eq('movie_id', movie.id).single();
+              return (error || !data) ? null : data.rating;
+            },
+          })
+        );
+      }
+
+      await Promise.all(prefetchPromises);
+    } catch (error) {
+      console.error("Prefetching failed, navigating anyway:", error);
+    } finally {
+      navigate(`/movie/${movie.id}`);
+    }
+  };
+
   return (
-    <Link to={`/movie/${movie.id}`} className="block">
+    <div onClick={handleCardClick} className="block">
       <motion.div
         layout
         className="relative w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer shadow-lg"
@@ -160,7 +220,12 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
             </div>
           </div>
         </div>
+        {isPrefetching && (
+          <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 rounded-lg">
+            <Loader2 className="h-10 w-10 text-white animate-spin" />
+          </div>
+        )}
       </motion.div>
-    </Link>
+    </div>
   );
 };
