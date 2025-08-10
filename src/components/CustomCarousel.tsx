@@ -73,7 +73,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
             <ChevronLeft className="h-8 w-8" />
           </Button>
           <div className={cn("embla px-12", isOverflowVisible && "!overflow-visible")} ref={emblaRef}>
-            <div className="embla__container flex gap-4 py-12">
+            <div className="embla__container flex gap-4 py-6">
               {movies.map((movie) => (
                 <div key={movie.id} className="embla__slide group/slide w-[45vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]" onMouseEnter={handleSlideMouseEnter} onMouseLeave={handleSlideMouseLeave}>
                   <LazyMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={onSelectMovie} showSynopsis={true} /> {/* Explicitly show synopsis for carousel cards */}

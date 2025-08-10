@@ -97,7 +97,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       <Card 
         className={cn(
           "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-          "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow"
+          "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-110 group-hover/slide:shadow-glow"
         )}
         onClick={handleCardClick}
       >
