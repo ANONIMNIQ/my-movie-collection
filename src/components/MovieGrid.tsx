@@ -21,13 +21,14 @@ export const MovieGrid = ({ movies, selectedMovieIds, onSelectMovie }: MovieGrid
             // On sm and larger screens, it will revert to grid's default sizing.
             className={cn(
               "relative overflow-visible group/slide",
-              "max-w-[280px] mx-auto sm:max-w-none sm:mx-0" // Increased max-w again
+              "max-w-[280px] mx-auto sm:max-w-none sm:mx-0"
             )}
           >
             <LazyMovieCard
               movie={movie}
               selectedMovieIds={selectedMovieIds}
               onSelectMovie={onSelectMovie}
+              showSynopsis={false} // Explicitly hide synopsis for grid cards
             />
           </div>
         );

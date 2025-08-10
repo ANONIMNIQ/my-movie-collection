@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } from "@/components/ui/skeleton"; // Corrected from '=>' to 'from'
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
@@ -29,11 +29,12 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
+  showSynopsis?: boolean; // New prop
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
+export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis = true }: MovieCardProps) => {
   const navigate = useNavigate();
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
@@ -155,10 +156,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             <h3 className="text-lg font-bold line-clamp-1">
               {movie.title}
             </h3>
-            {/* Synopsis: hidden on xs/sm, 1 line on md, 2 lines on lg+ */}
-            <p className="hidden md:line-clamp-1 lg:line-clamp-2 text-xs text-gray-300 mb-1">
-              {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-            </p>
+            {showSynopsis && ( // Conditionally render synopsis
+              <p className="hidden md:line-clamp-1 lg:line-clamp-2 text-xs text-gray-300 mb-1">
+                {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+              </p>
+            )}
             <div className="text-xs text-gray-400">
               <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
               {/* My Rating: hidden on xs, visible on sm+ */}

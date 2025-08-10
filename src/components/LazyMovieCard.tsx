@@ -7,6 +7,7 @@ interface LazyMovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
+  showSynopsis?: boolean; // Added showSynopsis prop
 }
 
 export const LazyMovieCard: React.FC<LazyMovieCardProps> = (props) => {
