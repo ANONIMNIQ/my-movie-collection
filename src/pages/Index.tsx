@@ -281,8 +281,8 @@ const Index = () => {
           "w-full text-center py-8 shadow-md z-50",
           isMobile ? "bg-background" : "bg-white"
         )}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
+        initial={{ y: "-100%", opacity: 0 }} // Start completely off-screen and invisible
+        animate={{ y: 0, opacity: 1 }} // Animate to visible and in place
         transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
       >
         <div className="container mx-auto px-4">
