@@ -270,16 +270,25 @@ const Index = () => {
   };
 
   return (
-    <div
-      className={cn(
-        "min-h-screen w-full overflow-x-hidden",
-        isMobile && pageLoaded ? "bg-white text-black" : "bg-background text-foreground"
-      )}
+    <motion.div
+      className="min-h-screen w-full overflow-x-hidden"
+      initial={{
+        backgroundColor: "hsl(var(--background))", // Default dark background
+        color: "hsl(var(--foreground))", // Default light text
+      }}
+      animate={{
+        backgroundColor: isMobile && pageLoaded ? "rgb(255,255,255)" : "hsl(var(--background))",
+        color: isMobile && pageLoaded ? "rgb(0,0,0)" : "hsl(var(--foreground))",
+      }}
+      transition={{
+        backgroundColor: { duration: 0.8, delay: 0.5, ease: "easeOut" },
+        color: { duration: 0.8, delay: 0.5, ease: "easeOut" },
+      }}
     >
       <motion.header
         className={cn(
           "w-full text-center py-8 shadow-md z-50",
-          isMobile ? "bg-background" : "bg-white"
+          !isMobile ? "bg-white" : (pageLoaded ? "bg-white" : "bg-background")
         )}
         initial={{ y: "-100%", opacity: 0 }} // Start completely off-screen and invisible
         animate={{ y: 0, opacity: 1 }} // Animate to visible and in place
@@ -289,7 +298,7 @@ const Index = () => {
           <motion.h1
             className={cn(
               "text-4xl md:text-5xl font-bold tracking-tight",
-              isMobile ? "text-foreground" : "text-headerTitle"
+              isMobile && pageLoaded ? "text-headerTitle" : "text-foreground"
             )}
             initial={{ opacity: 0 }}
             animate={{ opacity: pageLoaded ? 1 : 0 }}
@@ -300,7 +309,7 @@ const Index = () => {
           <motion.p
             className={cn(
               "mt-2 text-lg",
-              isMobile ? "text-muted-foreground" : "text-headerDescription"
+              isMobile && pageLoaded ? "text-headerDescription" : "text-muted-foreground"
             )}
             initial={{ opacity: 0 }}
             animate={{ opacity: pageLoaded ? 1 : 0 }}
@@ -317,8 +326,8 @@ const Index = () => {
             <MovieCounter 
               key={isMobile ? 'mobile' : 'desktop'}
               count={filteredAndSortedMovies.length} 
-              numberColor={isMobile ? "white" : "#0F0F0F"}
-              labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
+              numberColor={!isMobile ? "#0F0F0F" : (pageLoaded ? "#0F0F0F" : "white")}
+              labelColor={!isMobile ? "text-headerDescription" : (pageLoaded ? "text-headerDescription" : "text-muted-foreground")}
             />
           </motion.div>
           <motion.div
@@ -634,7 +643,7 @@ const Index = () => {
       >
         <MadeWithDyad />
       </motion.footer>
-    </div>
+    </motion.div>
   );
 };
 
