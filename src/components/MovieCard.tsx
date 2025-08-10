@@ -147,7 +147,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             {/* Info icon positioned above the title */}
             <div className="pointer-events-auto mb-1">
               <Info
-                size={18}
+                size={16} {/* Changed size from 18 to 16 */}
                 className="text-white cursor-pointer hover:text-gray-300 transition-colors"
                 onClick={(e) => { e.stopPropagation(); navigate(`/movie/${movie.id}`); }}
               />
