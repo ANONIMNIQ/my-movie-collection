@@ -73,7 +73,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
             <ChevronLeft className="h-8 w-8" />
           </Button>
           <div className={cn("embla", isOverflowVisible && "!overflow-visible")} ref={emblaRef}>
-            <div className="embla__container flex gap-4 py-12 px-4"> {/* Added px-4 here */}
+            <div className="embla__container flex gap-4 py-12 px-24"> {/* Increased px-4 to px-24 */}
               {movies.map((movie) => (
                 <div key={movie.id} className="embla__slide group/slide w-[40vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]" onMouseEnter={handleSlideMouseEnter} onMouseLeave={handleSlideMouseLeave}>
                   <LazyMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={onSelectMovie} />
