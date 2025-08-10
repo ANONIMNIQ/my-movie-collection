@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -22,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { motion } from "framer-motion";
+import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -33,6 +33,7 @@ interface MobileMovieCardProps {
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
 export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MobileMovieCardProps) => {
+  const navigate = useNavigate();
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
@@ -66,105 +67,99 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     }
   };
 
+  const trailer = tmdbMovie?.videos?.results?.find(
+    (video: any) => video.type === "Trailer" && video.site === "YouTube"
+  );
+  const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
   const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.backdrop_path}` : null;
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    // Prevent navigation if an interactive element inside the card is clicked
-    if (target.closest('button, [role="checkbox"]')) {
-      e.preventDefault();
+    if (target.closest('button, a, [role="checkbox"]')) {
+      return;
     }
+    navigate(`/movie/${movie.id}`);
   };
 
   return (
-    <Link to={`/movie/${movie.id}`} onClick={handleLinkClick} className="block">
-      <motion.div layoutId={`movie-card-${movie.id}`}>
-        <Card className="w-full bg-black text-white overflow-hidden shadow-2xl">
-          {isAdmin && (
-            <div className="absolute top-2 left-2 z-40">
-              <Checkbox
-                checked={selectedMovieIds.has(movie.id)}
-                onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
-                className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-white"
-              />
-            </div>
-          )}
-          {isAdmin && (
-            <div className="absolute top-2 right-2 flex gap-2 z-40">
-              <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => {
-                const navigate = useNavigate();
-                navigate(`/edit-movie/${movie.id}`);
-              }}>
-                <Edit className="h-4 w-4" />
+    <Card onClick={handleCardClick} className="w-full bg-black text-white rounded-lg overflow-hidden shadow-2xl cursor-pointer">
+      {isAdmin && (
+        <div className="absolute top-2 left-2 z-40">
+          <Checkbox
+            checked={selectedMovieIds.has(movie.id)}
+            onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
+            className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-white"
+          />
+        </div>
+      )}
+      {isAdmin && (
+        <div className="absolute top-2 right-2 flex gap-2 z-40">
+          <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
+            <Edit className="h-4 w-4" />
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="icon" className="h-8 w-8">
+                <Trash2 className="h-4 w-4" />
               </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon" className="h-8 w-8">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the movie "{movie.title}" from your collection.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          )}
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the movie "{movie.title}" from your collection.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
 
-          <div
-            className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
-            style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
-          >
-            {isLoading && <Skeleton className="w-full h-full" />}
-            {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-            {logoUrl && !isLoading && (
-              <img
-                src={logoUrl}
-                alt={`${movie.title} logo`}
-                className="max-h-24 max-w-full object-contain z-10"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            )}
-            {!backdropUrl && !logoUrl && !isLoading && (
-              <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
-            )}
-          </div>
+      <div
+        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
+        style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
+      >
+        {isLoading && <Skeleton className="w-full h-full" />}
+        {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+        {logoUrl && !isLoading && (
+          <img
+            src={logoUrl}
+            alt={`${movie.title} logo`}
+            className="max-h-24 max-w-full object-contain z-10"
+            onError={(e) => (e.currentTarget.style.display = 'none')}
+          />
+        )}
+        {!backdropUrl && !logoUrl && !isLoading && (
+          <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
+        )}
+      </div>
 
-          <div className="p-4">
-            <div className="flex justify-between items-start">
-                <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>
-                <Button variant="ghost" size="icon" className="h-auto w-auto p-0 -mt-1" onClick={() => {
-                  const navigate = useNavigate();
-                  navigate(`/movie/${movie.id}`);
-                }}>
-                    <Info size={20} className="text-white hover:text-gray-300" />
-                </Button>
-            </div>
-            <p className="text-sm text-gray-300 line-clamp-3 mb-3">
-              {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-            </p>
-            <div className="flex justify-between items-center text-sm text-gray-400">
-              <div>
-                <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-                <div className="flex items-center mt-1">
-                  <Star className="text-yellow-400 h-4 w-4 mr-1" />
-                  <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
-                </div>
-              </div>
+      <div className="p-4">
+        <div className="flex justify-between items-start">
+            <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>
+            <Button variant="ghost" size="icon" className="h-auto w-auto p-0 -mt-1" onClick={() => navigate(`/movie/${movie.id}`)}>
+                <Info size={20} className="text-white hover:text-gray-300" />
+            </Button>
+        </div>
+        <p className="text-sm text-gray-300 line-clamp-3 mb-3">
+          {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+        </p>
+        <div className="flex justify-between items-center text-sm text-gray-400">
+          <div>
+            <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+            <div className="flex items-center mt-1">
+              <Star className="text-yellow-400 h-4 w-4 mr-1" />
+              <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
             </div>
           </div>
-        </Card>
-      </motion.div>
-    </Link>
+        </div>
+      </div>
+    </Card>
   );
 };

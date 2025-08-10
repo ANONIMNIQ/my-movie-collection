@@ -12,7 +12,6 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
-import { motion } from "framer-motion";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -156,14 +155,7 @@ const MovieDetail = () => {
     : (tmdbMovie?.production_countries?.map((c: any) => c.name).join(', ') || "");
 
   return (
-    <motion.div
-      layoutId={`movie-card-${id}`}
-      className="relative min-h-screen bg-background text-foreground"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-    >
+    <div className="relative min-h-screen bg-background text-foreground">
       {/* Backdrop Image or Video with Overlay */}
       {showTrailer && trailerKey ? (
         <YouTubePlayerBackground videoId={trailerKey} />
@@ -263,7 +255,7 @@ const MovieDetail = () => {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
