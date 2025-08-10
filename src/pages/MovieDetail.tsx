@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom"; // Corrected import path
+import { useParams, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft, Youtube, Play } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -123,7 +123,7 @@ const MovieDetail = () => {
   }
 
   // Prioritize Supabase data, fallback to TMDb if Supabase data is empty/placeholder
-  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null;
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb/t/p/original${tmdbMovie.backdrop_path}` : null;
   const synopsis = movie.synopsis || tmdbMovie?.overview || "";
   
   // Safely access genres and movie_cast, providing empty array if null
@@ -151,7 +151,7 @@ const MovieDetail = () => {
       {/* Backdrop Image with Overlay */}
       {backdropUrl && (
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center" // Changed to top-only with fixed height
           style={{ backgroundImage: `url(${backdropUrl})` }}
         >
           {/* Dark overlay to make text readable */}
@@ -161,7 +161,7 @@ const MovieDetail = () => {
         </div>
       )}
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:py-12">
+      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[40vh] md:pb-12"> {/* Adjusted padding-top */}
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
