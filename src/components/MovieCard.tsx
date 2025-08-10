@@ -88,12 +88,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
         <Link to={`/movie/${movie.id}`} className="block h-full">
           <Card className="h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden">
             {isAdmin && (
-              <div className="absolute top-2 left-2 z-40">
+              <div className="absolute top-2 left-2 z-40" onClick={(e) => e.stopPropagation()}>
                 <Checkbox
                   checked={selectedMovieIds.has(movie.id)}
                   onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
                   className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
             )}
@@ -163,34 +162,35 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             {isAdmin && (
               <div className="absolute top-2 right-2 flex gap-2 z-40">
                 <Link to={`/edit-movie/${movie.id}`}
-                      onClick={(e) => e.stopPropagation()}> {/* Added stopPropagation */}
+                      onClick={(e) => e.stopPropagation()}>
                   <Button variant="secondary" size="icon" className="h-8 w-8">
                     <Edit className="h-4 w-4" />
                   </Button>
                 </Link>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="icon" className="h-8 w-8"
-                            onClick={(e) => e.stopPropagation()}> {/* Added stopPropagation */}
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the
-                        movie "{movie.title}" from your collection.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDelete}>
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <div onClick={(e) => e.stopPropagation()}> {/* New wrapper div for stopPropagation */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="icon" className="h-8 w-8">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete the
+                          movie "{movie.title}" from your collection.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete}>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
             )}
           </Card>
