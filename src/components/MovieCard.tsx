@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } => "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Corrected from '=>' to 'from'
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
