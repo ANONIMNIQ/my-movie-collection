@@ -151,6 +151,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   return (
     <div onClick={handleCardClick} className="relative h-full group-hover/slide:z-30 block cursor-pointer">
       <motion.div
+        layoutId={`movie-card-container-${movie.id}`}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
         className={cn(
           "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
           "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow"
@@ -166,9 +168,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           </div>
         )}
 
-        <motion.div
-          layoutId={`movie-poster-${movie.id}`}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+        <div
           className="relative aspect-[2/3] w-full bg-muted"
         >
           <img
@@ -179,7 +179,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
             loading="lazy"
           />
           {isLoading && <Skeleton className="absolute inset-0 w-full h-full" />}
-        </motion.div>
+        </div>
 
         <div
           className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none"

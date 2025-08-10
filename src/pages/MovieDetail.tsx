@@ -82,7 +82,7 @@ const MovieDetail = () => {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <motion.div
-        layoutId={`movie-poster-${id}`}
+        layoutId={`movie-card-container-${id}`}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden bg-gray-900"
       >

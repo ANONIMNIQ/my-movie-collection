@@ -139,6 +139,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     <div onClick={handleCardClick} className="block">
       <motion.div
         layout
+        layoutId={`movie-card-container-${movie.id}`}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
         className="relative w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer shadow-lg"
       >
         {isAdmin && (
@@ -177,9 +179,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
           </div>
         )}
 
-        <motion.div
-          layoutId={`movie-poster-${movie.id}`}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+        <div
           className="relative h-40 w-full flex items-center justify-center p-2 overflow-hidden bg-cover bg-center"
           style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
         >
@@ -196,7 +196,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
           {!backdropUrl && !logoUrl && !isLoading && (
             <h3 className="relative z-10 text-xl font-bold text-white text-center">{movie.title}</h3>
           )}
-        </motion.div>
+        </div>
 
         <div className="p-4">
           <div className="flex justify-between items-start">
