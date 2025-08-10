@@ -149,6 +149,7 @@ const MovieDetail = () => {
     : (tmdbMovie?.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "");
   
   const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
+  const originCountry = movie.origin_country || tmdbMovie?.production_countries?.[0]?.name || "";
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
@@ -239,6 +240,10 @@ const MovieDetail = () => {
             <div>
               <p className="font-semibold">Director</p>
               <p className="text-muted-foreground">{director || "N/A"}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Origin Country</p>
+              <p className="text-muted-foreground">{originCountry || "N/A"}</p>
             </div>
             <div>
               <p className="font-semibold">Cast</p>
