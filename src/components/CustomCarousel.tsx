@@ -63,7 +63,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   return (
     <section className="mb-12 relative">
-      <div className="px-4">
+      <div className="px-10">
         <h2 className="text-3xl font-bold">{title}</h2>
       </div>
       <div className="relative z-10 mt-[-2rem]">
