@@ -24,7 +24,7 @@ export default {
         'space-mono': ['"Space Mono"', 'monospace'],
       },
       boxShadow: {
-        glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
+        glow: "0 0 25px 0px rgb(255 255 255 / 0.15)",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -99,13 +99,13 @@ export default {
         },
         "card-flash": {
           "0%": {
-            boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.4)",
+            boxShadow: "0 0 0 0 rgba(0, 0, 0, 0.2)",
           },
           "70%": {
-            boxShadow: "0 0 0 20px rgba(255, 255, 255, 0)",
+            boxShadow: "0 0 0 20px rgba(0, 0, 0, 0)",
           },
           "100%": {
-            boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
+            boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
           },
         },
       },
