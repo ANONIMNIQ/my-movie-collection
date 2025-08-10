@@ -1,14 +1,14 @@
 import { useParams, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowLeft, Youtube, Play } from "lucide-react"; // Added Play icon
+import { Star, ArrowLeft, Youtube, Play } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import PersonalRating from "@/components/PersonalRating";
 import { useSession } from "@/contexts/SessionContext";
 import { useQuery } from "@tanstack/react-query";
-import MovieDetailSkeleton from "@/components/MovieDetailSkeleton"; // Import the new skeleton
-import { Separator } from "@/components/ui/separator"; // Import Separator
+import MovieDetailSkeleton from "@/components/MovieDetailSkeleton";
+import { Separator } from "@/components/ui/separator";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -18,7 +18,7 @@ const MovieDetail = () => {
   const userId = session?.user?.id;
 
   // Fetch main movie data using useQuery
-  const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie } = useQuery<Movie, Error>({
+  const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie, error: movieError } = useQuery<Movie, Error>({
     queryKey: ["movie", id],
     queryFn: async () => {
       if (!id) throw new Error("Movie ID is missing.");
@@ -29,23 +29,23 @@ const MovieDetail = () => {
         .single();
 
       if (error) {
-        console.error("Error fetching movie details:", error);
-        throw new Error("Failed to load movie details.");
+        console.error("Error fetching movie details from Supabase:", error);
+        throw new Error("Failed to load movie details from database.");
       }
       return data as Movie;
     },
-    enabled: !!id, // Only run this query if id is available
-    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
-    retry: false, // Do not retry on error, handle it directly
+    enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
   });
 
-  const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovie(
+  const { data: tmdbMovie, isLoading: isLoadingTmdb, error: tmdbError } = useTmdbMovie(
     movie?.title ?? "",
     movie?.year ?? "",
   );
 
   // Fetch admin's personal rating for this movie (visible to all)
-  const { data: adminPersonalRatingData, isLoading: isLoadingAdminPersonalRating } = useQuery({
+  const { data: adminPersonalRatingData, isLoading: isLoadingAdminPersonalRating, error: adminRatingError } = useQuery({
     queryKey: ['admin_user_rating', id, ADMIN_USER_ID],
     queryFn: async () => {
       if (!id) return null;
@@ -55,7 +55,7 @@ const MovieDetail = () => {
         .eq('user_id', ADMIN_USER_ID)
         .eq('movie_id', id)
         .single();
-      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+      if (error && error.code !== 'PGRST116') {
         console.error("Error fetching admin's personal rating:", error);
         return null;
       }
@@ -66,7 +66,7 @@ const MovieDetail = () => {
   });
 
   // Fetch current user's personal rating (for interactive rating if logged in)
-  const { data: currentUserPersonalRatingData, isLoading: isLoadingCurrentUserPersonalRating } = useQuery({
+  const { data: currentUserPersonalRatingData, isLoading: isLoadingCurrentUserPersonalRating, error: userRatingError } = useQuery({
     queryKey: ['current_user_rating', id, userId],
     queryFn: async () => {
       if (!userId || !id) return null;
@@ -76,7 +76,7 @@ const MovieDetail = () => {
         .eq('user_id', userId)
         .eq('movie_id', id)
         .single();
-      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows found
+      if (error && error.code !== 'PGRST116') {
         console.error("Error fetching current user's personal rating:", error);
         return null;
       }
@@ -89,15 +89,30 @@ const MovieDetail = () => {
   // Combine all loading states
   const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb;
 
+  // Log data after loading to debug potential empty states
+  if (!overallLoading) {
+    console.log("MovieDetail: Data Loaded.");
+    console.log("Supabase Movie Data:", movie);
+    console.log("TMDb Movie Data:", tmdbMovie);
+    if (isErrorMovie) console.error("Supabase Movie Error:", movieError);
+    if (tmdbError) console.error("TMDb Fetch Error:", tmdbError);
+    if (adminRatingError) console.error("Admin Rating Error:", adminRatingError);
+    if (userRatingError) console.error("User Rating Error:", userRatingError);
+  }
+
   if (overallLoading) {
     return <MovieDetailSkeleton />;
   }
 
-  if (isErrorMovie || !movie) {
+  // Check for movie data more robustly
+  if (isErrorMovie || !movie || !movie.id) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
-        <div className="text-center">
+        <div className="text-center p-8 bg-card rounded-lg shadow-lg">
           <h1 className="text-4xl font-bold mb-4">Movie not found</h1>
+          <p className="text-xl text-muted-foreground mb-4">
+            {movieError?.message || "The movie you are looking for does not exist or an unexpected error occurred."}
+          </p>
           <Link to="/" className="text-primary hover:underline">
             Back to collection
           </Link>
