@@ -36,6 +36,7 @@ interface MovieCardProps {
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
+const HOVER_SCALE_FACTOR = 1.25; // Corresponds to scale-125 in Tailwind
 
 export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis = true }: MovieCardProps) => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
 
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [rect, setRect] = useState<DOMRect | null>(null);
+  const [initialRect, setInitialRect] = useState<DOMRect | null>(null); // Stores the calculated hovered rect
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -102,8 +103,15 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     e.preventDefault();
 
     if (cardRef.current) {
-      const currentRect = cardRef.current.getBoundingClientRect();
-      setRect(currentRect);
+      const unscaledRect = cardRef.current.getBoundingClientRect();
+      
+      // Calculate the dimensions and position if the card were scaled by HOVER_SCALE_FACTOR
+      const scaledWidth = unscaledRect.width * HOVER_SCALE_FACTOR;
+      const scaledHeight = unscaledRect.height * HOVER_SCALE_FACTOR;
+      const scaledLeft = unscaledRect.left - (scaledWidth - unscaledRect.width) / 2;
+      const scaledTop = unscaledRect.top - (scaledHeight - unscaledRect.height) / 2;
+
+      setInitialRect(new DOMRect(scaledLeft, scaledTop, scaledWidth, scaledHeight));
     }
 
     document.body.style.overflow = 'hidden';
@@ -333,14 +341,14 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       {/* Animating overlay card, rendered via portal to ensure it's on top */}
       {createPortal(
         <AnimatePresence>
-          {isClicked && rect && (
+          {isClicked && initialRect && (
             <motion.div
               key={movie.id}
               initial={{
-                top: rect.top,
-                left: rect.left,
-                width: rect.width,
-                height: rect.height,
+                top: initialRect.top,
+                left: initialRect.left,
+                width: initialRect.width,
+                height: initialRect.height,
                 borderRadius: "0px",
                 backgroundColor: "rgb(0,0,0)",
                 position: "fixed",
