@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation, useNavigate, useNavigationType } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom"; // Removed useNavigationType
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -57,9 +57,8 @@ const Index = () => {
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
-  const location = useLocation();
-  const navigationType = useNavigationType();
-  const scrollRestored = useRef(false); // To prevent multiple scrolls
+  // Removed useLocation and useNavigationType as they are no longer needed for manual scroll restoration
+  // Removed scrollRestored ref
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -82,29 +81,8 @@ const Index = () => {
     fetchMovies();
   }, []);
 
-  // Effect to save scroll position when navigating away from this page
-  useEffect(() => {
-    return () => {
-      // Save scroll position when component is about to unmount due to navigation
-      sessionStorage.setItem('scrollPos-Index', window.scrollY.toString());
-    };
-  }, [location.pathname]); // Re-run cleanup when location.pathname changes (navigating away)
-
-  // Effect to restore scroll position when navigating back to this page
-  useEffect(() => {
-    if (!loadingMovies && navigationType === 'POP' && !scrollRestored.current) {
-      const savedScrollY = sessionStorage.getItem('scrollPos-Index');
-      if (savedScrollY) {
-        window.scrollTo(0, parseInt(savedScrollY, 10));
-        sessionStorage.removeItem('scrollPos-Index'); // Clear after restoring
-        scrollRestored.current = true; // Mark as restored
-      }
-    }
-    // Reset scrollRestored ref if navigating forward or directly to index
-    if (navigationType === 'PUSH' || navigationType === 'REPLACE') {
-      scrollRestored.current = false;
-    }
-  }, [loadingMovies, navigationType, location.key]); // Depend on location.key to ensure it runs on every history change
+  // Removed useEffect for saving scroll position
+  // Removed useEffect for restoring scroll position
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
