@@ -123,21 +123,28 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
       <motion.div
         layoutId={`movie-poster-${movie.id}`}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
-        style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
+        className="relative h-40 w-full flex items-center justify-center p-2 overflow-hidden"
       >
-        {isLoading && <Skeleton className="w-full h-full" />}
-        {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+        {isLoading ? (
+          <Skeleton className="absolute inset-0" />
+        ) : (
+          <img
+            src={backdropUrl || '/placeholder.svg'}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-black opacity-50"></div>
         {logoUrl && !isLoading && (
           <img
             src={logoUrl}
             alt={`${movie.title} logo`}
-            className="max-h-24 max-w-full object-contain z-10"
+            className="relative z-10 max-h-24 max-w-full object-contain"
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
         )}
         {!backdropUrl && !logoUrl && !isLoading && (
-          <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
+          <h3 className="relative z-10 text-xl font-bold text-white text-center">{movie.title}</h3>
         )}
       </motion.div>
 
