@@ -84,12 +84,11 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     setIsClicked(true);
 
     // Navigate after the animation has had time to complete
-    // Total animation duration will be around 0.8s (0.6s for layout/bg + 0.2s buffer)
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
       // Re-enable scroll, important if the user navigates back
       document.body.style.overflow = '';
-    }, 800); // Increased timeout to match new animation duration
+    }, 1000); // Match total animation duration (1.0s for layout/bg)
   };
 
   const cardVariants = {
@@ -107,8 +106,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
       borderRadius: "0px",
       zIndex: 100,
       transition: {
-        layout: { duration: 0.6, ease: "easeInOut" }, // Slower enlargement
-        backgroundColor: { duration: 0.6, ease: "easeInOut" }, // Slower color transition
+        layout: { duration: 1.0, ease: "easeInOut" }, // Slower enlargement
+        backgroundColor: { duration: 1.0, ease: "easeInOut" }, // Slower color transition
       },
     },
   };
@@ -118,8 +117,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     clicked: {
       opacity: 0,
       transition: {
-        duration: 0.4, // Slower fade out
-        delay: 0.2,    // Start fading after 0.2s of enlargement
+        duration: 0.5, // Slower fade out
+        delay: 0.5,    // Start fading after 0.5s of enlargement
         ease: "easeOut"
       },
     },
