@@ -446,10 +446,10 @@ const Index = () => {
             </>
           )}
 
-          <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-white md:text-black">
+          <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-100 md:text-black">
             {!loadingMovies && (
               <>
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8"> {/* Added pt-8 for spacing */}
                   <h2 className="text-3xl font-bold ml-3">All Movies</h2>
                   <div className="flex w-full sm:w-auto items-center gap-2">
                     <Input
@@ -457,10 +457,10 @@ const Index = () => {
                       placeholder="Search movies..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full sm:w-auto md:bg-white md:text-black md:border-gray-300"
+                      className="w-full sm:w-auto bg-white text-black border-gray-300"
                     />
                     <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                      <SelectTrigger className="w-[220px] md:bg-white md:text-black md:border-gray-300">
+                      <SelectTrigger className="w-[220px] bg-white text-black border-gray-300">
                         <SelectValue placeholder="Sort & Filter" />
                       </SelectTrigger>
                       <SelectContent>
@@ -551,6 +551,13 @@ const Index = () => {
                 onSelectMovie={handleSelectMovie}
               />
             )}
+            {visibleCount < filteredAndSortedMovies.length && (
+              <motion.div variants={contentVariants} className="text-center mt-12 pb-12"> {/* Added pb-12 for spacing */}
+                <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
+                  Load More
+                </Button>
+              </motion.div>
+            )}
           </motion.div>
         </div>
 
@@ -637,15 +644,14 @@ const Index = () => {
               ))
             )}
           </div>
+          {visibleCount < filteredAndSortedMovies.length && (
+            <motion.div variants={contentVariants} className="text-center mt-12 pb-12"> {/* Added pb-12 for spacing */}
+              <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
+                Load More
+              </Button>
+            </motion.div>
+          )}
         </div>
-
-        {visibleCount < filteredAndSortedMovies.length && (
-          <motion.div variants={contentVariants} className="text-center mt-12">
-            <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
-              Load More
-            </Button>
-          </motion.div>
-        )}
       </motion.main>
       <motion.footer
         className="py-8"
