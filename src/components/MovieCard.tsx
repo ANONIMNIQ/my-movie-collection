@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } => "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"; // Corrected from '=>' to 'from'
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
