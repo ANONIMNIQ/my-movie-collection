@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
+import { cn } from "@/lib/utils";
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -84,7 +85,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   };
 
   return (
-    <Card onClick={handleCardClick} className="w-full bg-black text-white rounded-lg overflow-hidden shadow-2xl cursor-pointer">
+    <Card onClick={handleCardClick} className="w-full bg-black text-white rounded-lg overflow-hidden shadow-glow cursor-pointer">
       {isAdmin && (
         <div className="absolute top-2 left-2 z-40">
           <Checkbox
