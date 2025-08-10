@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft, Youtube, Play } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -17,6 +17,7 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific U
 
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate(); // Initialize useNavigate
   const { session } = useSession();
   const userId = session?.user?.id;
   const [showTrailer, setShowTrailer] = useState(false);
@@ -128,9 +129,9 @@ const MovieDetail = () => {
           <p className="text-xl text-muted-foreground mb-4">
             {movieError?.message || "The movie you are looking for does not exist or an unexpected error occurred."}
           </p>
-          <Link to="/" className="text-primary hover:underline">
+          <Button onClick={() => navigate('/')} className="text-primary hover:underline"> {/* Changed to Button */}
             Back to collection
-          </Link>
+          </Button>
         </div>
       </div>
     );
@@ -178,13 +179,14 @@ const MovieDetail = () => {
       )}
 
       <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
-        <Link
-          to="/"
+        <Button
+          onClick={() => navigate(-1)} // Use navigate(-1) for back functionality
+          variant="ghost"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
         >
           <ArrowLeft size={16} />
           Back to Collection
-        </Link>
+        </Button>
         
         <div className="max-w-3xl">
           {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
