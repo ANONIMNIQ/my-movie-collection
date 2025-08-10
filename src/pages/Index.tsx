@@ -8,7 +8,7 @@ import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox"; // Corrected import path
+import { Checkbox } from "@/components/ui/checkbox"; // Corrected import path back to shadcn/ui
 import { Trash2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { useQueryClient } from "@tanstack/react-query";
