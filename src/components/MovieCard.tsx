@@ -1,6 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
+import { Link, useNavigate } from "react-router-dom";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +29,7 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
-  showSynopsis?: boolean; // New prop
+  showSynopsis?: boolean;
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
@@ -67,9 +66,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
 
   const handleDelete = async () => {
     const { error } = await supabase.from("movies").delete().eq("id", movie.id);
-
     if (error) {
-      console.error("Error deleting movie:", error);
       showError("Failed to delete movie: " + error.message);
     } else {
       showSuccess("Movie deleted successfully!");
@@ -86,26 +83,21 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
-    // Do not navigate if the click came from any interactive element.
-    if (target.closest('button, a, [role="checkbox"]')) {
-      return;
-    }
-    navigate(`/movie/${movie.id}`);
+  const handleInteraction = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   return (
-    <div className="relative h-full group-hover/slide:z-30">
-      <Card 
+    <Link to={`/movie/${movie.id}`} className="relative h-full group-hover/slide:z-30 block">
+      <motion.div
         className={cn(
           "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
           "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow"
         )}
-        onClick={handleCardClick}
       >
         {isAdmin && (
-          <div className="absolute top-2 left-2 z-40">
+          <div className="absolute top-2 left-2 z-40" onClick={handleInteraction}>
             <Checkbox
               checked={selectedMovieIds.has(movie.id)}
               onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
@@ -132,11 +124,9 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           )}
         </motion.div>
 
-        {/* Hover Overlay */}
         <div
           className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none"
         >
-          {/* Top part of overlay (backdrop) */}
           <div
             className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
             style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
@@ -154,10 +144,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
               <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
             )}
           </div>
-
-          {/* Bottom part of overlay (info and buttons) */}
           <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white pointer-events-auto">
-            <div className="mb-1">
+            <div className="mb-1" onClick={handleInteraction}>
               <Button variant="ghost" size="icon" className="h-auto w-auto p-0" onClick={() => navigate(`/movie/${movie.id}`)}>
                 <Info size={16} className="text-white cursor-pointer hover:text-gray-300 transition-colors" />
               </Button>
@@ -177,7 +165,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
                 <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
               </div>
             </div>
-            <div className="hidden md:flex flex-row gap-1 mt-2">
+            <div className="hidden md:flex flex-row gap-1 mt-2" onClick={handleInteraction}>
               {trailerUrl && (
                 <Button asChild variant="outline" className="flex-1 w-full justify-center gap-1 text-xs h-7 px-2">
                   <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
@@ -189,9 +177,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           </div>
         </div>
 
-        {/* Admin Buttons */}
         {isAdmin && (
-          <div className="absolute top-2 right-2 flex gap-2 z-40">
+          <div className="absolute top-2 right-2 flex gap-2 z-40" onClick={handleInteraction}>
             <Button 
               variant="secondary" 
               size="icon" 
@@ -228,7 +215,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
             </AlertDialog>
           </div>
         )}
-      </Card>
-    </div>
+      </motion.div>
+    </Link>
   );
 };
