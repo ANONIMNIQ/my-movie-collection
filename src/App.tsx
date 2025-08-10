@@ -19,7 +19,7 @@ import EditMovie from "./pages/EditMovie";
 import ImportRatings from "./pages/ImportRatings";
 import { SessionContextProvider } from "./contexts/SessionContext";
 import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
 const queryClient = new QueryClient();
 
@@ -28,18 +28,12 @@ const RootLayout = () => {
   const location = useLocation();
   return (
     <SessionContextProvider>
+      {/* AnimatePresence is still needed for layoutId animations to work across routes */}
       <AnimatePresence mode="wait">
-        {/* The key is crucial for AnimatePresence to detect route changes */}
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <div key={location.pathname}>
           <Outlet />
           <ScrollRestoration />
-        </motion.div>
+        </div>
       </AnimatePresence>
     </SessionContextProvider>
   );
