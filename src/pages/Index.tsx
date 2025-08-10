@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Removed useNavigationType
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,6 +38,7 @@ import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { MobileMovieCard } from "@/components/MobileMovieCard";
+import { motion } from "framer-motion"; // Import motion
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
@@ -55,10 +56,10 @@ const Index = () => {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  const isAdmin = session?.user?.id === ADMIN_USER_ID;
+  // Animation state
+  const [introComplete, setIntroComplete] = useState(false);
 
-  // Removed useLocation and useNavigationType as they are no longer needed for manual scroll restoration
-  // Removed scrollRestored ref
+  const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -80,9 +81,6 @@ const Index = () => {
 
     fetchMovies();
   }, []);
-
-  // Removed useEffect for saving scroll position
-  // Removed useEffect for restoring scroll position
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -258,301 +256,393 @@ const Index = () => {
     setIsDeleting(false);
   };
 
+  // Animation variants
+  const contentVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  };
+
+  const headerVariants = {
+    hidden: { y: -100, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 1, ease: "easeOut" } },
+  };
+
+  const introOverlayVariants = {
+    hidden: { opacity: 1 },
+    visible: { opacity: 0, transition: { delay: 2, duration: 1 } }, // Fade out after 2s, takes 1s
+  };
+
   return (
-    <div className={cn("min-h-screen w-full overflow-x-hidden", isMobile ? "bg-white text-black" : "bg-background text-foreground")}>
-      <header className={cn("w-full text-center py-8 shadow-md z-50", isMobile ? "bg-background" : "bg-white")}>
-        <div className="container mx-auto px-4">
-          <h1 className={cn("text-4xl md:text-5xl font-bold tracking-tight", isMobile ? "text-foreground" : "text-headerTitle")}>
+    <motion.div
+      initial={{ backgroundColor: 'hsl(var(--background))' }}
+      animate={isMobile && introComplete ? { backgroundColor: 'white' } : {}}
+      transition={{ duration: 1.5, delay: 2.8 }} // Start mobile color transition after intro overlay fades
+      className={cn("min-h-screen w-full overflow-x-hidden", isMobile && introComplete ? "text-black" : "text-foreground")}
+    >
+      {/* Intro Overlay - covers the screen initially */}
+      {!introComplete && (
+        <motion.div
+          className="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center" // Increased z-index
+          initial="hidden"
+          animate="visible"
+          variants={introOverlayVariants}
+          onAnimationComplete={() => setIntroComplete(true)}
+          style={{ pointerEvents: introComplete ? 'none' : 'auto' }} // Disable pointer events after animation
+        >
+          <motion.h1
+            className="text-4xl md:text-5xl font-bold tracking-tight text-foreground"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
             Georgi's Movie Collection
-          </h1>
-          <p className={cn("mt-2 text-lg", isMobile ? "text-muted-foreground" : "text-headerDescription")}>
+          </motion.h1>
+          <motion.p
+            className="mt-2 text-lg text-muted-foreground"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.7 }}
+          >
             A minimalist collection of cinematic gems.
-          </p>
-          <div className="mt-6">
-            <MovieCounter 
-              key={isMobile ? 'mobile' : 'desktop'}
-              count={filteredAndSortedMovies.length} 
-              numberColor={isMobile ? "white" : "#0F0F0F"}
-              labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
-            />
-          </div>
-          <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-            {sessionLoading ? (
-              <Skeleton className="w-32 h-10" />
-            ) : session ? (
-              <>
-                <Link to="/add-movie">
-                  <Button>Add New Movie</Button>
-                </Link>
-                {isAdmin && (
-                  <Link to="/import-movies">
-                    <Button variant="secondary">Import Movies (CSV)</Button>
-                  </Link>
-                )}
-                <Link to="/import-ratings">
-                  <Button variant="outline">Import My Ratings</Button>
-                </Link>
-                <Button variant="outline" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <></>
-            )}
-          </div>
-        </div>
-      </header>
+          </motion.p>
+        </motion.div>
+      )}
 
-      <main className="pt-0">
-        {/* Desktop View */}
-        <div className="hidden md:block pt-8">
-          {loadingMovies ? (
-            <div className="container mx-auto px-4 mb-12">
-              <h2 className="text-3xl font-bold mb-4">New Movies</h2>
-              <div className="flex overflow-hidden gap-4">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
-                ))}
-              </div>
+      {/* Main Content - hidden until intro is complete */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={introComplete ? { opacity: 1 } : {}}
+        transition={{ delay: 2.8, duration: 0.5 }} // Appear after intro overlay fades
+      >
+        <motion.header
+          className={cn("w-full text-center py-8 shadow-md z-50", isMobile && introComplete ? "bg-white" : "bg-background")}
+          initial="hidden"
+          animate={introComplete ? "visible" : "hidden"}
+          variants={headerVariants}
+        >
+          <div className="container mx-auto px-4">
+            <h1 className={cn("text-4xl md:text-5xl font-bold tracking-tight", isMobile && introComplete ? "text-headerTitle" : "text-foreground")}>
+              Georgi's Movie Collection
+            </h1>
+            <p className={cn("mt-2 text-lg", isMobile && introComplete ? "text-headerDescription" : "text-muted-foreground")}>
+              A minimalist collection of cinematic gems.
+            </p>
+            <div className="mt-6">
+              <MovieCounter 
+                key={isMobile ? 'mobile' : 'desktop'}
+                count={filteredAndSortedMovies.length} 
+                numberColor={isMobile && introComplete ? "#0F0F0F" : "white"}
+                labelColor={isMobile && introComplete ? "text-headerDescription" : "text-muted-foreground"}
+              />
             </div>
-          ) : (
-            <>
-              <CustomCarousel
-                title="New Movies"
-                movies={categorizedMovies.newMovies}
-                selectedMovieIds={selectedMovieIds}
-                onSelectMovie={handleSelectMovie}
-              />
-              {categorizedMovies.dramaMovies.length > 0 && (
-                <CustomCarousel
-                  title="Drama"
-                  movies={categorizedMovies.dramaMovies}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={handleSelectMovie}
-                />
+            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+              {sessionLoading ? (
+                <Skeleton className="w-32 h-10" />
+              ) : session ? (
+                <>
+                  <Link to="/add-movie">
+                    <Button>Add New Movie</Button>
+                  </Link>
+                  {isAdmin && (
+                    <Link to="/import-movies">
+                      <Button variant="secondary">Import Movies (CSV)</Button>
+                    </Link>
+                  )}
+                  <Link to="/import-ratings">
+                    <Button variant="outline">Import My Ratings</Button>
+                  </Link>
+                  <Button variant="outline" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <></>
               )}
-              {categorizedMovies.thrillerMovies.length > 0 && (
-                <CustomCarousel
-                  title="Thriller"
-                  movies={categorizedMovies.thrillerMovies}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={handleSelectMovie}
-                />
-              )}
-              {categorizedMovies.scifiMovies.length > 0 && (
-                <CustomCarousel
-                  title="Sci-Fi"
-                  movies={categorizedMovies.scifiMovies}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={handleSelectMovie}
-                />
-              )}
-              {categorizedMovies.horrorMovies.length > 0 && (
-                <CustomCarousel
-                  title="Horror"
-                  movies={categorizedMovies.horrorMovies}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={handleSelectMovie}
-                />
-              )}
-            </>
-          )}
+            </div>
+          </div>
+        </motion.header>
 
-          <div className="px-4 overflow-x-visible">
-            {!loadingMovies && (
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
-                <h2 className="text-3xl font-bold ml-3">All Movies</h2>
-                <div className="flex w-full sm:w-auto items-center gap-2">
-                  <Input
-                    type="text"
-                    placeholder="Search movies..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:w-auto"
-                  />
-                  <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Sort & Filter" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Sort by</SelectLabel>
-                        <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-                        <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-                        <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
-                        <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
-                      </SelectGroup>
-                      {allGenres.length > 0 && <Separator className="my-1" />}
-                      <SelectGroup>
-                        <SelectLabel>Filter by Genre</SelectLabel>
-                        {allGenres.map((genre) => (
-                          <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                      {allCountries.length > 0 && <Separator className="my-1" />}
-                      <SelectGroup>
-                        <SelectLabel>Filter by Country</SelectLabel>
-                        {allCountries.map((country) => (
-                          <SelectItem key={country} value={country}>{country}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+        <motion.main
+          className="pt-0"
+          initial="hidden"
+          animate={introComplete ? "visible" : "hidden"}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.1,
+                delayChildren: 0.5, // Delay for children to start animating after main appears
+              },
+            },
+          }}
+        >
+          {/* Desktop View */}
+          <div className="hidden md:block pt-8">
+            {loadingMovies ? (
+              <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
+                <h2 className="text-3xl font-bold mb-4">New Movies</h2>
+                <div className="flex overflow-hidden gap-4">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
+                  ))}
                 </div>
-              </div>
+              </motion.div>
+            ) : (
+              <>
+                <motion.div variants={contentVariants}>
+                  <CustomCarousel
+                    title="New Movies"
+                    movies={categorizedMovies.newMovies}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={handleSelectMovie}
+                  />
+                </motion.div>
+                {categorizedMovies.dramaMovies.length > 0 && (
+                  <motion.div variants={contentVariants}>
+                    <CustomCarousel
+                      title="Drama"
+                      movies={categorizedMovies.dramaMovies}
+                      selectedMovieIds={selectedMovieIds}
+                      onSelectMovie={handleSelectMovie}
+                    />
+                  </motion.div>
+                )}
+                {categorizedMovies.thrillerMovies.length > 0 && (
+                  <motion.div variants={contentVariants}>
+                    <CustomCarousel
+                      title="Thriller"
+                      movies={categorizedMovies.thrillerMovies}
+                      selectedMovieIds={selectedMovieIds}
+                      onSelectMovie={handleSelectMovie}
+                    />
+                  </motion.div>
+                )}
+                {categorizedMovies.scifiMovies.length > 0 && (
+                  <motion.div variants={contentVariants}>
+                    <CustomCarousel
+                      title="Sci-Fi"
+                      movies={categorizedMovies.scifiMovies}
+                      selectedMovieIds={selectedMovieIds}
+                      onSelectMovie={handleSelectMovie}
+                    />
+                  </motion.div>
+                )}
+                {categorizedMovies.horrorMovies.length > 0 && (
+                  <motion.div variants={contentVariants}>
+                    <CustomCarousel
+                      title="Horror"
+                      movies={categorizedMovies.horrorMovies}
+                      selectedMovieIds={selectedMovieIds}
+                      onSelectMovie={handleSelectMovie}
+                    />
+                  </motion.div>
+                )}
+              </>
             )}
 
+            <motion.div variants={contentVariants} className="px-4 overflow-x-visible">
+              {!loadingMovies && (
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
+                  <h2 className="text-3xl font-bold ml-3">All Movies</h2>
+                  <div className="flex w-full sm:w-auto items-center gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Search movies..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full sm:w-auto"
+                    />
+                    <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
+                      <SelectTrigger className="w-[220px]">
+                        <SelectValue placeholder="Sort & Filter" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Sort by</SelectLabel>
+                          <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                          <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                          <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                          <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                        </SelectGroup>
+                        {allGenres.length > 0 && <Separator className="my-1" />}
+                        <SelectGroup>
+                          <SelectLabel>Filter by Genre</SelectLabel>
+                          {allGenres.map((genre) => (
+                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                        {allCountries.length > 0 && <Separator className="my-1" />}
+                        <SelectGroup>
+                          <SelectLabel>Filter by Country</SelectLabel>
+                          {allCountries.map((country) => (
+                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {isAdmin && !loadingMovies && (
+                <div className="flex items-center justify-between mb-4 px-6">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="select-all"
+                      checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
+                      onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                      disabled={filteredAndSortedMovies.length === 0 || isDeleting}
+                    />
+                    <label htmlFor="select-all" className="text-sm font-medium">
+                      Select All ({selectedMovieIds.size} selected)
+                    </label>
+                  </div>
+                  {selectedMovieIds.size > 0 && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="gap-2" disabled={isDeleting}>
+                          <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete{" "}
+                            <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
+                            {isDeleting ? "Deleting..." : "Delete All"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                </div>
+              )}
+
+              {loadingMovies ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                  {Array.from({ length: 18 }).map((_, index) => (
+                    <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
+                  ))}
+                </div>
+              ) : error ? (
+                <div className="text-center text-destructive">{error}</div>
+              ) : filteredAndSortedMovies.length === 0 ? (
+                <div className="text-center text-muted-foreground text-lg py-16">
+                  No movies found matching your search.
+                </div>
+              ) : (
+                <MovieGrid
+                  movies={moviesToShow}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={handleSelectMovie}
+                />
+              )}
+            </motion.div>
+          </div>
+
+          {/* Mobile View */}
+          <div className="md:hidden pt-8 px-4">
+            <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+              <h2 className="text-3xl font-bold">All Movies</h2>
+              <Input
+                type="text"
+                placeholder="Search movies..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-auto"
+              />
+            </motion.div>
+            
             {isAdmin && !loadingMovies && (
-              <div className="flex items-center justify-between mb-4 px-6">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="select-all"
-                    checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
-                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                    disabled={filteredAndSortedMovies.length === 0 || isDeleting}
-                  />
-                  <label htmlFor="select-all" className="text-sm font-medium">
-                    Select All ({selectedMovieIds.size} selected)
-                  </label>
+                <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="select-all-mobile"
+                      checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
+                      onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                      disabled={filteredAndSortedMovies.length === 0 || isDeleting}
+                    />
+                    <label htmlFor="select-all-mobile" className="text-sm font-medium">
+                      Select All ({selectedMovieIds.size} selected)
+                    </label>
+                  </div>
+                  {selectedMovieIds.size > 0 && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="gap-2" disabled={isDeleting}>
+                          <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete{" "}
+                            <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
+                            {isDeleting ? "Deleting..." : "Delete All"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
+                </motion.div>
+              )}
+
+            <div className="flex flex-col gap-4">
+              {loadingMovies ? (
+                Array.from({ length: 5 }).map((_, index) => (
+                  <Skeleton key={index} className="w-full h-80 rounded-lg" />
+                ))
+              ) : error ? (
+                <div className="text-center text-destructive">{error}</div>
+              ) : filteredAndSortedMovies.length === 0 ? (
+                <div className="text-center text-gray-500 text-lg py-16">
+                  No movies found matching your search.
                 </div>
-                {selectedMovieIds.size > 0 && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" className="gap-2" disabled={isDeleting}>
-                        <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete{" "}
-                          <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
-                          {isDeleting ? "Deleting..." : "Delete All"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-              </div>
-            )}
-
-            {loadingMovies ? (
-              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                {Array.from({ length: 18 }).map((_, index) => (
-                  <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
-                ))}
-              </div>
-            ) : error ? (
-              <div className="text-center text-destructive">{error}</div>
-            ) : filteredAndSortedMovies.length === 0 ? (
-              <div className="text-center text-muted-foreground text-lg py-16">
-                No movies found matching your search.
-              </div>
-            ) : (
-              <MovieGrid
-                movies={moviesToShow}
-                selectedMovieIds={selectedMovieIds}
-                onSelectMovie={handleSelectMovie}
-              />
-            )}
+              ) : (
+                moviesToShow.map(movie => (
+                  <motion.div key={movie.id} variants={contentVariants}>
+                    <MobileMovieCard 
+                      movie={movie}
+                      selectedMovieIds={selectedMovieIds}
+                      onSelectMovie={handleSelectMovie}
+                    />
+                  </motion.div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Mobile View */}
-        <div className="md:hidden pt-8 px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-            <h2 className="text-3xl font-bold">All Movies</h2>
-            <Input
-              type="text"
-              placeholder="Search movies..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-auto"
-            />
-          </div>
-          
-          {isAdmin && !loadingMovies && (
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="select-all-mobile"
-                    checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
-                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                    disabled={filteredAndSortedMovies.length === 0 || isDeleting}
-                  />
-                  <label htmlFor="select-all-mobile" className="text-sm font-medium">
-                    Select All ({selectedMovieIds.size} selected)
-                  </label>
-                </div>
-                {selectedMovieIds.size > 0 && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" className="gap-2" disabled={isDeleting}>
-                        <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete{" "}
-                          <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
-                          {isDeleting ? "Deleting..." : "Delete All"}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-              </div>
-            )}
-
-          <div className="flex flex-col gap-4">
-            {loadingMovies ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <Skeleton key={index} className="w-full h-80 rounded-lg" />
-              ))
-            ) : error ? (
-              <div className="text-center text-destructive">{error}</div>
-            ) : filteredAndSortedMovies.length === 0 ? (
-              <div className="text-center text-gray-500 text-lg py-16">
-                No movies found matching your search.
-              </div>
-            ) : (
-              moviesToShow.map(movie => (
-                <MobileMovieCard 
-                  key={movie.id}
-                  movie={movie}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={handleSelectMovie}
-                />
-              ))
-            )}
-          </div>
-        </div>
-
-        {visibleCount < filteredAndSortedMovies.length && (
-          <div className="text-center mt-12">
-            <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
-              Load More
-            </Button>
-          </div>
-        )}
-      </main>
-      <footer className="py-8">
-        <MadeWithDyad />
-      </footer>
-    </div>
+          {visibleCount < filteredAndSortedMovies.length && (
+            <motion.div variants={contentVariants} className="text-center mt-12">
+              <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
+                Load More
+              </Button>
+            </motion.div>
+          )}
+        </motion.main>
+        <motion.footer
+          className="py-8"
+          initial="hidden"
+          animate={introComplete ? "visible" : "hidden"}
+          variants={contentVariants}
+        >
+          <MadeWithDyad />
+        </motion.footer>
+      </motion.div>
+    </motion.div>
   );
 };
 
