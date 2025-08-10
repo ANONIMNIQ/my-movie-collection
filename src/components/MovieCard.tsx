@@ -45,6 +45,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const userId = session?.user?.id;
 
   const [isClicked, setIsClicked] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false); // New state to control original card's behavior
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
@@ -102,8 +103,45 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     e.preventDefault();
 
     if (cardRef.current) {
+      setIsAnimating(true); // Start animating the clone
+
       const currentRect = cardRef.current.getBoundingClientRect();
-      setRect(currentRect);
+      const currentTransform = window.getComputedStyle(cardRef.current).transform;
+      let currentScale = 1;
+      if (currentTransform && currentTransform !== 'none') {
+        const matrix = currentTransform.match(/matrix\(([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^)]+)\)/);
+        if (matrix && matrix.length > 1) {
+          currentScale = parseFloat(matrix[1]); // matrix[1] is scaleX
+        }
+      }
+
+      // Calculate the base dimensions (what they would be at scale 1)
+      const baseWidth = currentRect.width / currentScale;
+      const baseHeight = currentRect.height / currentScale;
+
+      // Calculate the target dimensions (what they would be at scale 1.25, the fully hovered state)
+      const targetScale = 1.25;
+      const targetWidth = baseWidth * targetScale;
+      const targetHeight = baseHeight * targetScale;
+
+      // Calculate the new top/left to keep the center in place
+      const deltaX = (targetWidth - baseWidth) / 2;
+      const deltaY = (targetHeight - baseHeight) / 2;
+
+      const targetLeft = currentRect.left - deltaX;
+      const targetTop = currentRect.top - deltaY;
+
+      setRect({
+        left: targetLeft,
+        top: targetTop,
+        width: targetWidth,
+        height: targetHeight,
+        x: targetLeft, // Add x, y for DOMRect compatibility
+        y: targetTop,
+        bottom: targetTop + targetHeight,
+        right: targetLeft + targetWidth,
+        toJSON: () => ({}) // Dummy toJSON
+      });
     }
 
     document.body.style.overflow = 'hidden';
@@ -182,6 +220,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
       document.body.style.overflow = '';
+      setIsAnimating(false); // Reset animation state after navigation
     }, 800); // Match animation duration
   };
 
@@ -321,7 +360,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow",
+            isAnimating ? "pointer-events-none transition-none transform-none" : "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow",
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
           onClick={handleCardClick}
