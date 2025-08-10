@@ -393,6 +393,8 @@ const Index = () => {
                   movies={categorizedMovies.newMovies}
                   selectedMovieIds={selectedMovieIds}
                   onSelectMovie={handleSelectMovie}
+                  isMobile={isMobile}
+                  pageLoaded={pageLoaded}
                 />
               </motion.div>
               {categorizedMovies.dramaMovies.length > 0 && (
@@ -402,6 +404,8 @@ const Index = () => {
                     movies={categorizedMovies.dramaMovies}
                     selectedMovieIds={selectedMovieIds}
                     onSelectMovie={handleSelectMovie}
+                    isMobile={isMobile}
+                    pageLoaded={pageLoaded}
                   />
                 </motion.div>
               )}
@@ -412,6 +416,8 @@ const Index = () => {
                     movies={categorizedMovies.thrillerMovies}
                     selectedMovieIds={selectedMovieIds}
                     onSelectMovie={handleSelectMovie}
+                    isMobile={isMobile}
+                    pageLoaded={pageLoaded}
                   />
                 </motion.div>
               )}
@@ -422,6 +428,8 @@ const Index = () => {
                     movies={categorizedMovies.scifiMovies}
                     selectedMovieIds={selectedMovieIds}
                     onSelectMovie={handleSelectMovie}
+                    isMobile={isMobile}
+                    pageLoaded={pageLoaded}
                   />
                 </motion.div>
               )}
@@ -432,6 +440,8 @@ const Index = () => {
                     movies={categorizedMovies.horrorMovies}
                     selectedMovieIds={selectedMovieIds}
                     onSelectMovie={handleSelectMovie}
+                    isMobile={isMobile}
+                    pageLoaded={pageLoaded}
                   />
                 </motion.div>
               )}
@@ -549,7 +559,17 @@ const Index = () => {
         {/* Mobile View */}
         <div className="md:hidden pt-8 px-4">
           <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-            <h2 className="text-3xl font-bold">All Movies</h2>
+            <motion.h2
+              className={cn(
+                "text-3xl font-bold",
+                isMobile && (pageLoaded ? "text-black" : "text-foreground") // Conditional text color
+              )}
+              initial={isMobile ? { color: "hsl(var(--foreground))" } : {}} // Initial dark color for mobile
+              animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile
+              transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Match main background delay
+            >
+              All Movies
+            </motion.h2>
             <Input
               type="text"
               placeholder="Search movies..."
