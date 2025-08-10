@@ -155,8 +155,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         layoutId={`movie-card-container-${movie.id}`}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className={cn(
-          "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-          "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow"
+          "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer"
         )}
       >
         {isAdmin && (
