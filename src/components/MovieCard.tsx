@@ -24,6 +24,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface MovieCardProps {
   movie: Movie;
@@ -117,7 +118,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           {isLoading ? (
             <Skeleton className="w-full h-full" />
           ) : (
-            <img
+            <motion.img
+              layoutId={`movie-poster-${movie.id}`}
               src={posterUrl}
               alt={movie.title}
               className="w-full h-full object-cover"

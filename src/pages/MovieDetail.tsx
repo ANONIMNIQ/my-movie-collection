@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
+import { motion } from "framer-motion";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -137,7 +138,7 @@ const MovieDetail = () => {
   }
 
   // Prioritize Supabase data, fallback to TMDb if Supabase data is empty/placeholder
-  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null;
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : (movie.poster_url && movie.poster_url !== '/placeholder.svg' ? movie.poster_url : null);
   const synopsis = movie.synopsis || tmdbMovie?.overview || "";
   
   // Safely access genres and movie_cast, providing empty array if null
@@ -160,7 +161,8 @@ const MovieDetail = () => {
       {showTrailer && trailerKey ? (
         <YouTubePlayerBackground videoId={trailerKey} />
       ) : backdropUrl ? (
-        <div
+        <motion.div
+          layoutId={`movie-poster-${id}`}
           className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"
         >
           <img
@@ -170,14 +172,19 @@ const MovieDetail = () => {
           />
           <div className="absolute inset-0 bg-black opacity-50"></div>
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
-        </div>
+        </motion.div>
       ) : (
         <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900">
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
       )}
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
+      <motion.div
+        className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0, transition: { delay: 0.3, duration: 0.5 } }}
+        exit={{ opacity: 0 }}
+      >
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
@@ -254,7 +261,7 @@ const MovieDetail = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

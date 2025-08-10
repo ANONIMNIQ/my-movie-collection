@@ -14,7 +14,6 @@ import ImportRatings from "./pages/ImportRatings";
 import { SessionContextProvider } from "./contexts/SessionContext";
 import React from "react";
 import { AnimatePresence } from "framer-motion";
-import PageTransition from "./components/PageTransition";
 
 const queryClient = new QueryClient();
 
@@ -23,14 +22,14 @@ const AppRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
-        <Route path="/movie/:id" element={<PageTransition><MovieDetail /></PageTransition>} />
-        <Route path="/add-movie" element={<PageTransition><AddMovie /></PageTransition>} />
-        <Route path="/edit-movie/:id" element={<PageTransition><EditMovie /></PageTransition>} />
-        <Route path="/import-movies" element={<PageTransition><ImportMovies /></PageTransition>} />
-        <Route path="/import-ratings" element={<PageTransition><ImportRatings /></PageTransition>} />
-        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/movie/:id" element={<MovieDetail />} />
+        <Route path="/add-movie" element={<AddMovie />} />
+        <Route path="/edit-movie/:id" element={<EditMovie />} />
+        <Route path="/import-movies" element={<ImportMovies />} />
+        <Route path="/import-ratings" element={<ImportRatings />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
   );
