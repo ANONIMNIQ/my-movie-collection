@@ -79,7 +79,9 @@ const Index = () => {
     const genres = new Set<string>();
     movies.forEach((movie) => {
       if (Array.isArray(movie.genres)) {
-        movie.genres.forEach((genre) => genres.add(genre));
+        movie.genres.forEach((genre) => {
+          if (genre) genres.add(genre);
+        });
       }
     });
     return Array.from(genres).sort();
@@ -89,7 +91,9 @@ const Index = () => {
     const countries = new Set<string>();
     movies.forEach((movie) => {
       if (Array.isArray(movie.origin_country)) {
-        movie.origin_country.forEach((country) => countries.add(country));
+        movie.origin_country.forEach((country) => {
+          if (country) countries.add(country);
+        });
       }
     });
     return Array.from(countries).sort();
