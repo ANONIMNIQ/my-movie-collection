@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import MovieDetailSkeleton from "@/components/MovieDetailSkeleton";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import React from "react"; // Import React for useEffect
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -17,6 +18,11 @@ const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { session } = useSession();
   const userId = session?.user?.id;
+
+  // Scroll to top on component mount
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Fetch main movie data using useQuery
   const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie, error: movieError } = useQuery<Movie, Error>({
@@ -90,17 +96,6 @@ const MovieDetail = () => {
   // Combine all loading states
   const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb;
 
-  // Log data after loading to debug potential empty states
-  if (!overallLoading) {
-    console.log("MovieDetail: Data Loaded.");
-    console.log("Supabase Movie Data:", movie);
-    console.log("TMDb Movie Data:", tmdbMovie);
-    if (isErrorMovie) console.error("Supabase Movie Error:", movieError);
-    if (tmdbError) console.error("TMDb Fetch Error:", tmdbError);
-    if (adminRatingError) console.error("Admin Rating Error:", adminRatingError);
-    if (userRatingError) console.error("User Rating Error:", userRatingError);
-  }
-
   if (overallLoading) {
     return <MovieDetailSkeleton />;
   }
@@ -123,7 +118,7 @@ const MovieDetail = () => {
   }
 
   // Prioritize Supabase data, fallback to TMDb if Supabase data is empty/placeholder
-  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null; // Corrected URL
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null;
   const synopsis = movie.synopsis || tmdbMovie?.overview || "";
   
   // Safely access genres and movie_cast, providing empty array if null
@@ -151,7 +146,7 @@ const MovieDetail = () => {
       {/* Backdrop Image with Overlay */}
       {backdropUrl && (
         <div
-          className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center" // Changed to top-only with fixed height
+          className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center"
           style={{ backgroundImage: `url(${backdropUrl})` }}
         >
           {/* Dark overlay to make text readable */}
@@ -161,7 +156,7 @@ const MovieDetail = () => {
         </div>
       )}
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[40vh] md:pb-12"> {/* Adjusted padding-top */}
+      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[40vh] md:pb-12">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
@@ -170,7 +165,7 @@ const MovieDetail = () => {
           Back to Collection
         </Link>
         
-        <div className="max-w-3xl"> {/* Constrain content width */}
+        <div className="max-w-3xl">
           {logoUrl ? (
             <img src={logoUrl} alt={`${movie.title} logo`} className="max-h-28 md:max-h-40 mb-4 object-contain" />
           ) : (
