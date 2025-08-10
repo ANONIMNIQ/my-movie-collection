@@ -24,7 +24,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion"; // Import useMotionValue
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb";
 
@@ -46,9 +46,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const userId = session?.user?.id;
 
   const [isClicked, setIsClicked] = useState(false);
-  const [isForcedHover, setIsForcedHover] = useState(false); // New state to force hover styles
   const cardRef = useRef<HTMLDivElement>(null);
   const [initialRect, setInitialRect] = useState<DOMRect | null>(null); // Stores the calculated hovered rect
+
+  // Use Framer Motion's useMotionValue for scale
+  const scale = useMotionValue(1);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -104,17 +106,15 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     e.preventDefault();
 
     if (cardRef.current) {
-      // 1. Force the hover state visually *instantly*
-      setIsForcedHover(true);
+      // Instantly set the scale to the hover scale factor
+      scale.set(HOVER_SCALE_FACTOR);
 
-      // 2. Wait for the browser to render the forced hover state
-      //    This requestAnimationFrame ensures the DOM has updated with the new scale
+      // Wait for the next animation frame to ensure the DOM has updated
       requestAnimationFrame(() => {
         if (cardRef.current) {
-          // 3. Get the actual bounding rect of the now-scaled card
           const rect = cardRef.current.getBoundingClientRect();
           setInitialRect(rect);
-          setIsClicked(true); // Trigger the animation
+          setIsClicked(true); // Trigger the portal animation
         }
       });
     }
@@ -194,8 +194,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
       document.body.style.overflow = '';
-      // Reset isForcedHover after navigation to ensure card returns to normal state
-      setIsForcedHover(false);
+      // Reset scale after navigation
+      scale.set(1);
     }, 800); // Match animation duration
   };
 
@@ -229,7 +229,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       <div
         className={cn(
           "absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none pointer-events-none",
-          isAnimatingClone ? "opacity-0" : (isForcedHover ? "opacity-100" : "opacity-0 group-hover/slide:opacity-100") // Hide overlay on animating clone, or force visible
+          isAnimatingClone ? "opacity-0" : "opacity-0 group-hover/slide:opacity-100" // Hide overlay on animating clone
         )}
       >
         {/* Top part of overlay (backdrop) */}
@@ -330,21 +330,27 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   return (
     <>
       {/* Original card in the grid/list */}
-      <div className="relative h-full group-hover/slide:z-30">
+      <motion.div
+        ref={cardRef}
+        className="relative h-full group-hover/slide:z-30"
+        style={{ scale }} // Bind scale MotionValue
+        whileHover={{ scale: HOVER_SCALE_FACTOR, boxShadow: "0 0 25px 0px rgb(0 0 0 / 0.9)" }} // Apply hover effects
+        transition={{ duration: 0.3, ease: "easeOut" }} // Smooth transition for hover
+        onClick={handleCardClick}
+        // Hide original when animating
+        initial={{ visibility: 'visible' }}
+        animate={{ visibility: isClicked ? 'hidden' : 'visible' }}
+        // No transition for visibility change, it should be instant
+        transition={{ duration: 0 }}
+      >
         <Card 
-          ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            // Apply transition only for shadow, not transform, when not forced hover
-            !isForcedHover && "transition-shadow duration-300 ease-in-out",
-            isForcedHover ? "scale-125 shadow-glow" : "group-hover/slide:scale-125 group-hover/slide:shadow-glow", // Apply forced hover or normal hover
-            isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
-          onClick={handleCardClick}
         >
           {renderCardContent(false)}
         </Card>
-      </div>
+      </motion.div>
 
       {/* Animating overlay card, rendered via portal to ensure it's on top */}
       {createPortal(
