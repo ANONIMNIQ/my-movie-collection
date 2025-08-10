@@ -25,7 +25,7 @@ export default {
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
-        'mobile-card': '0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4)',
+        'mobile-card': '0 8px 24px rgba(200, 200, 200, 0.15)',
       },
       colors: {
         border: "hsl(var(--border))",
