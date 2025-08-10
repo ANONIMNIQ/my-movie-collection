@@ -434,203 +434,206 @@ const Index = () => {
 
           <motion.div variants={contentVariants} className="px-4 overflow-x-visible">
             {!loadingMovies && (
-              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
-                <h2 className="text-3xl font-bold ml-3">All Movies</h2>
-                <div className="flex w-full sm:w-auto items-center gap-2">
-                  <Input
-                    type="text"
-                    placeholder="Search movies..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:w-auto"
-                  />
-                  <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                    <SelectTrigger className="w-[220px]">
-                      <SelectValue placeholder="Sort & Filter" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Sort by</SelectLabel>
-                        <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-                        <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-                        <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
-                        <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
-                      </SelectGroup>
-                      {allGenres.length > 0 && <Separator className="my-1" />}
-                      <SelectGroup>
-                        <SelectLabel>Filter by Genre</SelectLabel>
-                        {allGenres.map((genre) => (
-                          <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                      {allCountries.length > 0 && <Separator className="my-1" />}
-                      <SelectGroup>
-                        <SelectLabel>Filter by Country</SelectLabel>
-                        {allCountries.map((country) => (
-                          <SelectItem key={country} value={country}>{country}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {isAdmin && !loadingMovies && (
-                <div className="flex items-center justify-between mb-4 px-6">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="select-all"
-                      checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
-                      onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                      disabled={filteredAndSortedMovies.length === 0 || isDeleting}
+              <>
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
+                  <h2 className="text-3xl font-bold ml-3">All Movies</h2>
+                  <div className="flex w-full sm:w-auto items-center gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Search movies..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full sm:w-auto"
                     />
-                    <label htmlFor="select-all" className="text-sm font-medium">
-                      Select All ({selectedMovieIds.size} selected)
-                    </label>
+                    <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
+                      <SelectTrigger className="w-[220px]">
+                        <SelectValue placeholder="Sort & Filter" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Sort by</SelectLabel>
+                          <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                          <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                          <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                          <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                        </SelectGroup>
+                        {allGenres.length > 0 && <Separator className="my-1" />}
+                        <SelectGroup>
+                          <SelectLabel>Filter by Genre</SelectLabel>
+                          {allGenres.map((genre) => (
+                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                        {allCountries.length > 0 && <Separator className="my-1" />}
+                        <SelectGroup>
+                          <SelectLabel>Filter by Country</SelectLabel>
+                          {allCountries.map((country) => (
+                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
-                  {selectedMovieIds.size > 0 && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" className="gap-2" disabled={isDeleting}>
-                          <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete{" "}
-                            <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
-                            {isDeleting ? "Deleting..." : "Delete All"}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
                 </div>
-              )}
 
-              {loadingMovies ? (
-                <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                  {Array.from({ length: 18 }).map((_, index) => (
-                    <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
-                  ))}
-                </div>
-              ) : error ? (
-                <div className="text-center text-destructive">{error}</div>
-              ) : filteredAndSortedMovies.length === 0 ? (
-                <div className="text-center text-muted-foreground text-lg py-16">
-                  No movies found matching your search.
-                </div>
-              ) : (
-                <MovieGrid
-                  movies={moviesToShow}
-                  selectedMovieIds={selectedMovieIds}
-                  onSelectMovie={handleSelectMovie}
-                />
-              )}
-            </motion.div>
-          </div>
+                {isAdmin && (
+                  <div className="flex items-center justify-between mb-4 px-6">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="select-all"
+                        checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
+                        onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                        disabled={filteredAndSortedMovies.length === 0 || isDeleting}
+                      />
+                      <label htmlFor="select-all" className="text-sm font-medium">
+                        Select All ({selectedMovieIds.size} selected)
+                      </label>
+                    </div>
+                    {selectedMovieIds.size > 0 && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" className="gap-2" disabled={isDeleting}>
+                            <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete{" "}
+                              <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
+                              {isDeleting ? "Deleting..." : "Delete All"}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
 
-          {/* Mobile View */}
-          <div className="md:hidden pt-8 px-4">
-            <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-              <h2 className="text-3xl font-bold">All Movies</h2>
-              <Input
-                type="text"
-                placeholder="Search movies..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full sm:w-auto"
+            {loadingMovies ? (
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                {Array.from({ length: 18 }).map((_, index) => (
+                  <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
+                ))}
+              </div>
+            ) : error ? (
+              <div className="text-center text-destructive">{error}</div>
+            ) : filteredAndSortedMovies.length === 0 ? (
+              <div className="text-center text-muted-foreground text-lg py-16">
+                No movies found matching your search.
+              </div>
+            ) : (
+              <MovieGrid
+                movies={moviesToShow}
+                selectedMovieIds={selectedMovieIds}
+                onSelectMovie={handleSelectMovie}
               />
-            </motion.div>
-            
-            {isAdmin && !loadingMovies && (
-                <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="select-all-mobile"
-                      checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
-                      onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                      disabled={filteredAndSortedMovies.length === 0 || isDeleting}
-                    />
-                    <label htmlFor="select-all-mobile" className="text-sm font-medium">
-                      Select All ({selectedMovieIds.size} selected)
-                    </label>
-                  </div>
-                  {selectedMovieIds.size > 0 && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" className="gap-2" disabled={isDeleting}>
-                          <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently delete{" "}
-                            <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
-                            {isDeleting ? "Deleting..." : "Delete All"}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-                </motion.div>
-              )}
+            )}
+          </motion.div>
+        </div>
 
-            <div className="flex flex-col gap-4">
-              {loadingMovies ? (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton key={index} className="w-full h-80 rounded-lg" />
-                ))
-              ) : error ? (
-                <div className="text-center text-destructive">{error}</div>
-              ) : filteredAndSortedMovies.length === 0 ? (
-                <div className="text-center text-gray-500 text-lg py-16">
-                  No movies found matching your search.
+        {/* Mobile View */}
+        <div className="md:hidden pt-8 px-4">
+          <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+            <h2 className="text-3xl font-bold">All Movies</h2>
+            <Input
+              type="text"
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full sm:w-auto"
+            />
+          </motion.div>
+          
+          {isAdmin && !loadingMovies && (
+              <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="select-all-mobile"
+                    checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
+                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                    disabled={filteredAndSortedMovies.length === 0 || isDeleting}
+                  />
+                  <label htmlFor="select-all-mobile" className="text-sm font-medium">
+                    Select All ({selectedMovieIds.size} selected)
+                  </label>
                 </div>
-              ) : (
-                moviesToShow.map(movie => (
-                  <motion.div key={movie.id} variants={contentVariants}>
-                    <MobileMovieCard 
-                      movie={movie}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={handleSelectMovie}
-                    />
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </div>
+                {selectedMovieIds.size > 0 && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="gap-2" disabled={isDeleting}>
+                        <Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete{" "}
+                          <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
+                          {isDeleting ? "Deleting..." : "Delete All"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </motion.div>
+            )}
 
-          {visibleCount < filteredAndSortedMovies.length && (
-            <motion.div variants={contentVariants} className="text-center mt-12">
-              <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
-                Load More
-              </Button>
-            </motion.div>
-          )}
-        </motion.main>
-        <motion.footer
-          className="py-8"
-          initial="hidden"
-          animate={pageLoaded ? "visible" : "hidden"}
-          variants={contentVariants}
-        >
-          <MadeWithDyad />
-        </motion.footer>
+          <div className="flex flex-col gap-4">
+            {loadingMovies ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="w-full h-80 rounded-lg" />
+              ))
+            ) : error ? (
+              <div className="text-center text-destructive">{error}</div>
+            ) : filteredAndSortedMovies.length === 0 ? (
+              <div className="text-center text-gray-500 text-lg py-16">
+                No movies found matching your search.
+              </div>
+            ) : (
+              moviesToShow.map(movie => (
+                <motion.div key={movie.id} variants={contentVariants}>
+                  <MobileMovieCard 
+                    movie={movie}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={handleSelectMovie}
+                  />
+                </motion.div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {visibleCount < filteredAndSortedMovies.length && (
+          <motion.div variants={contentVariants} className="text-center mt-12">
+            <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
+              Load More
+            </Button>
+          </motion.div>
+        )}
+      </motion.main>
+      <motion.footer
+        className="py-8"
+        initial="hidden"
+        animate={pageLoaded ? "visible" : "hidden"}
+        variants={contentVariants}
+      >
+        <MadeWithDyad />
+      </motion.footer>
     </div>
   );
 };
