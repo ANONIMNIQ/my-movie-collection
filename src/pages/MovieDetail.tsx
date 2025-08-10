@@ -10,8 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import MovieDetailSkeleton from "@/components/MovieDetailSkeleton";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import React from "react";
-import YouTubePlayerBackground from "@/components/YouTubePlayerBackground"; // Import the new component
+import React, { useState, useEffect } from "react";
+import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -19,9 +19,10 @@ const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { session } = useSession();
   const userId = session?.user?.id;
+  const [showTrailer, setShowTrailer] = useState(false);
 
   // Scroll to top on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
@@ -94,6 +95,23 @@ const MovieDetail = () => {
     staleTime: 1000 * 60 * 5,
   });
 
+  // Find YouTube trailer
+  const trailer = tmdbMovie?.videos?.results?.find(
+    (video: any) => video.type === "Trailer" && video.site === "YouTube"
+  );
+  const trailerKey = trailer ? trailer.key : null;
+
+  // Timer to switch from backdrop to trailer
+  useEffect(() => {
+    if (trailerKey) {
+      const timer = setTimeout(() => {
+        setShowTrailer(true);
+      }, 10000); // 10 seconds
+
+      return () => clearTimeout(timer); // Cleanup on unmount
+    }
+  }, [trailerKey]);
+
   // Combine all loading states
   const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb;
 
@@ -132,33 +150,24 @@ const MovieDetail = () => {
   
   const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
 
-  // Find YouTube trailer
-  const trailer = tmdbMovie?.videos?.results?.find(
-    (video: any) => video.type === "Trailer" && video.site === "YouTube"
-  );
-  const trailerKey = trailer ? trailer.key : null;
-
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       {/* Backdrop Image or Video with Overlay */}
-      {trailerKey ? (
-        <YouTubePlayerBackground videoId={trailerKey} delay={3000} />
+      {showTrailer && trailerKey ? (
+        <YouTubePlayerBackground videoId={trailerKey} />
       ) : backdropUrl ? (
         <div
-          className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden" // Added overflow-hidden
+          className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"
         >
           <img
             src={backdropUrl}
             alt={`${movie.title} backdrop`}
-            className="w-full h-full object-cover" // Ensures image covers the area
+            className="w-full h-full object-cover"
           />
-          {/* Dark overlay to make text readable */}
           <div className="absolute inset-0 bg-black opacity-70"></div>
-          {/* Gradient overlay for bottom fade */}
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
       ) : (
-        // Fallback if no trailer and no backdrop image
         <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900">
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
@@ -174,7 +183,6 @@ const MovieDetail = () => {
         </Link>
         
         <div className="max-w-3xl">
-          {/* Movie Title/Logo */}
           {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
             <img src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`} alt={`${movie.title} logo`} className="max-h-28 md:max-h-40 mb-4 object-contain" />
           ) : (

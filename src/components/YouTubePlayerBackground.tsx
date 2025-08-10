@@ -16,7 +16,7 @@ declare global {
   }
 }
 
-const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ videoId, delay = 3000 }) => {
+const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ videoId, delay = 0 }) => {
   const playerRef = useRef<any>(null);
   const iframeContainerRef = useRef<HTMLDivElement>(null); // Reference to the div that will become the iframe
   const [isPlaying, setIsPlaying] = useState(false);
