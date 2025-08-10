@@ -466,7 +466,7 @@ const Index = () => {
                       <SelectTrigger className="w-[220px]">
                         <SelectValue placeholder="Sort & Filter" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white text-black"> {/* Added bg-white text-black here */}
                         <SelectGroup>
                           <SelectLabel>Sort by</SelectLabel>
                           <SelectItem value="title-asc">Title (A-Z)</SelectItem>

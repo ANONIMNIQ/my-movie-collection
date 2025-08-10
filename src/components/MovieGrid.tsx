@@ -21,7 +21,8 @@ export const MovieGrid = ({ movies, selectedMovieIds, onSelectMovie }: MovieGrid
             // On sm and larger screens, it will revert to grid's default sizing.
             className={cn(
               "relative overflow-visible group/slide aspect-[2/3]",
-              "max-w-[280px] mx-auto sm:max-w-none sm:mx-0"
+              "max-w-[280px] mx-auto sm:max-w-none sm:mx-0",
+              "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow group-hover/slide:z-30" // Moved hover effects here
             )}
           >
             <LazyMovieCard

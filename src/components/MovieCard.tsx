@@ -199,7 +199,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         </div>
       )}
 
-      <div className="aspect-[2/3] w-full bg-muted">
+      <div className={cn("aspect-[2/3] w-full bg-muted", !isAnimatingClone && "group-hover/slide:opacity-0 transition-opacity duration-300")}> {/* Added opacity-0 on hover */}
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
@@ -318,12 +318,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   return (
     <>
       {/* Original card in the grid/list */}
-      <div className="relative h-full"> {/* Removed group-hover/slide:z-30 from here */}
+      <div className="relative h-full">
         <Card 
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow group-hover/slide:z-30", // Added group-hover/slide:z-30 here
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
           onClick={handleCardClick}
