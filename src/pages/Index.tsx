@@ -8,7 +8,7 @@ import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "lucide-react"; // Changed from "@/components/ui/checkbox" to lucide-react for Checkbox icon
+import { Checkbox } from "@/components/ui/checkbox"; // Corrected import path
 import { Trash2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -487,7 +487,7 @@ const Index = () => {
                         </SelectGroup>
                         {allCountries.length > 0 && <Separator className="my-1" />}
                         <SelectGroup>
-                          <SelectLabel>Filter by Country</SelectLabel>
+                          <SelectLabel>Filter by Country</Label>
                           {allCountries.map((country) => (
                             <SelectItem key={country} value={country}>{country}</SelectItem>
                           ))}
