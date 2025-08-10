@@ -26,7 +26,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
+  const isScrolling = useRef(false);
   const leaveTimeout = useRef<number | null>(null);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
@@ -39,7 +39,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   }, [emblaApi]);
 
   const handleSlideMouseEnter = () => {
-    if (isScrolling) return; // Prevent hover effect during scroll
+    if (isScrolling.current) return; // Prevent hover effect during scroll
     if (leaveTimeout.current) clearTimeout(leaveTimeout.current);
     setIsOverflowVisible(true);
   };
@@ -51,8 +51,12 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   useEffect(() => {
     if (!emblaApi) return;
     
-    const onScroll = () => setIsScrolling(true);
-    const onSettle = () => setIsScrolling(false);
+    const onScroll = () => {
+      isScrolling.current = true;
+    };
+    const onSettle = () => {
+      isScrolling.current = false;
+    };
 
     onSelect();
     emblaApi.on('select', onSelect);
