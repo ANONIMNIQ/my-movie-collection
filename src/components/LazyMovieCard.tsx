@@ -40,7 +40,7 @@ export const LazyMovieCard: React.FC<LazyMovieCardProps> = (props) => {
   }, []);
 
   return (
-    <div ref={cardRef} className="h-full w-full">
+    <div ref={cardRef} className="absolute inset-0">
       {isVisible ? (
         <MovieCard {...props} />
       ) : (
