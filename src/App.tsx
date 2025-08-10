@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 const AppRoutes = () => {
   const location = useLocation();
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />

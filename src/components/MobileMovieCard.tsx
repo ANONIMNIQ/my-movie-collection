@@ -66,7 +66,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     }
   };
 
-  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.backdrop_path}` : null;
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.backdrop_path}` : (movie.poster_url && movie.poster_url !== '/placeholder.svg' ? movie.poster_url : null);
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
@@ -79,8 +79,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   };
 
   return (
-    <motion.div
-      layout
+    <div
       onClick={handleCardClick}
       className="relative w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer shadow-lg"
     >
@@ -123,18 +122,11 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
       <motion.div
         layoutId={`movie-poster-${movie.id}`}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="relative h-40 w-full flex items-center justify-center p-2 overflow-hidden"
+        className="relative h-40 w-full flex items-center justify-center p-2 overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >
-        {isLoading ? (
-          <Skeleton className="absolute inset-0" />
-        ) : (
-          <img
-            src={backdropUrl || '/placeholder.svg'}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        )}
-        <div className="absolute inset-0 bg-black opacity-50"></div>
+        {isLoading && <Skeleton className="absolute inset-0" />}
+        {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
         {logoUrl && !isLoading && (
           <img
             src={logoUrl}
@@ -168,6 +160,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
