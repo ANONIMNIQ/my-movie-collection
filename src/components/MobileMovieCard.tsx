@@ -84,7 +84,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   };
 
   return (
-    <Card onClick={handleCardClick} className="w-full bg-black text-white rounded-lg overflow-hidden shadow-lg cursor-pointer">
+    <Card onClick={handleCardClick} className="w-full bg-black text-white rounded-lg overflow-hidden shadow-2xl cursor-pointer">
       {isAdmin && (
         <div className="absolute top-2 left-2 z-40">
           <Checkbox

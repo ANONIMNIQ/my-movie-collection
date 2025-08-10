@@ -537,7 +537,7 @@ const Index = () => {
 
         {visibleCount < filteredAndSortedMovies.length && (
           <div className="text-center mt-12">
-            <Button onClick={handleLoadMore} size="lg">
+            <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
               Load More
             </Button>
           </div>
