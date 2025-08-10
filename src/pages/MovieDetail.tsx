@@ -86,15 +86,20 @@ const MovieDetail = () => {
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden bg-gray-900"
       >
-        { !overallLoading && showTrailer && trailerKey ? (
+        <img 
+            src={backdropUrl || '/placeholder.svg'} 
+            alt={`${movie?.title ?? 'Movie'} backdrop`} 
+            className="w-full h-full object-cover" 
+        />
+
+        { !overallLoading && showTrailer && trailerKey && (
           <YouTubePlayerBackground videoId={trailerKey} />
-        ) : backdropUrl ? (
-          <img src={backdropUrl} alt={`${movie?.title ?? 'Movie'} backdrop`} className="w-full h-full object-cover" />
-        ) : (
-          <Skeleton className="w-full h-full" />
         )}
+        
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+
+        {overallLoading && <Skeleton className="absolute inset-0 w-full h-full" />}
       </motion.div>
 
       <div

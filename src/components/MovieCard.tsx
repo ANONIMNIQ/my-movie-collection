@@ -109,19 +109,16 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         <motion.div
           layoutId={`movie-poster-${movie.id}`}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="aspect-[2/3] w-full bg-muted"
+          className="relative aspect-[2/3] w-full bg-muted"
         >
-          {isLoading ? (
-            <Skeleton className="w-full h-full" />
-          ) : (
-            <img
-              src={posterUrl}
-              alt={movie.title}
-              className="w-full h-full object-cover"
-              onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
-              loading="lazy"
-            />
-          )}
+          <img
+            src={posterUrl}
+            alt={movie.title}
+            className="w-full h-full object-cover"
+            onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
+            loading="lazy"
+          />
+          {isLoading && <Skeleton className="absolute inset-0 w-full h-full" />}
         </motion.div>
 
         <div
