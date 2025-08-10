@@ -199,7 +199,10 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         </div>
       )}
 
-      <div className="aspect-[2/3] w-full bg-muted">
+      <div className={cn(
+        "aspect-[2/3] w-full bg-muted",
+        !isAnimatingClone && "transition-opacity duration-300 group-hover/slide:opacity-0" // Apply this only to the original card
+      )}>
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
