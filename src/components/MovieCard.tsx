@@ -1,9 +1,9 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } => "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } => "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton"; // Corrected '=>' to 'from'
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
@@ -40,7 +40,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   const queryClient = useQueryClient();
 
   const { data: adminPersonalRatingData } = useQuery({
-    queryKey: ['admin_user_rating', movie.id, ADMIN_USER_USER_ID],
+    queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_ratings')
