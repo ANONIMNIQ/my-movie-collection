@@ -97,11 +97,8 @@ const MovieDetail = () => {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
       </motion.div>
 
-      <motion.div
+      <div
         className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 0.3, duration: 0.5 } }}
-        exit={{ opacity: 0 }}
       >
         <Link to="/" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
           <ArrowLeft size={16} />
@@ -161,7 +158,7 @@ const MovieDetail = () => {
             </>
           )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
