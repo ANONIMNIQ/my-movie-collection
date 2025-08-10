@@ -163,7 +163,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             {isAdmin && (
               <div className="absolute top-2 right-2 flex gap-2 z-40">
                 <Link to={`/edit-movie/${movie.id}`}
-                      onClick={(e) => e.stopPropagation()}>
+                      onClick={(e) => e.stopPropagation()}> {/* Added stopPropagation */}
                   <Button variant="secondary" size="icon" className="h-8 w-8">
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -171,7 +171,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" size="icon" className="h-8 w-8"
-                            onClick={(e) => e.stopPropagation()}>
+                            onClick={(e) => e.stopPropagation()}> {/* Added stopPropagation */}
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
