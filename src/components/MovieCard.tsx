@@ -151,6 +151,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   return (
     <div onClick={handleCardClick} className="relative h-full group-hover/slide:z-30 block cursor-pointer">
       <motion.div
+        layout
         layoutId={`movie-card-container-${movie.id}`}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className={cn(
