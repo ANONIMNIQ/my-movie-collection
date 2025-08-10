@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, ScrollRestoration } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MovieDetail from "./pages/MovieDetail";
@@ -14,7 +14,6 @@ import ImportRatings from "./pages/ImportRatings";
 import { SessionContextProvider } from "./contexts/SessionContext";
 import React from "react";
 import { AnimatePresence } from "framer-motion";
-import ScrollToTop from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -43,7 +42,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <ScrollToTop />
+          <ScrollRestoration />
           <SessionContextProvider>
             <AppRoutes />
           </SessionContextProvider>
