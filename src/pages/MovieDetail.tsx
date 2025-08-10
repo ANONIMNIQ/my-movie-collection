@@ -123,7 +123,7 @@ const MovieDetail = () => {
   }
 
   // Prioritize Supabase data, fallback to TMDb if Supabase data is empty/placeholder
-  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb/t/p/original${tmdbMovie.backdrop_path}` : null;
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null; // Corrected URL
   const synopsis = movie.synopsis || tmdbMovie?.overview || "";
   
   // Safely access genres and movie_cast, providing empty array if null
