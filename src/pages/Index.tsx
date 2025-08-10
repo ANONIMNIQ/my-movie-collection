@@ -39,6 +39,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion } from "framer-motion"; // Import motion
+import React from "react"; // Import React for React.Fragment
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
@@ -474,20 +475,28 @@ const Index = () => {
                           <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
                           <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
                         </SelectGroup>
-                        {allGenres.length > 0 && <Separator className="my-1" />}
-                        <SelectGroup>
-                          <SelectLabel>Filter by Genre</SelectLabel>
-                          {allGenres.map((genre) => (
-                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                        {allCountries.length > 0 && <Separator className="my-1" />}
-                        <SelectGroup>
-                          <SelectLabel>Filter by Country</Label>
-                          {allCountries.map((country) => (
-                            <SelectItem key={country} value={country}>{country}</SelectItem>
-                          ))}
-                        </SelectGroup>
+                        {allGenres.length > 0 && (
+                          <React.Fragment>
+                            <Separator className="my-1" />
+                            <SelectGroup>
+                              <SelectLabel>Filter by Genre</SelectLabel>
+                              {allGenres.map((genre) => (
+                                <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </React.Fragment>
+                        )}
+                        {allCountries.length > 0 && (
+                          <React.Fragment>
+                            <Separator className="my-1" />
+                            <SelectGroup>
+                              <SelectLabel>Filter by Country</Label>
+                              {allCountries.map((country) => (
+                                <SelectItem key={country} value={country}>{country}</SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </React.Fragment>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
