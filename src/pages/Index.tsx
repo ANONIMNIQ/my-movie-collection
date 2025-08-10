@@ -8,7 +8,7 @@ import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox"; // Corrected import path back to shadcn/ui
+import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -51,13 +51,13 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  // Animation state
-  const [introComplete, setIntroComplete] = useState(false);
+  // State to control when main content animations start
+  const [pageLoaded, setPageLoaded] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -80,6 +80,13 @@ const Index = () => {
     };
 
     fetchMovies();
+
+    // Set pageLoaded to true after a short delay to trigger animations
+    const timer = setTimeout(() => {
+      setPageLoaded(true);
+    }, 500); // Adjust delay as needed
+
+    return () => clearTimeout(timer);
   }, []);
 
   const allGenres = useMemo(() => {
@@ -256,245 +263,215 @@ const Index = () => {
     setIsDeleting(false);
   };
 
-  // Animation variants
+  // Variants for content sections (fade in and slight slide up)
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
-  const headerVariants = {
-    hidden: { y: -100, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 1, ease: "easeOut" } },
-  };
-
-  const introOverlayVariants = {
-    hidden: { opacity: 1 },
-    visible: { opacity: 0, transition: { delay: 2, duration: 1 } }, // Fade out after 2s, takes 1s
-  };
-
   return (
-    <motion.div
-      initial={{ backgroundColor: 'hsl(var(--background))' }} // Start dark
-      animate={isMobile && introComplete ? { backgroundColor: 'white' } : {}} // Animate to white only on mobile after intro
-      transition={{ duration: 1.5, delay: 2.8 }}
-      className="min-h-screen w-full overflow-x-hidden" // Base classes, no text color here
+    <div
+      className={cn(
+        "min-h-screen w-full overflow-x-hidden",
+        isMobile && pageLoaded ? "bg-white text-black" : "bg-background text-foreground"
+      )}
     >
-      {/* Intro Overlay - covers the screen initially */}
-      {!introComplete && (
-        <motion.div
-          className="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center" // Increased z-index
-          initial="hidden"
-          animate="visible"
-          variants={introOverlayVariants}
-          onAnimationComplete={() => setIntroComplete(true)}
-          style={{ pointerEvents: introComplete ? 'none' : 'auto' }} // Disable pointer events after animation
-        >
+      <motion.header
+        className={cn(
+          "w-full text-center py-8 shadow-md z-50",
+          isMobile ? "bg-background" : "bg-white"
+        )}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <div className="container mx-auto px-4">
           <motion.h1
-            className="text-4xl md:text-5xl font-bold tracking-tight text-foreground"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            className={cn(
+              "text-4xl md:text-5xl font-bold tracking-tight",
+              isMobile ? "text-foreground" : "text-headerTitle"
+            )}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: pageLoaded ? 1 : 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
             Georgi's Movie Collection
           </motion.h1>
           <motion.p
-            className="mt-2 text-lg text-muted-foreground"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            className={cn(
+              "mt-2 text-lg",
+              isMobile ? "text-muted-foreground" : "text-headerDescription"
+            )}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: pageLoaded ? 1 : 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
           >
             A minimalist collection of cinematic gems.
           </motion.p>
-        </motion.div>
-      )}
-
-      {/* Main Content - hidden until intro is complete */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={introComplete ? { opacity: 1 } : {}}
-        transition={{ delay: 2.8, duration: 0.5 }} // Appear after intro overlay fades
-        // This div's text color should be based on the *final* background color
-        // which is white on mobile after intro, and dark on desktop.
-        // So, if isMobile and introComplete, text should be black. Otherwise, text should be foreground.
-        className={cn(introComplete && isMobile ? "text-black" : "text-foreground")}
-      >
-        <motion.header
-          className={cn(
-            "w-full text-center py-8 shadow-md z-50",
-            isMobile ? "bg-background" : "bg-white" // Explicitly set background based on isMobile
-          )}
-          initial="hidden"
-          animate={introComplete ? "visible" : "hidden"}
-          variants={headerVariants}
-        >
-          <div className="container mx-auto px-4">
-            <h1 className={cn(
-              "text-4xl md:text-5xl font-bold tracking-tight",
-              isMobile ? "text-foreground" : "text-headerTitle" // Explicitly set text color based on isMobile
-            )}>
-              Georgi's Movie Collection
-            </h1>
-            <p className={cn(
-              "mt-2 text-lg",
-              isMobile ? "text-muted-foreground" : "text-headerDescription" // Explicitly set text color based on isMobile
-            )}>
-              A minimalist collection of cinematic gems.
-            </p>
-            <div className="mt-6">
-              <MovieCounter 
-                key={isMobile ? 'mobile' : 'desktop'}
-                count={filteredAndSortedMovies.length} 
-                numberColor={isMobile ? "white" : "#0F0F0F"} // Correct based on header background
-                labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"} // Correct based on header background
-              />
-            </div>
-            <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-              {sessionLoading ? (
-                <Skeleton className="w-32 h-10" />
-              ) : session ? (
-                <>
-                  <Link to="/add-movie">
-                    <Button>Add New Movie</Button>
-                  </Link>
-                  {isAdmin && (
-                    <Link to="/import-movies">
-                      <Button variant="secondary">Import Movies (CSV)</Button>
-                    </Link>
-                  )}
-                  <Link to="/import-ratings">
-                    <Button variant="outline">Import My Ratings</Button>
-                  </Link>
-                  <Button variant="outline" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                </>
-              ) : (
-                <></>
-              )}
-            </div>
-          </div>
-        </motion.header>
-
-        <motion.main
-          className="pt-0"
-          initial="hidden"
-          animate={introComplete ? "visible" : "hidden"}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.5, // Delay for children to start animating after main appears
-              },
-            },
-          }}
-        >
-          {/* Desktop View */}
-          <div className="hidden md:block pt-8">
-            {loadingMovies ? (
-              <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
-                <h2 className="text-3xl font-bold mb-4">New Movies</h2>
-                <div className="flex overflow-hidden gap-4">
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
+          <motion.div
+            className="mt-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: pageLoaded ? 1 : 0, y: pageLoaded ? 0 : 20 }}
+            transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
+          >
+            <MovieCounter 
+              key={isMobile ? 'mobile' : 'desktop'}
+              count={filteredAndSortedMovies.length} 
+              numberColor={isMobile ? "white" : "#0F0F0F"}
+              labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
+            />
+          </motion.div>
+          <motion.div
+            className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: pageLoaded ? 1 : 0, y: pageLoaded ? 0 : 20 }}
+            transition={{ duration: 0.6, delay: 1.1, ease: "easeOut" }}
+          >
+            {sessionLoading ? (
+              <Skeleton className="w-32 h-10" />
+            ) : session ? (
               <>
+                <Link to="/add-movie">
+                  <Button>Add New Movie</Button>
+                </Link>
+                {isAdmin && (
+                  <Link to="/import-movies">
+                    <Button variant="secondary">Import Movies (CSV)</Button>
+                  </Link>
+                )}
+                <Link to="/import-ratings">
+                  <Button variant="outline">Import My Ratings</Button>
+                </Link>
+                <Button variant="outline" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <></>
+            )}
+          </motion.div>
+        </div>
+      </motion.header>
+
+      <motion.main
+        className="pt-0"
+        initial="hidden"
+        animate={pageLoaded ? "visible" : "hidden"}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1,
+              delayChildren: 0.5, // Delay for children to start animating after main appears
+            },
+          },
+        }}
+      >
+        {/* Desktop View */}
+        <div className="hidden md:block pt-8">
+          {loadingMovies ? (
+            <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
+              <h2 className="text-3xl font-bold mb-4">New Movies</h2>
+              <div className="flex overflow-hidden gap-4">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <>
+              <motion.div variants={contentVariants}>
+                <CustomCarousel
+                  title="New Movies"
+                  movies={categorizedMovies.newMovies}
+                  selectedMovieIds={selectedMovieIds}
+                  onSelectMovie={handleSelectMovie}
+                />
+              </motion.div>
+              {categorizedMovies.dramaMovies.length > 0 && (
                 <motion.div variants={contentVariants}>
                   <CustomCarousel
-                    title="New Movies"
-                    movies={categorizedMovies.newMovies}
+                    title="Drama"
+                    movies={categorizedMovies.dramaMovies}
                     selectedMovieIds={selectedMovieIds}
                     onSelectMovie={handleSelectMovie}
                   />
                 </motion.div>
-                {categorizedMovies.dramaMovies.length > 0 && (
-                  <motion.div variants={contentVariants}>
-                    <CustomCarousel
-                      title="Drama"
-                      movies={categorizedMovies.dramaMovies}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={handleSelectMovie}
-                    />
-                  </motion.div>
-                )}
-                {categorizedMovies.thrillerMovies.length > 0 && (
-                  <motion.div variants={contentVariants}>
-                    <CustomCarousel
-                      title="Thriller"
-                      movies={categorizedMovies.thrillerMovies}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={handleSelectMovie}
-                    />
-                  </motion.div>
-                )}
-                {categorizedMovies.scifiMovies.length > 0 && (
-                  <motion.div variants={contentVariants}>
-                    <CustomCarousel
-                      title="Sci-Fi"
-                      movies={categorizedMovies.scifiMovies}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={handleSelectMovie}
-                    />
-                  </motion.div>
-                )}
-                {categorizedMovies.horrorMovies.length > 0 && (
-                  <motion.div variants={contentVariants}>
-                    <CustomCarousel
-                      title="Horror"
-                      movies={categorizedMovies.horrorMovies}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={handleSelectMovie}
-                    />
-                  </motion.div>
-                )}
-              </>
-            )}
+              )}
+              {categorizedMovies.thrillerMovies.length > 0 && (
+                <motion.div variants={contentVariants}>
+                  <CustomCarousel
+                    title="Thriller"
+                    movies={categorizedMovies.thrillerMovies}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={handleSelectMovie}
+                  />
+                </motion.div>
+              )}
+              {categorizedMovies.scifiMovies.length > 0 && (
+                <motion.div variants={contentVariants}>
+                  <CustomCarousel
+                    title="Sci-Fi"
+                    movies={categorizedMovies.scifiMovies}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={handleSelectMovie}
+                  />
+                </motion.div>
+              )}
+              {categorizedMovies.horrorMovies.length > 0 && (
+                <motion.div variants={contentVariants}>
+                  <CustomCarousel
+                    title="Horror"
+                    movies={categorizedMovies.horrorMovies}
+                    selectedMovieIds={selectedMovieIds}
+                    onSelectMovie={handleSelectMovie}
+                  />
+                </motion.div>
+              )}
+            </>
+          )}
 
-            <motion.div variants={contentVariants} className="px-4 overflow-x-visible">
-              {!loadingMovies && (
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
-                  <h2 className="text-3xl font-bold ml-3">All Movies</h2>
-                  <div className="flex w-full sm:w-auto items-center gap-2">
-                    <Input
-                      type="text"
-                      placeholder="Search movies..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full sm:w-auto"
-                    />
-                    <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                      <SelectTrigger className="w-[220px]">
-                        <SelectValue placeholder="Sort & Filter" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Sort by</SelectLabel>
-                          <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-                          <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-                          <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
-                          <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
-                        </SelectGroup>
-                        {allGenres.length > 0 && <Separator className="my-1" />}
-                        <SelectGroup>
-                          <SelectLabel>Filter by Genre</SelectLabel>
-                          {allGenres.map((genre) => (
-                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                        {allCountries.length > 0 && <Separator className="my-1" />}
-                        <SelectGroup>
-                          <SelectLabel>Filter by Country</SelectLabel>
-                          {allCountries.map((country) => (
-                            <SelectItem key={country} value={country}>{country}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
+          <motion.div variants={contentVariants} className="px-4 overflow-x-visible">
+            {!loadingMovies && (
+              <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
+                <h2 className="text-3xl font-bold ml-3">All Movies</h2>
+                <div className="flex w-full sm:w-auto items-center gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Search movies..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full sm:w-auto"
+                  />
+                  <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
+                    <SelectTrigger className="w-[220px]">
+                      <SelectValue placeholder="Sort & Filter" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Sort by</SelectLabel>
+                        <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                        <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                        <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                        <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                      </SelectGroup>
+                      {allGenres.length > 0 && <Separator className="my-1" />}
+                      <SelectGroup>
+                        <SelectLabel>Filter by Genre</SelectLabel>
+                        {allGenres.map((genre) => (
+                          <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                      {allCountries.length > 0 && <Separator className="my-1" />}
+                      <SelectGroup>
+                        <SelectLabel>Filter by Country</SelectLabel>
+                        {allCountries.map((country) => (
+                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
@@ -649,13 +626,12 @@ const Index = () => {
         <motion.footer
           className="py-8"
           initial="hidden"
-          animate={introComplete ? "visible" : "hidden"}
+          animate={pageLoaded ? "visible" : "hidden"}
           variants={contentVariants}
         >
           <MadeWithDyad />
         </motion.footer>
-      </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
