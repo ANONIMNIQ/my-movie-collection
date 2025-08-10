@@ -270,11 +270,17 @@ const Index = () => {
   };
 
   return (
-    <div
+    <motion.div
       className={cn(
         "min-h-screen w-full overflow-x-hidden",
-        isMobile && pageLoaded ? "bg-white text-black" : "bg-background text-foreground"
+        // On desktop, always use dark background and light foreground
+        !isMobile && "bg-background text-foreground",
+        // On mobile, text color changes with background
+        isMobile && (pageLoaded ? "text-black" : "text-foreground")
       )}
+      initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}} // Dark initial for mobile
+      animate={isMobile && pageLoaded ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
+      transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Adjust delay to be after header
     >
       <motion.header
         className={cn(
@@ -634,7 +640,7 @@ const Index = () => {
       >
         <MadeWithDyad />
       </motion.footer>
-    </div>
+    </motion.div>
   );
 };
 
