@@ -51,7 +51,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set()); // Corrected initialization
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -270,11 +270,16 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-background text-foreground">
+    <div
+      className={cn(
+        "min-h-screen w-full overflow-x-hidden",
+        isMobile && pageLoaded ? "bg-white text-black" : "bg-background text-foreground"
+      )}
+    >
       <motion.header
         className={cn(
           "w-full text-center py-8 shadow-md z-50",
-          !isMobile ? "bg-white" : (pageLoaded ? "bg-white" : "bg-background")
+          isMobile ? "bg-background" : "bg-white"
         )}
         initial={{ y: "-100%", opacity: 0 }} // Start completely off-screen and invisible
         animate={{ y: 0, opacity: 1 }} // Animate to visible and in place
@@ -284,7 +289,7 @@ const Index = () => {
           <motion.h1
             className={cn(
               "text-4xl md:text-5xl font-bold tracking-tight",
-              isMobile && pageLoaded ? "text-headerTitle" : "text-foreground"
+              isMobile ? "text-foreground" : "text-headerTitle"
             )}
             initial={{ opacity: 0 }}
             animate={{ opacity: pageLoaded ? 1 : 0 }}
@@ -295,7 +300,7 @@ const Index = () => {
           <motion.p
             className={cn(
               "mt-2 text-lg",
-              isMobile && pageLoaded ? "text-headerDescription" : "text-muted-foreground"
+              isMobile ? "text-muted-foreground" : "text-headerDescription"
             )}
             initial={{ opacity: 0 }}
             animate={{ opacity: pageLoaded ? 1 : 0 }}
@@ -312,8 +317,8 @@ const Index = () => {
             <MovieCounter 
               key={isMobile ? 'mobile' : 'desktop'}
               count={filteredAndSortedMovies.length} 
-              numberColor={!isMobile ? "#0F0F0F" : (pageLoaded ? "#0F0F0F" : "white")}
-              labelColor={!isMobile ? "text-headerDescription" : (pageLoaded ? "text-headerDescription" : "text-muted-foreground")}
+              numberColor={isMobile ? "white" : "#0F0F0F"}
+              labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
             />
           </motion.div>
           <motion.div
@@ -361,16 +366,6 @@ const Index = () => {
               delayChildren: 0.5, // Delay for children to start animating after main appears
             },
           },
-        }}
-        // Apply background and text color animation here for mobile only
-        style={{
-          backgroundColor: isMobile ? "hsl(var(--background))" : "transparent",
-          color: isMobile ? "hsl(var(--foreground))" : "inherit",
-        }}
-        animate={isMobile && pageLoaded ? { backgroundColor: "rgb(255,255,255)", color: "rgb(0,0,0)" } : {}}
-        transition={{
-          backgroundColor: { duration: 0.8, delay: 0.5, ease: "easeOut" },
-          color: { duration: 0.8, delay: 0.5, ease: "easeOut" },
         }}
       >
         {/* Desktop View */}
