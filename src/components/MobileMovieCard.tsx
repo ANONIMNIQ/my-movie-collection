@@ -4,7 +4,7 @@ import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
+import { Edit, Trash2, Star, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -21,7 +21,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
 import { motion } from "framer-motion";
 
 interface MobileMovieCardProps {
@@ -78,46 +77,32 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
       return;
     }
     e.preventDefault();
+    
+    // Lock scroll to prevent layout shifts during animation
+    document.body.style.overflow = 'hidden';
+    
     setIsClicked(true);
-  };
 
-  const cardVariants = {
-    initial: {
-      borderRadius: "0px",
-    },
-    clicked: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "hsl(0 0% 8.2%)", // --background color
-      borderRadius: "0px",
-      zIndex: 100,
-      transition: { duration: 0.4, ease: "easeInOut" },
-    },
-  };
-
-  const contentVariants = {
-    initial: { opacity: 1 },
-    clicked: { opacity: 0, transition: { duration: 0.2 } },
+    // Navigate after the animation has had time to complete
+    setTimeout(() => {
+      navigate(`/movie/${movie.id}`);
+      // Re-enable scroll, important if the user navigates back
+      document.body.style.overflow = '';
+    }, 400); // This duration should match the transition duration
   };
 
   return (
     <motion.div
       layout
-      variants={cardVariants}
-      initial="initial"
-      animate={isClicked ? "clicked" : "initial"}
       onClick={handleCardClick}
-      onAnimationComplete={() => {
-        if (isClicked) {
-          navigate(`/movie/${movie.id}`);
-        }
-      }}
-      className="w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer"
+      className={isClicked ? "fixed top-0 left-0 w-screen h-screen bg-background z-[100]" : "w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer"}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
     >
-      <motion.div variants={contentVariants} className="w-full h-full">
+      <motion.div
+        animate={{ opacity: isClicked ? 0 : 1 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="w-full h-full"
+      >
         {isAdmin && (
           <div className="absolute top-2 left-2 z-40">
             <Checkbox
