@@ -23,6 +23,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
+import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -36,7 +37,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   const navigate = useNavigate();
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient(); // Get query client
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -74,7 +75,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleCardClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     if (target.closest('button, a, [role="checkbox"]')) {
       return;
@@ -88,6 +89,77 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     
     document.body.style.overflow = 'hidden';
     setIsClicked(true);
+
+    const movieId = movie.id;
+    const userId = session?.user?.id;
+
+    // Prefetch main movie data from Supabase
+    queryClient.prefetchQuery({
+        queryKey: ["movie", movieId],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from("movies")
+                .select("*")
+                .eq("id", movieId)
+                .single();
+            if (error) throw error;
+            return data as Movie;
+        },
+    });
+
+    // Prefetch TMDb data
+    queryClient.prefetchQuery({
+        queryKey: ["tmdb", movie.title, movie.year],
+        queryFn: async () => {
+            let searchResults = await fetchFromTmdb("/search/movie", {
+                query: movie.title,
+                primary_release_year: movie.year,
+            });
+            if (!searchResults || searchResults.results.length === 0) {
+                searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
+            }
+            if (!searchResults || searchResults.results.length === 0) {
+                return null;
+            }
+            const movieSummary = searchResults.results[0];
+            const details = await fetchFromTmdb(`/movie/${movieSummary.id}`, {
+                append_to_response: "credits,release_dates,images,videos",
+            });
+            return details;
+        },
+    });
+
+    // Prefetch admin's personal rating
+    queryClient.prefetchQuery({
+        queryKey: ['admin_user_rating', movieId, ADMIN_USER_ID],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from('user_ratings')
+                .select('rating')
+                .eq('user_id', ADMIN_USER_ID)
+                .eq('movie_id', movieId)
+                .single();
+            if (error && error.code !== 'PGRST116') throw error;
+            return data?.rating ?? null;
+        },
+    });
+
+    // Prefetch current user's personal rating (if logged in)
+    if (userId) {
+        queryClient.prefetchQuery({
+            queryKey: ['current_user_rating', movieId, userId],
+            queryFn: async () => {
+                const { data, error } = await supabase
+                    .from('user_ratings')
+                    .select('rating')
+                    .eq('user_id', userId)
+                    .eq('movie_id', movieId)
+                    .single();
+                if (error && error.code !== 'PGRST116') throw error;
+                return data?.rating ?? null;
+            },
+        });
+    }
 
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
