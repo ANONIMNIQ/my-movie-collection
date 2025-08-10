@@ -1,13 +1,14 @@
 import { useParams, Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowLeft, Youtube } from "lucide-react";
+import { Star, ArrowLeft, Youtube, Play } from "lucide-react"; // Added Play icon
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import PersonalRating from "@/components/PersonalRating";
 import { useSession } from "@/contexts/SessionContext";
 import { useQuery } from "@tanstack/react-query";
+import MovieDetailSkeleton from "@/components/MovieDetailSkeleton"; // Import the new skeleton
+import { Separator } from "@/components/ui/separator"; // Import Separator
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -86,19 +87,15 @@ const MovieDetail = () => {
   });
 
   // Combine all loading states
-  const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating;
+  const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb;
 
   if (overallLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Skeleton className="w-64 h-96 rounded-lg" />
-      </div>
-    );
+    return <MovieDetailSkeleton />;
   }
 
   if (isErrorMovie || !movie) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Movie not found</h1>
           <Link to="/" className="text-primary hover:underline">
@@ -110,10 +107,7 @@ const MovieDetail = () => {
   }
 
   // Prioritize Supabase data, fallback to TMDb if Supabase data is empty/placeholder
-  const posterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
-    ? movie.poster_url
-    : (tmdbMovie?.poster_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.poster_path}` : '/placeholder.svg');
-  
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null;
   const synopsis = movie.synopsis || tmdbMovie?.overview || "";
   
   // Safely access genres and movie_cast, providing empty array if null
@@ -138,12 +132,17 @@ const MovieDetail = () => {
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
-      {/* Backdrop Image */}
-      {tmdbMovie?.backdrop_path && (
+      {/* Backdrop Image with Overlay */}
+      {backdropUrl && (
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-10 md:opacity-20"
-          style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path})` }}
-        ></div>
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${backdropUrl})` }}
+        >
+          {/* Dark overlay to make text readable */}
+          <div className="absolute inset-0 bg-black opacity-70"></div>
+          {/* Gradient overlay for bottom fade */}
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+        </div>
       )}
 
       <div className="relative z-10 container mx-auto px-4 py-8 md:py-12">
@@ -154,105 +153,71 @@ const MovieDetail = () => {
           <ArrowLeft size={16} />
           Back to Collection
         </Link>
-        <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-          <div className="md:col-span-1">
-            {isLoadingTmdb ? (
-              <Skeleton className="w-full aspect-[2/3] rounded-lg" />
-            ) : (
-              <img
-                src={posterUrl}
-                alt={movie.title}
-                className="w-full h-auto rounded-lg shadow-lg aspect-[2/3] object-cover"
-                onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
-              />
-            )}
+        
+        <div className="max-w-3xl"> {/* Constrain content width */}
+          {logoUrl ? (
+            <img src={logoUrl} alt={`${movie.title} logo`} className="max-h-28 md:max-h-40 mb-4 object-contain" />
+          ) : (
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
+              {movie.title}
+            </h1>
+          )}
+          
+          <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-lg text-muted-foreground mb-6">
+            <span>{movie.rating}</span>
+            <span>{movie.runtime} min</span>
+            <span>{movie.year}</span>
+            {/* Add 4K UHD if applicable, for now just a placeholder */}
+            {/* <span>4K UHD</span> */}
           </div>
-          <div className="md:col-span-2">
-            {logoUrl && !isLoadingTmdb ? (
-              <img src={logoUrl} alt={`${movie.title} logo`} className="max-h-24 md:max-h-32 mb-4 object-contain" />
-            ) : (
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-                {movie.title}
-              </h1>
-            )}
-            <p className="text-xl text-muted-foreground mt-2">{movie.year}</p>
-            <div className="flex items-center flex-wrap gap-4 mt-4">
-              <div className="flex items-center gap-1">
-                <Star className="text-yellow-400" size={20} />
-                <span className="font-bold text-lg">
-                  {movie.community_rating?.toFixed(1) ?? "N/A"}
-                </span>
-              </div>
-              <Badge variant="outline">{movie.rating}</Badge>
-              <span className="text-muted-foreground">{movie.runtime} min</span>
+
+          {trailerUrl && (
+            <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
+              <Button size="lg" className="mb-8">
+                <Play className="mr-2 h-5 w-5" /> Watch Trailer
+              </Button>
+            </a>
+          )}
+
+          <p className="text-lg text-muted-foreground mb-8">
+            {synopsis || "No synopsis available."}
+          </p>
+
+          <Separator className="my-8 bg-muted-foreground/30" />
+
+          <h2 className="text-2xl font-semibold mb-4">Details</h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-lg">
+            <div>
+              <p className="font-semibold">Genres</p>
+              <p className="text-muted-foreground">{genresToDisplay.join(", ") || "N/A"}</p>
             </div>
-            {/* Always show admin's rating */}
-            <div className="mt-4 flex items-center gap-2">
-              <span className="text-lg font-semibold">My Rating:</span>
+            <div>
+              <p className="font-semibold">Community Rating</p>
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <Star className="text-yellow-400" size={18} />
+                <span>{movie.community_rating?.toFixed(1) ?? "N/A"}</span>
+              </div>
+            </div>
+            <div>
+              <p className="font-semibold">My Rating</p>
               <PersonalRating movieId={movie.id} initialRating={adminPersonalRatingData} readOnly={true} />
               {adminPersonalRatingData === null && <span className="text-lg text-muted-foreground ml-1">N/A</span>}
             </div>
-            {/* Show interactive rating for current user if logged in and not admin */}
             {userId && userId !== ADMIN_USER_ID && (
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-lg font-semibold">Your Rating:</span>
+              <div>
+                <p className="font-semibold">Your Rating</p>
                 <PersonalRating movieId={movie.id} initialRating={currentUserPersonalRatingData} />
               </div>
             )}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {genresToDisplay.map((genre) => (
-                <Badge key={genre} variant="secondary">
-                  {genre}
-                </Badge>
-              ))}
+            <div>
+              <p className="font-semibold">Director</p>
+              <p className="text-muted-foreground">{director || "N/A"}</p>
             </div>
-            <div className="mt-8">
-              <h2 className="text-2xl font-semibold">Synopsis</h2>
-               {isLoadingTmdb && !synopsis ? (
-                <div className="space-y-2 mt-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-              ) : (
-                <p className="mt-2 text-lg text-muted-foreground">{synopsis}</p>
-              )}
+            <div>
+              <p className="font-semibold">Cast</p>
+              <p className="text-muted-foreground">{cast || "N/A"}</p>
             </div>
-            <div className="mt-8">
-              <h2 className="text-2xl font-semibold">Director</h2>
-               {isLoadingTmdb && !director ? (
-                <Skeleton className="h-4 w-1/2 mt-2" />
-              ) : (
-              <p className="mt-2 text-lg text-muted-foreground">{director}</p>
-              )}
-            </div>
-            <div className="mt-8">
-              <h2 className="text-2xl font-semibold">Cast</h2>
-               {isLoadingTmdb && !cast ? (
-                 <div className="space-y-2 mt-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
-              ) : (
-              <p className="mt-2 text-lg text-muted-foreground">{cast}</p>
-              )}
-            </div>
-            {trailerUrl && (
-              <div className="mt-8">
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                  <Youtube size={24} className="text-red-500" /> Trailer
-                </h2>
-                <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
-                  <iframe
-                    className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-                    src={trailerUrl}
-                    title={`${movie.title} Trailer`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
