@@ -446,10 +446,7 @@ const Index = () => {
             </>
           )}
 
-          <motion.div variants={contentVariants} className={cn(
-            "px-4 overflow-x-visible",
-            !isMobile && "bg-white text-black py-8" // Apply white background and black text on desktop/tablet
-          )}>
+          <motion.div variants={contentVariants} className="px-4 overflow-x-visible">
             {!loadingMovies && (
               <>
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6">
