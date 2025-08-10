@@ -292,7 +292,7 @@ const Index = () => {
             />
           )}
 
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 overflow-x-visible"> {/* Added overflow-x-visible */}
             {!loadingMovies && filteredMovies.length > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <h2 className="text-3xl font-bold">All Movies</h2>
@@ -353,7 +353,7 @@ const Index = () => {
             )}
 
             {loadingMovies ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                 {Array.from({ length: 18 }).map((_, index) => (
                   <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
                 ))}
