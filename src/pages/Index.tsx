@@ -8,7 +8,7 @@ import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "lucide-react"; // Changed from "@/components/ui/checkbox" to lucide-react for Checkbox icon
 import { Trash2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -274,7 +274,10 @@ const Index = () => {
 
   return (
     <motion.div
-      className="min-h-screen w-full overflow-x-hidden bg-background text-foreground" // Always dark background for the main container
+      initial={{ backgroundColor: 'hsl(var(--background))' }} // Start dark
+      animate={isMobile && introComplete ? { backgroundColor: 'white' } : {}} // Animate to white only on mobile after intro
+      transition={{ duration: 1.5, delay: 2.8 }}
+      className="min-h-screen w-full overflow-x-hidden" // Base classes, no text color here
     >
       {/* Intro Overlay - covers the screen initially */}
       {!introComplete && (
@@ -310,26 +313,39 @@ const Index = () => {
         initial={{ opacity: 0 }}
         animate={introComplete ? { opacity: 1 } : {}}
         transition={{ delay: 2.8, duration: 0.5 }} // Appear after intro overlay fades
+        // This div's text color should be based on the *final* background color
+        // which is white on mobile after intro, and dark on desktop.
+        // So, if isMobile and introComplete, text should be black. Otherwise, text should be foreground.
+        className={cn(introComplete && isMobile ? "text-black" : "text-foreground")}
       >
         <motion.header
-          className="w-full text-center py-8 shadow-md z-50 bg-background md:bg-white" // Responsive background
+          className={cn(
+            "w-full text-center py-8 shadow-md z-50",
+            isMobile ? "bg-background" : "bg-white" // Explicitly set background based on isMobile
+          )}
           initial="hidden"
           animate={introComplete ? "visible" : "hidden"}
           variants={headerVariants}
         >
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground md:text-headerTitle"> {/* Responsive text color */}
+            <h1 className={cn(
+              "text-4xl md:text-5xl font-bold tracking-tight",
+              isMobile ? "text-foreground" : "text-headerTitle" // Explicitly set text color based on isMobile
+            )}>
               Georgi's Movie Collection
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground md:text-headerDescription"> {/* Responsive text color */}
+            <p className={cn(
+              "mt-2 text-lg",
+              isMobile ? "text-muted-foreground" : "text-headerDescription" // Explicitly set text color based on isMobile
+            )}>
               A minimalist collection of cinematic gems.
             </p>
             <div className="mt-6">
               <MovieCounter 
                 key={isMobile ? 'mobile' : 'desktop'}
                 count={filteredAndSortedMovies.length} 
-                numberColor={isMobile ? "white" : "#0F0F0F"} // Responsive number color
-                labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"} // Responsive label color
+                numberColor={isMobile ? "white" : "#0F0F0F"} // Correct based on header background
+                labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"} // Correct based on header background
               />
             </div>
             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
