@@ -125,7 +125,10 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           )}
         </div>
 
-        <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none">
+        <div
+          className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none group-hover/slide:pointer-events-auto"
+          onClick={handleCardClick}
+        >
           <div
             className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
             style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
@@ -146,7 +149,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
 
           <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
             {/* Info icon positioned above the title */}
-            <div className="pointer-events-auto mb-1">
+            <div className="mb-1">
               <Info
                 size={16}
                 className="text-white cursor-pointer hover:text-gray-300 transition-colors"
@@ -170,7 +173,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
               </div>
             </div>
             {/* Trailer Button: hidden on xs/sm, visible on md+ */}
-            <div className="hidden md:flex flex-row gap-1 mt-2 pointer-events-auto">
+            <div className="hidden md:flex flex-row gap-1 mt-2">
               {trailerUrl && (
                 <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1"
                    onClick={(e) => e.stopPropagation()}>
