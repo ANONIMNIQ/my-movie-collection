@@ -274,10 +274,7 @@ const Index = () => {
 
   return (
     <motion.div
-      initial={{ backgroundColor: 'hsl(var(--background))' }}
-      animate={isMobile && introComplete ? { backgroundColor: 'white' } : {}}
-      transition={{ duration: 1.5, delay: 2.8 }} // Start mobile color transition after intro overlay fades
-      className={cn("min-h-screen w-full overflow-x-hidden", isMobile && introComplete ? "text-black" : "text-foreground")}
+      className="min-h-screen w-full overflow-x-hidden bg-background text-foreground" // Always dark background
     >
       {/* Intro Overlay - covers the screen initially */}
       {!introComplete && (
@@ -315,24 +312,24 @@ const Index = () => {
         transition={{ delay: 2.8, duration: 0.5 }} // Appear after intro overlay fades
       >
         <motion.header
-          className={cn("w-full text-center py-8 shadow-md z-50", isMobile && introComplete ? "bg-white" : "bg-background")}
+          className="w-full text-center py-8 shadow-md z-50 bg-background" // Always dark background for header
           initial="hidden"
           animate={introComplete ? "visible" : "hidden"}
           variants={headerVariants}
         >
           <div className="container mx-auto px-4">
-            <h1 className={cn("text-4xl md:text-5xl font-bold tracking-tight", isMobile && introComplete ? "text-headerTitle" : "text-foreground")}>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground"> {/* Always foreground text */}
               Georgi's Movie Collection
             </h1>
-            <p className={cn("mt-2 text-lg", isMobile && introComplete ? "text-headerDescription" : "text-muted-foreground")}>
+            <p className="mt-2 text-lg text-muted-foreground"> {/* Always muted-foreground text */}
               A minimalist collection of cinematic gems.
             </p>
             <div className="mt-6">
               <MovieCounter 
                 key={isMobile ? 'mobile' : 'desktop'}
                 count={filteredAndSortedMovies.length} 
-                numberColor={isMobile && introComplete ? "#0F0F0F" : "white"}
-                labelColor={isMobile && introComplete ? "text-headerDescription" : "text-muted-foreground"}
+                numberColor="white" // Always white numbers
+                labelColor="text-muted-foreground" // Always muted-foreground label
               />
             </div>
             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
