@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MovieCard } from './MovieCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Movie } from '@/data/movies';
-import { cn } from '@/lib/utils'; // Import cn utility
 
 interface LazyMovieCardProps {
   movie: Movie;
@@ -41,7 +40,7 @@ export const LazyMovieCard: React.FC<LazyMovieCardProps> = (props) => {
   }, []);
 
   return (
-    <div ref={cardRef} className={cn("absolute inset-0", !isVisible && "group")}> {/* Added 'group' class here */}
+    <div ref={cardRef} className="absolute inset-0">
       {isVisible ? (
         <MovieCard {...props} />
       ) : (

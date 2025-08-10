@@ -20,9 +20,8 @@ export const MovieGrid = ({ movies, selectedMovieIds, onSelectMovie }: MovieGrid
             // and center it, so that when it scales on hover, it stays within view.
             // On sm and larger screens, it will revert to grid's default sizing.
             className={cn(
-              "relative overflow-visible group aspect-[2/3]", // Changed group/slide to group
+              "relative overflow-visible group/slide aspect-[2/3]",
               "max-w-[280px] mx-auto sm:max-w-none sm:mx-0"
-              // Removed hover effects from here
             )}
           >
             <LazyMovieCard
