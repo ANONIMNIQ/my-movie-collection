@@ -84,25 +84,57 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     setIsClicked(true);
 
     // Navigate after the animation has had time to complete
+    // Total animation duration will be around 0.8s (0.6s for layout/bg + 0.2s buffer)
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
       // Re-enable scroll, important if the user navigates back
       document.body.style.overflow = '';
-    }, 400); // This duration should match the transition duration
+    }, 800); // Increased timeout to match new animation duration
+  };
+
+  const cardVariants = {
+    initial: {
+      borderRadius: "0px",
+      backgroundColor: "rgb(0,0,0)", // Initial background color (black from bg-black)
+    },
+    clicked: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "hsl(0 0% 8.2%)", // Target background color (--background)
+      borderRadius: "0px",
+      zIndex: 100,
+      transition: {
+        layout: { duration: 0.6, ease: "easeInOut" }, // Slower enlargement
+        backgroundColor: { duration: 0.6, ease: "easeInOut" }, // Slower color transition
+      },
+    },
+  };
+
+  const contentVariants = {
+    initial: { opacity: 1 },
+    clicked: {
+      opacity: 0,
+      transition: {
+        duration: 0.4, // Slower fade out
+        delay: 0.2,    // Start fading after 0.2s of enlargement
+        ease: "easeOut"
+      },
+    },
   };
 
   return (
     <motion.div
       layout
+      variants={cardVariants}
+      initial="initial"
+      animate={isClicked ? "clicked" : "initial"}
       onClick={handleCardClick}
-      className={isClicked ? "fixed top-0 left-0 w-screen h-screen bg-background z-[100]" : "w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer"}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
+      className="w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer"
     >
-      <motion.div
-        animate={{ opacity: isClicked ? 0 : 1 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
-        className="w-full h-full"
-      >
+      <motion.div variants={contentVariants} className="w-full h-full">
         {isAdmin && (
           <div className="absolute top-2 left-2 z-40">
             <Checkbox
