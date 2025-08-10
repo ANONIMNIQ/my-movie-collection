@@ -65,13 +65,10 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {/* RouterProvider must wrap SessionContextProvider */}
-        <RouterProvider router={router}>
-          <SessionContextProvider>
-            {/* Children of SessionContextProvider will now have access to routing context */}
-            <React.Fragment /> {/* This fragment is needed because RouterProvider expects a single child */}
-          </SessionContextProvider>
-        </RouterProvider>
+        {/* SessionContextProvider must wrap RouterProvider */}
+        <SessionContextProvider>
+          <RouterProvider router={router} />
+        </SessionContextProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
