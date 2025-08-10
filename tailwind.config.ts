@@ -24,7 +24,7 @@ export default {
         'space-mono': ['"Space Mono"', 'monospace'],
       },
       boxShadow: {
-        glow: "0 0 25px 0px rgb(255 255 255 / 0.15)",
+        glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -97,16 +97,10 @@ export default {
             height: "0",
           },
         },
-        "card-flash": {
-          "0%": { opacity: "0" },
-          "50%": { opacity: "0.2" },
-          "100%": { opacity: "0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "card-flash": "card-flash 0.5s ease-out",
       },
     },
   },

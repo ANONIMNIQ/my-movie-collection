@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Star, Info, Loader2 } from "lucide-react";
+import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -21,8 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { motion } from "framer-motion";
-import { fetchFromTmdb } from "@/lib/tmdb";
+import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -34,11 +34,9 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
 export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MobileMovieCardProps) => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
-  const userId = session?.user?.id;
-  const [isPrefetching, setIsPrefetching] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -69,163 +67,99 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     }
   };
 
-  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.backdrop_path}` : (movie.poster_url && movie.poster_url !== '/placeholder.svg' ? movie.poster_url : null);
+  const trailer = tmdbMovie?.videos?.results?.find(
+    (video: any) => video.type === "Trailer" && video.site === "YouTube"
+  );
+  const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
+  const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.backdrop_path}` : null;
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  const handleInteraction = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
-
-  const handleCardClick = async (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('button, a, input[type="checkbox"]')) {
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('button, a, [role="checkbox"]')) {
       return;
     }
-    e.preventDefault();
-    setIsPrefetching(true);
-
-    try {
-      const prefetchPromises = [
-        queryClient.prefetchQuery({
-          queryKey: ["movie", movie.id],
-          queryFn: async () => {
-            const { data, error } = await supabase.from("movies").select("*").eq("id", movie.id).single();
-            if (error) throw new Error("Failed to prefetch movie details.");
-            return data;
-          },
-        }),
-        queryClient.prefetchQuery({
-          queryKey: ["tmdb", movie.title, movie.year],
-          queryFn: async () => {
-            let searchResults = await fetchFromTmdb("/search/movie", { query: movie.title, primary_release_year: movie.year });
-            if (!searchResults || searchResults.results.length === 0) {
-              searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
-            }
-            if (!searchResults || searchResults.results.length === 0) return null;
-            const movieSummary = searchResults.results[0];
-            return await fetchFromTmdb(`/movie/${movieSummary.id}`, { append_to_response: "credits,release_dates,images,videos" });
-          },
-        }),
-        queryClient.prefetchQuery({
-          queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
-          queryFn: async () => {
-            const { data, error } = await supabase.from('user_ratings').select('rating').eq('user_id', ADMIN_USER_ID).eq('movie_id', movie.id).single();
-            return (error || !data) ? null : data.rating;
-          },
-        }),
-      ];
-
-      if (userId) {
-        prefetchPromises.push(
-          queryClient.prefetchQuery({
-            queryKey: ['current_user_rating', movie.id, userId],
-            queryFn: async () => {
-              const { data, error } = await supabase.from('user_ratings').select('rating').eq('user_id', userId).eq('movie_id', movie.id).single();
-              return (error || !data) ? null : data.rating;
-            },
-          })
-        );
-      }
-
-      await Promise.all(prefetchPromises);
-    } catch (error) {
-      console.error("Prefetching failed, navigating anyway:", error);
-    } finally {
-      navigate(`/movie/${movie.id}`);
-    }
+    navigate(`/movie/${movie.id}`);
   };
 
   return (
-    <div onClick={handleCardClick} className="block">
-      <motion.div
-        layout
-        layoutId={`movie-card-container-${movie.id}`}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="relative w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer shadow-lg"
-      >
-        {isAdmin && (
-          <div className="absolute top-2 left-2 z-40" onClick={handleInteraction}>
-            <Checkbox
-              checked={selectedMovieIds.has(movie.id)}
-              onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
-              className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-white"
-            />
-          </div>
-        )}
-        {isAdmin && (
-          <div className="absolute top-2 right-2 flex gap-2 z-40" onClick={handleInteraction}>
-            <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="icon" className="h-8 w-8">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the movie "{movie.title}" from your collection.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        )}
-
-        <div
-          className="relative h-40 w-full flex items-center justify-center p-2 overflow-hidden bg-cover bg-center"
-          style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
-        >
-          {isLoading && <Skeleton className="absolute inset-0" />}
-          {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-          {logoUrl && !isLoading && (
-            <img
-              src={logoUrl}
-              alt={`${movie.title} logo`}
-              className="relative z-10 max-h-24 max-w-full object-contain"
-              onError={(e) => (e.currentTarget.style.display = 'none')}
-            />
-          )}
-          {!backdropUrl && !logoUrl && !isLoading && (
-            <h3 className="relative z-10 text-xl font-bold text-white text-center">{movie.title}</h3>
-          )}
+    <Card onClick={handleCardClick} className="w-full bg-black text-white rounded-lg overflow-hidden shadow-2xl cursor-pointer">
+      {isAdmin && (
+        <div className="absolute top-2 left-2 z-40">
+          <Checkbox
+            checked={selectedMovieIds.has(movie.id)}
+            onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
+            className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-white"
+          />
         </div>
+      )}
+      {isAdmin && (
+        <div className="absolute top-2 right-2 flex gap-2 z-40">
+          <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
+            <Edit className="h-4 w-4" />
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="icon" className="h-8 w-8">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the movie "{movie.title}" from your collection.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
 
-        <div className="p-4">
-          <div className="flex justify-between items-start">
-              <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>
-              <div onClick={handleInteraction}>
-                <Button variant="ghost" size="icon" className="h-auto w-auto p-0 -mt-1" onClick={() => navigate(`/movie/${movie.id}`)}>
-                    <Info size={20} className="text-white hover:text-gray-300" />
-                </Button>
-              </div>
-          </div>
-          <p className="text-sm text-gray-300 line-clamp-3 mb-3">
-            {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-          </p>
-          <div className="flex justify-between items-center text-sm text-gray-400">
-            <div>
-              <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-              <div className="flex items-center mt-1">
-                <Star className="text-yellow-400 h-4 w-4 mr-1" />
-                <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
-              </div>
+      <div
+        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
+        style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
+      >
+        {isLoading && <Skeleton className="w-full h-full" />}
+        {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+        {logoUrl && !isLoading && (
+          <img
+            src={logoUrl}
+            alt={`${movie.title} logo`}
+            className="max-h-24 max-w-full object-contain z-10"
+            onError={(e) => (e.currentTarget.style.display = 'none')}
+          />
+        )}
+        {!backdropUrl && !logoUrl && !isLoading && (
+          <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
+        )}
+      </div>
+
+      <div className="p-4">
+        <div className="flex justify-between items-start">
+            <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>
+            <Button variant="ghost" size="icon" className="h-auto w-auto p-0 -mt-1" onClick={() => navigate(`/movie/${movie.id}`)}>
+                <Info size={20} className="text-white hover:text-gray-300" />
+            </Button>
+        </div>
+        <p className="text-sm text-gray-300 line-clamp-3 mb-3">
+          {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+        </p>
+        <div className="flex justify-between items-center text-sm text-gray-400">
+          <div>
+            <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+            <div className="flex items-center mt-1">
+              <Star className="text-yellow-400 h-4 w-4 mr-1" />
+              <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
             </div>
           </div>
         </div>
-        {isPrefetching && (
-          <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 rounded-lg">
-            <Loader2 className="h-10 w-10 text-white animate-spin" />
-          </div>
-        )}
-      </motion.div>
-    </div>
+      </div>
+    </Card>
   );
 };

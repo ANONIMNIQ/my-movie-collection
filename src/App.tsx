@@ -2,13 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Outlet,
-  useLocation,
-  ScrollRestoration,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import MovieDetail from "./pages/MovieDetail";
@@ -19,43 +13,8 @@ import EditMovie from "./pages/EditMovie";
 import ImportRatings from "./pages/ImportRatings";
 import { SessionContextProvider } from "./contexts/SessionContext";
 import React from "react";
-import { AnimatePresence } from "framer-motion";
 
 const queryClient = new QueryClient();
-
-// This component acts as the root layout, providing context and handling animations.
-const RootLayout = () => {
-  const location = useLocation();
-  return (
-    <SessionContextProvider>
-      {/* AnimatePresence is still needed for layoutId animations to work across routes */}
-      <AnimatePresence mode="wait">
-        <div key={location.pathname}>
-          <Outlet />
-          <ScrollRestoration />
-        </div>
-      </AnimatePresence>
-    </SessionContextProvider>
-  );
-};
-
-// Define the routes using the data router format
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RootLayout />,
-    errorElement: <NotFound />, // Handles all errors, including 404s
-    children: [
-      { index: true, element: <Index /> },
-      { path: "login", element: <Login /> },
-      { path: "movie/:id", element: <MovieDetail /> },
-      { path: "add-movie", element: <AddMovie /> },
-      { path: "edit-movie/:id", element: <EditMovie /> },
-      { path: "import-movies", element: <ImportMovies /> },
-      { path: "import-ratings", element: <ImportRatings /> },
-    ],
-  },
-]);
 
 const App = () => {
   return (
@@ -63,7 +22,20 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <RouterProvider router={router} />
+        <BrowserRouter>
+          <SessionContextProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/movie/:id" element={<MovieDetail />} />
+              <Route path="/add-movie" element={<AddMovie />} />
+              <Route path="/edit-movie/:id" element={<EditMovie />} />
+              <Route path="/import-movies" element={<ImportMovies />} />
+              <Route path="/import-ratings" element={<ImportRatings />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </SessionContextProvider>
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );
