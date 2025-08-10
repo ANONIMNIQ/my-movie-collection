@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } from "@/components/ui/skeleton"; // Corrected from '=>' to 'from'
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
@@ -96,7 +96,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
       <Card 
         className={cn(
           "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-          "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow"
+          "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-[1.02] sm:group-hover/slide:scale-115 md:group-hover/slide:scale-125 group-hover/slide:shadow-glow"
         )}
         onClick={handleCardClick}
       >

@@ -72,10 +72,10 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           <Button variant="ghost" size="icon" className={cn("absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity", "opacity-0 group-hover/carousel:opacity-100", !canScrollPrev && "invisible")} onClick={scrollPrev} disabled={!canScrollPrev}>
             <ChevronLeft className="h-8 w-8" />
           </Button>
-          <div className={cn("embla px-12", isOverflowVisible && "!overflow-visible")} ref={emblaRef}>
-            <div className="embla__container flex gap-4 py-12">
+          <div className={cn("embla", isOverflowVisible && "!overflow-visible")} ref={emblaRef}>
+            <div className="embla__container flex gap-4 py-12 px-4"> {/* Added px-4 here */}
               {movies.map((movie) => (
-                <div key={movie.id} className="embla__slide group/slide w-[45vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]" onMouseEnter={handleSlideMouseEnter} onMouseLeave={handleSlideMouseLeave}>
+                <div key={movie.id} className="embla__slide group/slide w-[40vw] sm:w-[32vw] md:w-[22vw] lg:w-[18vw] xl:w-[15.5vw] 2xl:w-[15vw]" onMouseEnter={handleSlideMouseEnter} onMouseLeave={handleSlideMouseLeave}>
                   <LazyMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={onSelectMovie} />
                 </div>
               ))}
