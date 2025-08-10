@@ -199,7 +199,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         </div>
       )}
 
-      <div className={cn("aspect-[2/3] w-full bg-muted", !isAnimatingClone && "group-hover/slide:opacity-0 transition-opacity duration-300")}> {/* Added opacity-0 on hover */}
+      <div className={cn("aspect-[2/3] w-full bg-muted", !isAnimatingClone && "group-hover:opacity-0 transition-opacity duration-300")}> {/* Changed group-hover/slide to group-hover */}
         {isLoading ? (
           <Skeleton className="w-full h-full" />
         ) : (
@@ -217,7 +217,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       <div
         className={cn(
           "absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none pointer-events-none",
-          forceOverlayVisible ? "opacity-100" : "opacity-0 group-hover/slide:opacity-100" // Use forceOverlayVisible here
+          forceOverlayVisible ? "opacity-100" : "opacity-0 group-hover:opacity-100" // Changed group-hover/slide to group-hover
         )}
       >
         {/* Top part of overlay (backdrop) */}
@@ -323,6 +323,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
+            "transition-all duration-300 ease-in-out transform-gpu group-hover:scale-125 group-hover:shadow-glow group-hover:z-30", // Re-added group-hover effects here
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
           onClick={handleCardClick}
