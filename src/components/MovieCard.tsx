@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Corrected '=>' to 'from'
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -144,17 +144,17 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
           </div>
 
           <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
-            {/* Info icon positioned before the title */}
-            <div className="flex items-center gap-2 mb-1 pointer-events-auto">
+            {/* Info icon positioned above the title */}
+            <div className="pointer-events-auto mb-1">
               <Info
                 size={18}
                 className="text-white cursor-pointer hover:text-gray-300 transition-colors"
                 onClick={(e) => { e.stopPropagation(); navigate(`/movie/${movie.id}`); }}
               />
-              <h3 className="text-lg font-bold line-clamp-1">
-                {movie.title}
-              </h3>
             </div>
+            <h3 className="text-lg font-bold line-clamp-1">
+              {movie.title}
+            </h3>
             <p className="text-xs text-gray-300 line-clamp-2 mb-1">
               {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
             </p>
