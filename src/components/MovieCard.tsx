@@ -86,9 +86,6 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
   const handleCardClick = () => {
-    // All interactive child elements (buttons, checkbox) use `e.stopPropagation()`
-    // to prevent this handler from being called. Therefore, any click that reaches this
-    // point should trigger navigation to the movie detail page.
     navigate(`/movie/${movie.id}`);
   };
 
@@ -102,11 +99,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         onClick={handleCardClick}
       >
         {isAdmin && (
-          <div className="absolute top-2 left-2 z-40" onClick={(e) => e.stopPropagation()}>
+          <div className="absolute top-2 left-2 z-40">
             <Checkbox
               checked={selectedMovieIds.has(movie.id)}
               onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
               className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         )}
@@ -148,7 +146,6 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           </div>
 
           <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
-            {/* Info icon positioned above the title */}
             <div className="mb-1">
               <Info
                 size={16}
@@ -159,20 +156,18 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
             <h3 className="text-lg font-bold line-clamp-1">
               {movie.title}
             </h3>
-            {showSynopsis && ( // Conditionally render synopsis
+            {showSynopsis && (
               <p className="hidden md:line-clamp-1 lg:line-clamp-2 text-xs text-gray-300 mb-1">
                 {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
               </p>
             )}
             <div className="text-xs text-gray-400">
               <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-              {/* Georgi's Rating: hidden on xs, visible on sm+ */}
               <div className="hidden sm:flex items-center mt-1">
                 <Star className="text-yellow-400 h-3 w-3 mr-1" />
                 <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
               </div>
             </div>
-            {/* Trailer Button: hidden on xs/sm, visible on md+ */}
             <div className="hidden md:flex flex-row gap-1 mt-2">
               {trailerUrl && (
                 <Button asChild variant="outline" className="flex-1 w-full justify-center gap-1 text-xs h-7 px-2" onClick={(e) => e.stopPropagation()}>
@@ -187,35 +182,44 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
 
         {isAdmin && (
           <div className="absolute top-2 right-2 flex gap-2 z-40">
-            <div onClick={(e) => e.stopPropagation()}>
-              <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
-                <Edit className="h-4 w-4" />
-              </Button>
-            </div>
-            <div onClick={(e) => e.stopPropagation()}>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="icon" className="h-8 w-8">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the
-                      movie "{movie.title}" from your collection.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              className="h-8 w-8" 
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/edit-movie/${movie.id}`);
+              }}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="destructive" 
+                  size="icon" 
+                  className="h-8 w-8"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the
+                    movie "{movie.title}" from your collection.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         )}
       </Card>
