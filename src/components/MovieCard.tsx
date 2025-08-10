@@ -318,12 +318,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   return (
     <>
       {/* Original card in the grid/list */}
-      <div className="relative h-full group-hover/slide:z-30">
+      <div className="relative h-full"> {/* Removed group-hover/slide:z-30 from here */}
         <Card 
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow",
+            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow group-hover/slide:z-30", // Added group-hover/slide:z-30 here
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
           onClick={handleCardClick}
