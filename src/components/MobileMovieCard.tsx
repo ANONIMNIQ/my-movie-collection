@@ -158,13 +158,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
               <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
             </div>
           </div>
-          {trailerUrl && (
-            <Button asChild variant="outline" size="sm">
-              <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
-                <Youtube className="h-4 w-4 mr-2" /> Trailer
-              </a>
-            </Button>
-          )}
         </div>
       </div>
     </Card>

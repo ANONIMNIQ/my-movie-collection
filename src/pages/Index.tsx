@@ -467,7 +467,7 @@ const Index = () => {
               placeholder="Search movies..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full sm:w-auto bg-gray-100 border-gray-300"
+              className="w-full sm:w-auto"
             />
           </div>
           
