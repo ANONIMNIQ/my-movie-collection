@@ -104,10 +104,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     e.preventDefault();
 
     if (cardRef.current) {
-      // 1. Force the hover state visually
+      // 1. Force the hover state visually *instantly*
       setIsForcedHover(true);
 
       // 2. Wait for the browser to render the forced hover state
+      //    This requestAnimationFrame ensures the DOM has updated with the new scale
       requestAnimationFrame(() => {
         if (cardRef.current) {
           // 3. Get the actual bounding rect of the now-scaled card
@@ -193,6 +194,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
       document.body.style.overflow = '';
+      // Reset isForcedHover after navigation to ensure card returns to normal state
+      setIsForcedHover(false);
     }, 800); // Match animation duration
   };
 
@@ -226,7 +229,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       <div
         className={cn(
           "absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none pointer-events-none",
-          isAnimatingClone ? "opacity-0" : (isForcedHover || "opacity-0 group-hover/slide:opacity-100") // Hide overlay on animating clone, or force visible
+          isAnimatingClone ? "opacity-0" : (isForcedHover ? "opacity-100" : "opacity-0 group-hover/slide:opacity-100") // Hide overlay on animating clone, or force visible
         )}
       >
         {/* Top part of overlay (backdrop) */}
@@ -332,7 +335,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            "transition-all duration-300 ease-in-out transform-gpu",
+            // Apply transition only for shadow, not transform, when not forced hover
+            !isForcedHover && "transition-shadow duration-300 ease-in-out",
             isForcedHover ? "scale-125 shadow-glow" : "group-hover/slide:scale-125 group-hover/slide:shadow-glow", // Apply forced hover or normal hover
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
