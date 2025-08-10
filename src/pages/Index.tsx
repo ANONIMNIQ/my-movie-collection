@@ -25,6 +25,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CustomCarousel } from "@/components/CustomCarousel";
 import MovieCounter from "@/components/MovieCounter";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
@@ -36,6 +46,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortAndFilter, setSortAndFilter] = useState("title-asc");
   const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
@@ -64,20 +75,57 @@ const Index = () => {
     fetchMovies();
   }, []);
 
-  const filteredMovies = useMemo(() => {
-    if (!searchQuery) {
-      return movies;
+  const allGenres = useMemo(() => {
+    const genres = new Set<string>();
+    movies.forEach((movie) => {
+      movie.genres.forEach((genre) => genres.add(genre));
+    });
+    return Array.from(genres).sort();
+  }, [movies]);
+
+  const filteredAndSortedMovies = useMemo(() => {
+    let result = [...movies];
+
+    // 1. Filter by search query
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      result = result.filter(
+        (movie) =>
+          movie.title.toLowerCase().includes(lowerCaseQuery) ||
+          movie.director.toLowerCase().includes(lowerCaseQuery) ||
+          movie.genres.some((genre) => genre.toLowerCase().includes(lowerCaseQuery)) ||
+          movie.movie_cast.some((actor) => actor.toLowerCase().includes(lowerCaseQuery)) ||
+          movie.year.includes(lowerCaseQuery)
+      );
     }
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    return movies.filter(
-      (movie) =>
-        movie.title.toLowerCase().includes(lowerCaseQuery) ||
-        movie.director.toLowerCase().includes(lowerCaseQuery) ||
-        movie.genres.some((genre) => genre.toLowerCase().includes(lowerCaseQuery)) ||
-        movie.movie_cast.some((actor) => actor.toLowerCase().includes(lowerCaseQuery)) ||
-        movie.year.includes(lowerCaseQuery)
-    );
-  }, [movies, searchQuery]);
+
+    // 2. Filter by genre or sort
+    if (allGenres.includes(sortAndFilter)) {
+      result = result.filter((movie) => movie.genres.includes(sortAndFilter));
+      // Default sort by title when filtering by genre
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else {
+      switch (sortAndFilter) {
+        case "title-asc":
+          result.sort((a, b) => a.title.localeCompare(b.title));
+          break;
+        case "title-desc":
+          result.sort((a, b) => b.title.localeCompare(a.title));
+          break;
+        case "year-desc":
+          result.sort((a, b) => b.year.localeCompare(a.year));
+          break;
+        case "year-asc":
+          result.sort((a, b) => a.year.localeCompare(b.year));
+          break;
+        default:
+          result.sort((a, b) => a.title.localeCompare(b.title));
+          break;
+      }
+    }
+
+    return result;
+  }, [movies, searchQuery, sortAndFilter, allGenres]);
 
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
@@ -109,7 +157,7 @@ const Index = () => {
     return { newMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies };
   }, [movies]);
 
-  const moviesToShow = filteredMovies.slice(0, visibleCount);
+  const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
   const handleLoadMore = () => {
     setVisibleCount((prevCount) => prevCount + 18);
@@ -148,7 +196,7 @@ const Index = () => {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      const allFilteredMovieIds = new Set(filteredMovies.map((movie) => movie.id));
+      const allFilteredMovieIds = new Set(filteredAndSortedMovies.map((movie) => movie.id));
       setSelectedMovieIds(allFilteredMovieIds);
     } else {
       setSelectedMovieIds(new Set());
@@ -207,7 +255,7 @@ const Index = () => {
           </p>
           <div className="mt-6">
             <MovieCounter 
-              count={filteredMovies.length} 
+              count={filteredAndSortedMovies.length} 
               numberColor="#0F0F0F"
               labelColor="text-headerDescription"
             />
@@ -293,17 +341,42 @@ const Index = () => {
           )}
 
           <div className="container mx-auto px-4 overflow-x-visible"> {/* Added overflow-x-visible */}
-            {!loadingMovies && filteredMovies.length > 0 && (
+            {!loadingMovies && filteredAndSortedMovies.length > 0 && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <h2 className="text-3xl font-bold">All Movies</h2>
-                <div className="w-full sm:w-auto sm:max-w-xs">
+                <div className="flex w-full sm:w-auto items-center gap-2">
                   <Input
                     type="text"
                     placeholder="Search movies..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full"
+                    className="w-full sm:w-auto"
                   />
+                  <div className="hidden md:block">
+                    <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
+                      <SelectTrigger className="w-[220px]">
+                        <SelectValue placeholder="Sort & Filter" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Sort by</SelectLabel>
+                          <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                          <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                          <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                          <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                        </SelectGroup>
+                        {allGenres.length > 0 && <Separator className="my-1" />}
+                        <SelectGroup>
+                          <SelectLabel>Filter by Genre</SelectLabel>
+                          {allGenres.map((genre) => (
+                            <SelectItem key={genre} value={genre}>
+                              {genre}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
             )}
@@ -313,9 +386,9 @@ const Index = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="select-all"
-                    checked={selectedMovieIds.size === filteredMovies.length && filteredMovies.length > 0}
+                    checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0}
                     onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                    disabled={filteredMovies.length === 0 || isDeleting}
+                    disabled={filteredAndSortedMovies.length === 0 || isDeleting}
                   />
                   <label
                     htmlFor="select-all"
@@ -360,7 +433,7 @@ const Index = () => {
               </div>
             ) : error ? (
               <div className="text-center text-destructive">{error}</div>
-            ) : filteredMovies.length === 0 ? (
+            ) : filteredAndSortedMovies.length === 0 ? (
               <div className="text-center text-muted-foreground text-lg">
                 No movies found matching your search.
               </div>
@@ -371,7 +444,7 @@ const Index = () => {
                 onSelectMovie={handleSelectMovie}
               />
             )}
-            {visibleCount < filteredMovies.length && (
+            {visibleCount < filteredAndSortedMovies.length && (
               <div className="text-center mt-12">
                 <Button onClick={handleLoadMore} size="lg">
                   Load More
