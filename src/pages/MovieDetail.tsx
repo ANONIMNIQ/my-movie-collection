@@ -129,7 +129,7 @@ const MovieDetail = () => {
           <p className="text-xl text-muted-foreground mb-4">
             {movieError?.message || "The movie you are looking for does not exist or an unexpected error occurred."}
           </p>
-          <Button onClick={() => navigate('/')} className="text-primary hover:underline"> {/* Changed to Button */}
+          <Button onClick={() => navigate('/')} className="text-primary hover:underline">
             Back to collection
           </Button>
         </div>
@@ -179,8 +179,9 @@ const MovieDetail = () => {
       )}
 
       <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
+        {/* Changed to navigate('/') */}
         <Button
-          onClick={() => navigate('/')} {/* Changed to navigate('/') */}
+          onClick={() => navigate('/')}
           variant="ghost"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
         >
