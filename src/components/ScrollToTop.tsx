@@ -5,7 +5,10 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Only scroll to top if the path is for a movie detail page.
+    if (pathname.startsWith('/movie/')) {
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
 
   return null;
