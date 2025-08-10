@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
@@ -38,6 +38,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -81,11 +82,23 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     if (target.closest('button, a, [role="checkbox"]')) {
       return;
     }
-    navigate(`/movie/${movie.id}`);
+    
+    setIsAnimating(true);
+
+    setTimeout(() => {
+      navigate(`/movie/${movie.id}`);
+    }, 500);
   };
 
   return (
-    <Card onClick={handleCardClick} className="w-full bg-black text-white rounded-lg overflow-hidden shadow-mobile-card border-none cursor-pointer">
+    <Card 
+      onClick={handleCardClick} 
+      className={cn(
+        "w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer",
+        isAnimating && "animate-card-flash"
+      )}
+      onAnimationEnd={() => setIsAnimating(false)}
+    >
       {isAdmin && (
         <div className="absolute top-2 left-2 z-40">
           <Checkbox

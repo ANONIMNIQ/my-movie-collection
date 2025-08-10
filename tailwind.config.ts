@@ -25,7 +25,6 @@ export default {
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",
-        'mobile-card': '0 8px 24px rgba(200, 200, 200, 0.15)',
       },
       colors: {
         border: "hsl(var(--border))",
@@ -98,10 +97,22 @@ export default {
             height: "0",
           },
         },
+        "card-flash": {
+          "0%": {
+            boxShadow: "0 0 0 0 rgba(255, 255, 255, 0.4)",
+          },
+          "70%": {
+            boxShadow: "0 0 0 20px rgba(255, 255, 255, 0)",
+          },
+          "100%": {
+            boxShadow: "0 0 0 0 rgba(255, 255, 255, 0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "card-flash": "card-flash 0.5s ease-out",
       },
     },
   },
