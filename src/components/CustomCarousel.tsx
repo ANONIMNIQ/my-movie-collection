@@ -29,8 +29,19 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const isScrolling = useRef(false);
   const leaveTimeout = useRef<number | null>(null);
 
-  const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
-  const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) {
+      isScrolling.current = true;
+      emblaApi.scrollPrev();
+    }
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) {
+      isScrolling.current = true;
+      emblaApi.scrollNext();
+    }
+  }, [emblaApi]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -51,9 +62,10 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   useEffect(() => {
     if (!emblaApi) return;
     
-    const onScroll = () => {
+    const onPointerDown = () => {
       isScrolling.current = true;
     };
+    
     const onSettle = () => {
       isScrolling.current = false;
     };
@@ -61,14 +73,14 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
-    emblaApi.on('scroll', onScroll);
-    emblaApi.on('settle', onSettle);
+    emblaApi.on('pointerDown', onPointerDown); // Catches drag-scrolling
+    emblaApi.on('settle', onSettle); // When scrolling has stopped
 
     return () => {
       if (emblaApi) {
         emblaApi.off('select', onSelect);
         emblaApi.off('reInit', onSelect);
-        emblaApi.off('scroll', onScroll);
+        emblaApi.off('pointerDown', onPointerDown);
         emblaApi.off('settle', onSettle);
       }
     };
