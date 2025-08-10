@@ -62,11 +62,11 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   if (movies.length === 0) return null;
 
   return (
-    <section className="mb-12 relative">
-      <div className="container mx-auto px-4">
+    <section className="mb-12">
+      <div className="px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold">{title}</h2>
       </div>
-      <div className="relative z-10 mt-[-2rem]">
+      <div className="relative mt-4">
         <div className="relative group/carousel">
           <div className={cn("absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
           <Button variant="ghost" size="icon" className={cn("absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity", "opacity-0 group-hover/carousel:opacity-100", !canScrollPrev && "invisible")} onClick={scrollPrev} disabled={!canScrollPrev}>
