@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } => "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Star, Youtube, Info } from "lucide-react"; // Import Info icon
+import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -40,7 +40,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   const queryClient = useQueryClient();
 
   const { data: adminPersonalRatingData } = useQuery({
-    queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
+    queryKey: ['admin_user_rating', movie.id, ADMIN_USER_USER_ID],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_ratings')
@@ -144,29 +144,25 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
           </div>
 
           <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
-            {/* Info icon for navigation */}
-            <div className="absolute top-2 right-2 pointer-events-auto" onClick={(e) => { e.stopPropagation(); navigate(`/movie/${movie.id}`); }}>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 border border-white/50 text-white hover:bg-white/10" // Changed styling here
-              >
-                <Info className="h-4 w-4" />
-              </Button>
-            </div>
-            <div>
+            {/* Info icon positioned before the title */}
+            <div className="flex items-center gap-2 mb-1 pointer-events-auto">
+              <Info
+                size={18}
+                className="text-white cursor-pointer hover:text-gray-300 transition-colors"
+                onClick={(e) => { e.stopPropagation(); navigate(`/movie/${movie.id}`); }}
+              />
               <h3 className="text-lg font-bold line-clamp-1">
                 {movie.title}
               </h3>
-              <p className="text-xs text-gray-300 line-clamp-2 mb-1">
-                {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-              </p>
-              <div className="text-xs text-gray-400">
-                <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-                <div className="flex items-center mt-1">
-                  <Star className="text-yellow-400 h-3 w-3 mr-1" />
-                  <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
-                </div>
+            </div>
+            <p className="text-xs text-gray-300 line-clamp-2 mb-1">
+              {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+            </p>
+            <div className="text-xs text-gray-400">
+              <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+              <div className="flex items-center mt-1">
+                <Star className="text-yellow-400 h-3 w-3 mr-1" />
+                <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
               </div>
             </div>
             <div className="flex flex-row gap-1 mt-2 pointer-events-auto">
