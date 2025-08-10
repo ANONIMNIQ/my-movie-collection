@@ -51,7 +51,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set()); // Corrected initialization
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -270,21 +270,7 @@ const Index = () => {
   };
 
   return (
-    <motion.div
-      className="min-h-screen w-full overflow-x-hidden"
-      initial={{
-        backgroundColor: "hsl(var(--background))", // Default dark background
-        color: "hsl(var(--foreground))", // Default light text
-      }}
-      animate={{
-        backgroundColor: isMobile && pageLoaded ? "rgb(255,255,255)" : "hsl(var(--background))",
-        color: isMobile && pageLoaded ? "rgb(0,0,0)" : "hsl(var(--foreground))",
-      }}
-      transition={{
-        backgroundColor: { duration: 0.8, delay: 0.5, ease: "easeOut" },
-        color: { duration: 0.8, delay: 0.5, ease: "easeOut" },
-      }}
-    >
+    <div className="min-h-screen w-full overflow-x-hidden bg-background text-foreground">
       <motion.header
         className={cn(
           "w-full text-center py-8 shadow-md z-50",
@@ -375,6 +361,16 @@ const Index = () => {
               delayChildren: 0.5, // Delay for children to start animating after main appears
             },
           },
+        }}
+        // Apply background and text color animation here for mobile only
+        style={{
+          backgroundColor: isMobile ? "hsl(var(--background))" : "transparent",
+          color: isMobile ? "hsl(var(--foreground))" : "inherit",
+        }}
+        animate={isMobile && pageLoaded ? { backgroundColor: "rgb(255,255,255)", color: "rgb(0,0,0)" } : {}}
+        transition={{
+          backgroundColor: { duration: 0.8, delay: 0.5, ease: "easeOut" },
+          color: { duration: 0.8, delay: 0.5, ease: "easeOut" },
         }}
       >
         {/* Desktop View */}
@@ -643,7 +639,7 @@ const Index = () => {
       >
         <MadeWithDyad />
       </motion.footer>
-    </motion.div>
+    </div>
   );
 };
 
