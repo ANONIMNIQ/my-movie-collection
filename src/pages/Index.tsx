@@ -51,7 +51,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = new useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -281,9 +281,10 @@ const Index = () => {
           "w-full text-center py-8 shadow-md z-50",
           isMobile ? "bg-background" : "bg-white"
         )}
+        // Added delay: 1
+        transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.8, delay: 1, ease: "easeOut" }} {/* Added delay: 1 */}
       >
         <div className="container mx-auto px-4">
           <motion.h1
@@ -498,7 +499,7 @@ const Index = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle>
+                            <AlertDialogTitle>Confirm Bulk Deceased</AlertDialogTitle>
                             <AlertDialogDescription>
                               This action cannot be undone. This will permanently delete{" "}
                               <span className="font-bold">{selectedMovieIds.size}</span> selected movies.
