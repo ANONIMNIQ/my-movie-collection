@@ -24,7 +24,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence, useMotionValue } from "framer-motion"; // Import useMotionValue
+import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb";
 
@@ -36,7 +36,6 @@ interface MovieCardProps {
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
-const HOVER_SCALE_FACTOR = 1.25; // Corresponds to scale-125 in Tailwind
 
 export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis = true }: MovieCardProps) => {
   const navigate = useNavigate();
@@ -47,10 +46,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
 
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [initialRect, setInitialRect] = useState<DOMRect | null>(null); // Stores the calculated hovered rect
-
-  // Use Framer Motion's useMotionValue for scale
-  const scale = useMotionValue(1);
+  const [rect, setRect] = useState<DOMRect | null>(null);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -106,20 +102,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     e.preventDefault();
 
     if (cardRef.current) {
-      // Instantly set the scale to the hover scale factor
-      scale.set(HOVER_SCALE_FACTOR);
-
-      // Wait for the next animation frame to ensure the DOM has updated
-      requestAnimationFrame(() => {
-        if (cardRef.current) {
-          const rect = cardRef.current.getBoundingClientRect();
-          setInitialRect(rect);
-          setIsClicked(true); // Trigger the portal animation
-        }
-      });
+      const currentRect = cardRef.current.getBoundingClientRect();
+      setRect(currentRect);
     }
 
     document.body.style.overflow = 'hidden';
+    setIsClicked(true);
 
     const movieId = movie.id;
 
@@ -194,8 +182,6 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     setTimeout(() => {
       navigate(`/movie/${movie.id}`);
       document.body.style.overflow = '';
-      // Reset scale after navigation
-      scale.set(1);
     }, 800); // Match animation duration
   };
 
@@ -330,39 +316,31 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   return (
     <>
       {/* Original card in the grid/list */}
-      <motion.div
-        ref={cardRef}
-        className="relative h-full group-hover/slide:z-30"
-        style={{ scale }} // Bind scale MotionValue
-        whileHover={{ scale: HOVER_SCALE_FACTOR, boxShadow: "0 0 25px 0px rgb(0 0 0 / 0.9)" }} // Apply hover effects
-        transition={{ duration: 0.3, ease: "easeOut" }} // Smooth transition for hover
-        onClick={handleCardClick}
-        // Hide original when animating
-        initial={{ visibility: 'visible' }}
-        animate={{ visibility: isClicked ? 'hidden' : 'visible' }}
-        // No transition for visibility change, it should be instant
-        transition={{ duration: 0 }}
-      >
+      <div className="relative h-full group-hover/slide:z-30">
         <Card 
+          ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
+            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow",
+            isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
+          onClick={handleCardClick}
         >
           {renderCardContent(false)}
         </Card>
-      </motion.div>
+      </div>
 
       {/* Animating overlay card, rendered via portal to ensure it's on top */}
       {createPortal(
         <AnimatePresence>
-          {isClicked && initialRect && (
+          {isClicked && rect && (
             <motion.div
               key={movie.id}
               initial={{
-                top: initialRect.top,
-                left: initialRect.left,
-                width: initialRect.width,
-                height: initialRect.height,
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height,
                 borderRadius: "0px",
                 backgroundColor: "rgb(0,0,0)",
                 position: "fixed",
