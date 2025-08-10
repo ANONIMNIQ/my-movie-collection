@@ -275,8 +275,6 @@ const Index = () => {
         "min-h-screen w-full overflow-x-hidden",
         // On desktop, always use dark background and light foreground
         !isMobile && "bg-background text-foreground",
-        // On mobile, text color changes with background
-        isMobile && (pageLoaded ? "text-black" : "text-foreground")
       )}
       initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}} // Dark initial for mobile
       animate={isMobile && pageLoaded ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
@@ -560,11 +558,8 @@ const Index = () => {
         <div className="md:hidden pt-8 px-4">
           <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
             <motion.h2
-              className={cn(
-                "text-3xl font-bold",
-                isMobile && (pageLoaded ? "text-black" : "text-foreground") // Conditional text color
-              )}
-              initial={isMobile ? { color: "hsl(var(--foreground))" } : {}} // Initial dark color for mobile
+              className="text-3xl font-bold" // Removed conditional text color class
+              initial={isMobile ? { color: "rgb(255,255,255)" } : {}} // Initial white color for mobile
               animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile
               transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Match main background delay
             >

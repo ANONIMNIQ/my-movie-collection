@@ -79,11 +79,8 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     <section className="mb-12 relative">
       <div className="px-10">
         <motion.h2
-          className={cn(
-            "text-3xl font-bold ml-3",
-            isMobile && (pageLoaded ? "text-black" : "text-foreground") // Conditional text color
-          )}
-          initial={isMobile ? { color: "hsl(var(--foreground))" } : {}} // Initial dark color for mobile
+          className="text-3xl font-bold ml-3" // Removed conditional text color class
+          initial={isMobile ? { color: "rgb(255,255,255)" } : {}} // Initial white color for mobile
           animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Match main background delay
         >
