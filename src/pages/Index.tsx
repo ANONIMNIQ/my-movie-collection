@@ -274,7 +274,7 @@ const Index = () => {
 
   return (
     <motion.div
-      className="min-h-screen w-full overflow-x-hidden bg-background text-foreground" // Always dark background
+      className="min-h-screen w-full overflow-x-hidden bg-background text-foreground" // Always dark background for the main container
     >
       {/* Intro Overlay - covers the screen initially */}
       {!introComplete && (
@@ -312,24 +312,24 @@ const Index = () => {
         transition={{ delay: 2.8, duration: 0.5 }} // Appear after intro overlay fades
       >
         <motion.header
-          className="w-full text-center py-8 shadow-md z-50 bg-background" // Always dark background for header
+          className="w-full text-center py-8 shadow-md z-50 bg-background md:bg-white" // Responsive background
           initial="hidden"
           animate={introComplete ? "visible" : "hidden"}
           variants={headerVariants}
         >
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground"> {/* Always foreground text */}
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground md:text-headerTitle"> {/* Responsive text color */}
               Georgi's Movie Collection
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground"> {/* Always muted-foreground text */}
+            <p className="mt-2 text-lg text-muted-foreground md:text-headerDescription"> {/* Responsive text color */}
               A minimalist collection of cinematic gems.
             </p>
             <div className="mt-6">
               <MovieCounter 
                 key={isMobile ? 'mobile' : 'desktop'}
                 count={filteredAndSortedMovies.length} 
-                numberColor="white" // Always white numbers
-                labelColor="text-muted-foreground" // Always muted-foreground label
+                numberColor={isMobile ? "white" : "#0F0F0F"} // Responsive number color
+                labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"} // Responsive label color
               />
             </div>
             <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
