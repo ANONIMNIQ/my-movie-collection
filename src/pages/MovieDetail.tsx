@@ -226,7 +226,7 @@ const MovieDetail = () => {
               </div>
             </div>
             <div>
-              <p className="font-semibold">My Rating</p>
+              <p className="font-semibold">Georgi's Rating</p>
               <PersonalRating movieId={movie.id} initialRating={adminPersonalRatingData} readOnly={true} />
               {adminPersonalRatingData === null && <span className="text-lg text-muted-foreground ml-1">N/A</span>}
             </div>

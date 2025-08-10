@@ -163,10 +163,10 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
             )}
             <div className="text-xs text-gray-400">
               <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-              {/* My Rating: hidden on xs, visible on sm+ */}
+              {/* Georgi's Rating: hidden on xs, visible on sm+ */}
               <div className="hidden sm:flex items-center mt-1">
                 <Star className="text-yellow-400 h-3 w-3 mr-1" />
-                <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
+                <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
               </div>
             </div>
             {/* Trailer Button: hidden on xs/sm, visible on md+ */}

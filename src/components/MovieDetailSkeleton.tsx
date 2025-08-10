@@ -46,9 +46,9 @@ const MovieDetailSkeleton: React.FC = () => {
           </div>
         </div>
 
-        {/* My Rating Skeleton */}
+        {/* Georgi's Rating Skeleton */}
         <div className="mt-8">
-          <Skeleton className="h-8 w-28 mb-4" /> {/* My Rating heading */}
+          <Skeleton className="h-8 w-28 mb-4" /> {/* Georgi's Rating heading */}
           <Skeleton className="h-6 w-40" /> {/* Stars */}
         </div>
 
