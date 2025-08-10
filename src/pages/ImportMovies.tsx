@@ -56,40 +56,82 @@ const ImportMovies = () => {
       const text = await file.text();
       const parsedMovies = await parseMoviesCsv(text, ADMIN_USER_ID);
 
-      // Fetch existing movie titles to check for uniqueness
+      // Fetch existing movies to check for uniqueness and get their IDs for updates
       const { data: existingMovies, error: fetchError } = await supabase
         .from('movies')
-        .select('title, year');
+        .select('id, title, year');
 
       if (fetchError) {
         throw new Error(fetchError.message);
       }
 
-      const existingMovieSet = new Set<string>();
-      existingMovies.forEach((movie: Pick<Movie, 'title' | 'year'>) => {
-        existingMovieSet.add(`${movie.title.toLowerCase()}-${movie.year}`);
+      const existingMovieMap = new Map<string, string>();
+      existingMovies.forEach((movie: { id: string; title: string; year: string }) => {
+        const key = `${movie.title.toLowerCase().trim()}-${movie.year.trim()}`;
+        existingMovieMap.set(key, movie.id);
       });
 
-      const uniqueMoviesToInsert = parsedMovies.filter(movie => {
-        const movieIdentifier = `${movie.title.toLowerCase()}-${movie.year}`;
-        return !existingMovieSet.has(movieIdentifier);
+      const moviesToInsert: Omit<Movie, 'id'>[] = [];
+      const moviesToUpdate: Movie[] = [];
+
+      parsedMovies.forEach(movie => {
+        const key = `${movie.title.toLowerCase().trim()}-${movie.year.trim()}`;
+        const existingId = existingMovieMap.get(key);
+        if (existingId) {
+          moviesToUpdate.push({ ...movie, id: existingId });
+        } else {
+          moviesToInsert.push(movie);
+        }
       });
 
-      if (uniqueMoviesToInsert.length === 0) {
-        showSuccess("No new unique movies found in the CSV to import.");
-        setLoading(false);
-        return;
+      let insertedCount = 0;
+      let updatedCount = 0;
+      let errorCount = 0;
+
+      // Insert new movies
+      if (moviesToInsert.length > 0) {
+        const { error: insertError } = await supabase
+          .from('movies')
+          .insert(moviesToInsert);
+
+        if (insertError) {
+          console.error("Error inserting new movies:", insertError);
+          errorCount += moviesToInsert.length;
+        } else {
+          insertedCount = moviesToInsert.length;
+        }
       }
 
-      const { error: insertError } = await supabase
-        .from('movies')
-        .insert(uniqueMoviesToInsert);
+      // Update existing movies
+      if (moviesToUpdate.length > 0) {
+        const updatePromises = moviesToUpdate.map(movie => {
+          const { id, ...updateData } = movie;
+          return supabase.from('movies').update(updateData).eq('id', id);
+        });
 
-      if (insertError) {
-        throw new Error(insertError.message);
+        const results = await Promise.allSettled(updatePromises);
+        results.forEach(result => {
+          if (result.status === 'fulfilled' && !result.value.error) {
+            updatedCount++;
+          } else {
+            errorCount++;
+            console.error("Error updating movie:", result.status === 'rejected' ? result.reason : result.value.error);
+          }
+        });
       }
 
-      showSuccess(`Successfully imported ${uniqueMoviesToInsert.length} new movies!`);
+      let summaryMessage = "Import complete!";
+      if (insertedCount > 0) summaryMessage += ` ${insertedCount} movies added.`;
+      if (updatedCount > 0) summaryMessage += ` ${updatedCount} movies updated.`;
+      if (errorCount > 0) {
+        showError(`Import finished with ${errorCount} errors. Check console for details.`);
+      }
+      if (insertedCount > 0 || updatedCount > 0) {
+        showSuccess(summaryMessage);
+      } else if (errorCount === 0) {
+        showSuccess("No new movies to add or existing movies to update.");
+      }
+
       navigate('/');
     } catch (error: any) {
       console.error("Error importing movies:", error);
