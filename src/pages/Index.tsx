@@ -51,7 +51,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -259,16 +259,28 @@ const Index = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
+  // Header background slide-in variant
+  const headerBackgroundVariants = {
+    hidden: { y: "-100%" },
+    visible: { y: "0%", transition: { duration: 0.8, ease: "easeOut" } },
+  };
+
+  // Header text fade-in variant
+  const headerTextVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay: 0.2, ease: "easeOut" } },
+  };
+
   return (
     <div className="min-h-screen w-full overflow-x-hidden text-foreground">
       <motion.header
         className={cn(
-          "w-full text-center py-8 shadow-md z-50",
+          "w-full text-center py-8 shadow-md z-50 relative overflow-hidden", // Added relative and overflow-hidden
           isMobile ? "bg-background" : "bg-white"
         )}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        initial="hidden"
+        animate="visible"
+        variants={headerBackgroundVariants} // Apply slide-in to header itself
       >
         <div className="container mx-auto px-4">
           <motion.h1
@@ -276,9 +288,9 @@ const Index = () => {
               "text-4xl md:text-5xl font-bold tracking-tight",
               isMobile ? "text-foreground" : "text-headerTitle"
             )}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial="hidden"
+            animate="visible"
+            variants={headerTextVariants} // Apply fade-in to text
           >
             Georgi's Movie Collection
           </motion.h1>
@@ -287,17 +299,17 @@ const Index = () => {
               "mt-2 text-lg",
               isMobile ? "text-muted-foreground" : "text-headerDescription"
             )}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            initial="hidden"
+            animate="visible"
+            variants={{ ...headerTextVariants, transition: { ...headerTextVariants.transition, delay: 0.4 } }} // Delay for description
           >
             A minimalist collection of cinematic gems.
           </motion.p>
           <motion.div
             className="mt-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
+            initial="hidden"
+            animate="visible"
+            variants={{ ...headerTextVariants, transition: { ...headerTextVariants.transition, delay: 0.6 } }} // Delay for counter
           >
             <MovieCounter 
               key={isMobile ? 'mobile' : 'desktop'}
@@ -308,9 +320,9 @@ const Index = () => {
           </motion.div>
           <motion.div
             className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            initial="hidden"
+            animate="visible"
+            variants={{ ...headerTextVariants, transition: { ...headerTextVariants.transition, delay: 0.8 } }} // Delay for buttons
           >
             {sessionLoading ? (
               <Skeleton className="w-32 h-10" />
@@ -436,7 +448,7 @@ const Index = () => {
                       </SelectGroup>
                       {allCountries.length > 0 && <Separator className="my-1" />}
                       <SelectGroup>
-                        <SelectLabel>Filter by Country</Label>
+                        <SelectLabel>Filter by Country</SelectLabel>
                         {allCountries.map((country) => (
                           <SelectItem key={country} value={country}>{country}</SelectItem>
                         ))}
@@ -555,11 +567,12 @@ const Index = () => {
                         <AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>
                           {isDeleting ? "Deleting..." : "Delete All"}
                         </AlertDialogAction>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-                </motion.div>
-              )}
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </motion.div>
+            )}
 
             <div className="flex flex-col gap-4">
               {loadingMovies ? (
@@ -574,7 +587,7 @@ const Index = () => {
                 </div>
               ) : (
                 moviesToShow.map(movie => (
-                  <motion.div key={movie.id} initial="hidden" animate="visible" variants={sectionVariants} transition={{ delay: 1.2 }}>
+                  <motion.div key={movie.id} variants={sectionVariants}>
                     <MobileMovieCard 
                       movie={movie}
                       selectedMovieIds={selectedMovieIds}
