@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2, Star, Youtube, Info } from "lucide-react";
+import { Edit, Trash2, Star, Info } from "lucide-react";
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -22,8 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
-import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -38,7 +36,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
-  const [isAnimating, setIsAnimating] = useState(false);
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -69,10 +66,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     }
   };
 
-  const trailer = tmdbMovie?.videos?.results?.find(
-    (video: any) => video.type === "Trailer" && video.site === "YouTube"
-  );
-  const trailerUrl = trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : null;
   const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/w780${tmdbMovie.backdrop_path}` : null;
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
@@ -82,23 +75,14 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     if (target.closest('button, a, [role="checkbox"]')) {
       return;
     }
-    
-    setIsAnimating(true);
-
-    setTimeout(() => {
-      navigate(`/movie/${movie.id}`);
-    }, 500);
+    navigate(`/movie/${movie.id}`);
   };
 
   return (
-    <Card 
-      onClick={handleCardClick} 
-      className={cn(
-        "relative w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer",
-        "before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-0 before:z-10 before:pointer-events-none",
-        isAnimating && "before:animate-card-flash"
-      )}
-      onAnimationEnd={() => setIsAnimating(false)}
+    <motion.div
+      layout
+      onClick={handleCardClick}
+      className="relative w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer shadow-lg"
     >
       {isAdmin && (
         <div className="absolute top-2 left-2 z-40">
@@ -136,7 +120,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
         </div>
       )}
 
-      <div
+      <motion.div
+        layoutId={`movie-poster-${movie.id}`}
         className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
         style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >
@@ -153,7 +138,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
         {!backdropUrl && !logoUrl && !isLoading && (
           <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
         )}
-      </div>
+      </motion.div>
 
       <div className="p-4">
         <div className="flex justify-between items-start">
@@ -175,6 +160,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
           </div>
         </div>
       </div>
-    </Card>
+    </motion.div>
   );
 };
