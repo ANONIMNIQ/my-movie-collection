@@ -137,7 +137,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
 
   return (
     <div
-      className="w-full aspect-video overflow-hidden" // Changed from absolute inset-x-0 top-0 h-[60vh]
+      className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden" // Re-added absolute positioning and fixed height
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

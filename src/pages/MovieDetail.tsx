@@ -145,7 +145,7 @@ const MovieDetail = () => {
         <YouTubePlayerBackground videoId={trailerKey} delay={3000} />
       ) : backdropUrl ? (
         <div
-          className="w-full aspect-video bg-cover bg-center" // Removed absolute, inset-x-0, top-0, h-[60vh]
+          className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center" // Re-added absolute positioning and fixed height
           style={{ backgroundImage: `url(${backdropUrl})` }}
         >
           {/* Dark overlay to make text readable */}
@@ -155,12 +155,12 @@ const MovieDetail = () => {
         </div>
       ) : (
         // Fallback if no trailer and no backdrop image
-        <div className="w-full aspect-video bg-gray-900"> {/* Removed absolute, inset-x-0, top-0, h-[60vh] */}
+        <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900"> {/* Re-added absolute positioning and fixed height */}
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
       )}
 
-      <div className="relative z-10 container mx-auto px-4 py-8 md:pb-12"> {/* Removed md:pt-[40vh] */}
+      <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12"> {/* Re-added md:pt-[60vh] */}
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
