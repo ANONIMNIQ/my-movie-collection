@@ -467,7 +467,7 @@ const Index = () => {
                       <SelectTrigger className="w-[220px]">
                         <SelectValue placeholder="Sort & Filter" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white text-black"> {/* Added bg-white text-black here */}
+                      <SelectContent className="bg-white text-black">
                         <SelectGroup>
                           <SelectLabel>Sort by</SelectLabel>
                           <SelectItem value="title-asc">Title (A-Z)</SelectItem>
@@ -490,7 +490,7 @@ const Index = () => {
                           <React.Fragment>
                             <Separator className="my-1" />
                             <SelectGroup>
-                              <SelectLabel>Filter by Country</Label>
+                              <SelectLabel>Filter by Country</SelectLabel>
                               {allCountries.map((country) => (
                                 <SelectItem key={country} value={country}>{country}</SelectItem>
                               ))}
