@@ -358,8 +358,8 @@ const Index = () => {
             />
           )}
 
-          <div className="container mx-auto px-4 overflow-x-visible"> {/* Added overflow-x-visible */}
-            {!loadingMovies && filteredAndSortedMovies.length > 0 && (
+          <div className="container mx-auto px-4 overflow-x-visible">
+            {!loadingMovies && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <h2 className="text-3xl font-bold">All Movies</h2>
                 <div className="flex w-full sm:w-auto items-center gap-2">
@@ -408,7 +408,7 @@ const Index = () => {
               </div>
             )}
 
-            {isAdmin && (
+            {isAdmin && !loadingMovies && (
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -461,7 +461,7 @@ const Index = () => {
             ) : error ? (
               <div className="text-center text-destructive">{error}</div>
             ) : filteredAndSortedMovies.length === 0 ? (
-              <div className="text-center text-muted-foreground text-lg">
+              <div className="text-center text-muted-foreground text-lg py-16">
                 No movies found matching your search.
               </div>
             ) : (
