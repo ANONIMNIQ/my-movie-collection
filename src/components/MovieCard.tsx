@@ -9,7 +9,7 @@ import { Edit, Trash2, Star, Youtube, Info } from "lucide-react"; // Import Info
 import { useSession } from "@/contexts/SessionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { showSuccess, showError } from "@/utils/toast";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useQuery } => "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -146,7 +146,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
           <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
             {/* Info icon for navigation */}
             <div className="absolute top-2 right-2 pointer-events-auto" onClick={(e) => { e.stopPropagation(); navigate(`/movie/${movie.id}`); }}>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-white/80 hover:text-white">
+              <Button variant="ghost" size="icon" className="h-8 w-8 bg-black/50 hover:bg-black/75 text-white">
                 <Info className="h-4 w-4" />
               </Button>
             </div>
