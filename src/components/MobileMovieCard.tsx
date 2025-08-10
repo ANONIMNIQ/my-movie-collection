@@ -94,8 +94,9 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
     <Card 
       onClick={handleCardClick} 
       className={cn(
-        "w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer",
-        isAnimating && "animate-card-flash"
+        "relative w-full bg-black text-white rounded-lg overflow-hidden border-none cursor-pointer",
+        "before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-0 before:z-10 before:pointer-events-none",
+        isAnimating && "before:animate-card-flash"
       )}
       onAnimationEnd={() => setIsAnimating(false)}
     >

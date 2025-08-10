@@ -98,15 +98,9 @@ export default {
           },
         },
         "card-flash": {
-          "0%": {
-            boxShadow: "0 0 0 0 rgba(0, 0, 0, 0.2)",
-          },
-          "70%": {
-            boxShadow: "0 0 0 20px rgba(0, 0, 0, 0)",
-          },
-          "100%": {
-            boxShadow: "0 0 0 0 rgba(0, 0, 0, 0)",
-          },
+          "0%": { opacity: "0" },
+          "50%": { opacity: "0.2" },
+          "100%": { opacity: "0" },
         },
       },
       animation: {
