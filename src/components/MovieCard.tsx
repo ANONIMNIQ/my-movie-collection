@@ -85,15 +85,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
-  const handleCardClick = (e: React.MouseEvent<HTMLElement>) => {
-    // Do not navigate if the click is on an interactive element (button, link, checkbox)
-    // or any of their children. This is a more robust way than stopping propagation.
-    if (
-      e.target instanceof Element &&
-      (e.target.closest('button') || e.target.closest('a') || e.target.closest('[role="checkbox"]'))
-    ) {
-      return;
-    }
+  const handleCardClick = () => {
     navigate(`/movie/${movie.id}`);
   };
 
@@ -112,6 +104,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
               checked={selectedMovieIds.has(movie.id)}
               onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
               className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+              onClick={(e) => e.stopPropagation()}
             />
           </div>
         )}
@@ -131,7 +124,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         </div>
 
         <div
-          className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none"
+          className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none group-hover/slide:pointer-events-auto"
+          onClick={(e) => e.stopPropagation()}
         >
           <div
             className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
@@ -151,9 +145,9 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
             )}
           </div>
 
-          <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white pointer-events-auto">
+          <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
             <div className="mb-1">
-              <Button variant="ghost" size="icon" className="h-auto w-auto p-0" onClick={() => navigate(`/movie/${movie.id}`)}>
+              <Button variant="ghost" size="icon" className="h-auto w-auto p-0" onClick={(e) => { e.stopPropagation(); navigate(`/movie/${movie.id}`); }}>
                 <Info size={16} className="text-white cursor-pointer hover:text-gray-300 transition-colors" />
               </Button>
             </div>
@@ -175,7 +169,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
             <div className="hidden md:flex flex-row gap-1 mt-2">
               {trailerUrl && (
                 <Button asChild variant="outline" className="flex-1 w-full justify-center gap-1 text-xs h-7 px-2">
-                  <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={trailerUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                     <Youtube className="h-3 w-3" /> Trailer
                   </a>
                 </Button>
@@ -190,7 +184,10 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
               variant="secondary" 
               size="icon" 
               className="h-8 w-8" 
-              onClick={() => navigate(`/edit-movie/${movie.id}`)}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/edit-movie/${movie.id}`);
+              }}
             >
               <Edit className="h-4 w-4" />
             </Button>
@@ -200,11 +197,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
                   variant="destructive" 
                   size="icon" 
                   className="h-8 w-8"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
