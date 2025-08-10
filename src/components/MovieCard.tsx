@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Corrected from '=>' to 'from'
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -155,17 +155,20 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
             <h3 className="text-lg font-bold line-clamp-1">
               {movie.title}
             </h3>
-            <p className="text-xs text-gray-300 line-clamp-2 mb-1">
+            {/* Synopsis: hidden on xs, 1 line on sm, 2 lines on md+ */}
+            <p className="hidden sm:line-clamp-1 md:line-clamp-2 text-xs text-gray-300 mb-1">
               {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
             </p>
             <div className="text-xs text-gray-400">
               <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-              <div className="flex items-center mt-1">
+              {/* My Rating: hidden on xs, visible on sm+ */}
+              <div className="hidden sm:flex items-center mt-1">
                 <Star className="text-yellow-400 h-3 w-3 mr-1" />
                 <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
               </div>
             </div>
-            <div className="flex flex-row gap-1 mt-2 pointer-events-auto">
+            {/* Trailer Button: hidden on xs/sm, visible on md+ */}
+            <div className="hidden md:flex flex-row gap-1 mt-2 pointer-events-auto">
               {trailerUrl && (
                 <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1"
                    onClick={(e) => e.stopPropagation()}>
