@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
+import { cn } from "@/lib/utils"; // Import cn utility
 
 interface MovieCardProps {
   movie: Movie;
@@ -33,7 +34,7 @@ interface MovieCardProps {
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
 export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
@@ -92,9 +93,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
   return (
     <div className="relative h-full group-hover/slide:z-30">
-      <Card 
-        className="h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer"
-        onClick={handleCardClick} // Add onClick to the Card
+      <Card
+        className={cn(
+          "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
+          "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow"
+        )}
+        onClick={handleCardClick}
       >
         {isAdmin && (
           <div className="absolute top-2 left-2 z-40" onClick={(e) => e.stopPropagation()}>
@@ -170,12 +174,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
 
         {isAdmin && (
           <div className="absolute top-2 right-2 flex gap-2 z-40">
-            <div onClick={(e) => e.stopPropagation()}> {/* Wrapper for Edit button */}
+            <div onClick={(e) => e.stopPropagation()}>
               <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
                 <Edit className="h-4 w-4" />
               </Button>
             </div>
-            <div onClick={(e) => e.stopPropagation()}> {/* Wrapper for Delete button */}
+            <div onClick={(e) => e.stopPropagation()}>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" size="icon" className="h-8 w-8">
