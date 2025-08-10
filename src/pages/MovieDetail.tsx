@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -21,6 +22,7 @@ const MovieDetail = () => {
   const { session } = useSession();
   const userId = session?.user?.id;
   const [showTrailer, setShowTrailer] = useState(false);
+  const isMobile = useIsMobile();
 
   const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie, error: movieError } = useQuery<Movie, Error>({
     queryKey: ["movie", id],
@@ -82,8 +84,7 @@ const MovieDetail = () => {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <motion.div
-        layout
-        layoutId={`movie-card-container-${id}`}
+        {...(isMobile && { layoutId: `movie-card-container-${id}` })}
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden bg-gray-900"
       >
