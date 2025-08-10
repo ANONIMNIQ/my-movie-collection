@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { Card } from "@/components/ui/card";
 import { Movie } from "@/data/movies";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -22,7 +23,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils";
-import React from "react";
 
 interface MovieCardProps {
   movie: Movie;
@@ -33,6 +33,7 @@ interface MovieCardProps {
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
 export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardProps) => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
@@ -82,120 +83,125 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MovieCardP
   const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
   const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only navigate if the click didn't originate from a child interactive element
+    if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'IMG' || (e.target as HTMLElement).tagName === 'H3' || (e.target as HTMLElement).tagName === 'P' || (e.target as HTMLElement).tagName === 'SPAN') {
+      navigate(`/movie/${movie.id}`);
+    }
+  };
+
   return (
     <div className="relative h-full group-hover/slide:z-30">
-      <div className="h-full w-full transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow">
-        <Link to={`/movie/${movie.id}`} className="block h-full">
-          <Card className="h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden">
-            {isAdmin && (
-              <div className="absolute top-2 left-2 z-40" onClick={(e) => e.stopPropagation()}>
-                <Checkbox
-                  checked={selectedMovieIds.has(movie.id)}
-                  onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
-                  className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                />
-              </div>
-            )}
+      <Card 
+        className="h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer"
+        onClick={handleCardClick} // Add onClick to the Card
+      >
+        {isAdmin && (
+          <div className="absolute top-2 left-2 z-40" onClick={(e) => e.stopPropagation()}>
+            <Checkbox
+              checked={selectedMovieIds.has(movie.id)}
+              onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
+              className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+            />
+          </div>
+        )}
 
-            <div className="aspect-[2/3] w-full bg-muted">
-              {isLoading ? (
-                <Skeleton className="w-full h-full" />
-              ) : (
-                <img
-                  src={posterUrl}
-                  alt={movie.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
-                  loading="lazy"
-                />
+        <div className="aspect-[2/3] w-full bg-muted">
+          {isLoading ? (
+            <Skeleton className="w-full h-full" />
+          ) : (
+            <img
+              src={posterUrl}
+              alt={movie.title}
+              className="w-full h-full object-cover"
+              onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
+              loading="lazy"
+            />
+          )}
+        </div>
+
+        <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none">
+          <div
+            className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
+            style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
+          >
+            {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+            {logoUrl && (
+              <img
+                src={logoUrl}
+                alt={`${movie.title} logo`}
+                className="max-h-full max-w-full object-contain z-10"
+                onError={(e) => (e.currentTarget.style.display = 'none')}
+              />
+            )}
+            {!backdropUrl && !logoUrl && (
+              <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
+            )}
+          </div>
+
+          <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
+            <div>
+              <h3 className="text-lg font-bold line-clamp-1">
+                {movie.title}
+              </h3>
+              <p className="text-xs text-gray-300 line-clamp-2 mb-1">
+                {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+              </p>
+              <div className="text-xs text-gray-400">
+                <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+                <div className="flex items-center mt-1">
+                  <Star className="text-yellow-400 h-3 w-3 mr-1" />
+                  <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-row gap-1 mt-2 pointer-events-auto">
+              {trailerUrl && (
+                <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1"
+                   onClick={(e) => e.stopPropagation()}>
+                  <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
+                    <Youtube className="h-3 w-3" /> Trailer
+                  </Button>
+                </a>
               )}
             </div>
+          </div>
+        </div>
 
-            <div className="absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none opacity-0 group-hover/slide:opacity-100 pointer-events-none">
-              <div
-                className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
-                style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
-              >
-                {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-                {logoUrl && (
-                  <img
-                    src={logoUrl}
-                    alt={`${movie.title} logo`}
-                    className="max-h-full max-w-full object-contain z-10"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                )}
-                {!backdropUrl && !logoUrl && (
-                  <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
-                )}
-              </div>
-
-              <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white">
-                <div>
-                  <h3 className="text-lg font-bold line-clamp-1">
-                    {movie.title}
-                  </h3>
-                  <p className="text-xs text-gray-300 line-clamp-2 mb-1">
-                    {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
-                  </p>
-                  <div className="text-xs text-gray-400">
-                    <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
-                    <div className="flex items-center mt-1">
-                      <Star className="text-yellow-400 h-3 w-3 mr-1" />
-                      <span>My Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-row gap-1 mt-2 pointer-events-auto">
-                  {trailerUrl && (
-                    <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1"
-                       onClick={(e) => e.stopPropagation()}>
-                      <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
-                        <Youtube className="h-3 w-3" /> Trailer
-                      </Button>
-                    </a>
-                  )}
-                </div>
-              </div>
+        {isAdmin && (
+          <div className="absolute top-2 right-2 flex gap-2 z-40">
+            <div onClick={(e) => e.stopPropagation()}> {/* Wrapper for Edit button */}
+              <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
+                <Edit className="h-4 w-4" />
+              </Button>
             </div>
-
-            {isAdmin && (
-              <div className="absolute top-2 right-2 flex gap-2 z-40">
-                <Link to={`/edit-movie/${movie.id}`}
-                      onClick={(e) => e.stopPropagation()}>
-                  <Button variant="secondary" size="icon" className="h-8 w-8">
-                    <Edit className="h-4 w-4" />
+            <div onClick={(e) => e.stopPropagation()}> {/* Wrapper for Delete button */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="icon" className="h-8 w-8">
+                    <Trash2 className="h-4 w-4" />
                   </Button>
-                </Link>
-                <div onClick={(e) => e.stopPropagation()}> {/* New wrapper div for stopPropagation */}
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="icon" className="h-8 w-8">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the
-                          movie "{movie.title}" from your collection.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete}>
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </div>
-            )}
-          </Card>
-        </Link>
-      </div>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the
+                      movie "{movie.title}" from your collection.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+        )}
+      </Card>
     </div>
   );
 };
