@@ -265,6 +265,7 @@ const Index = () => {
           </p>
           <div className="mt-6">
             <MovieCounter 
+              key={isMobile ? 'mobile' : 'desktop'}
               count={filteredAndSortedMovies.length} 
               numberColor={isMobile ? "white" : "#0F0F0F"}
               labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
