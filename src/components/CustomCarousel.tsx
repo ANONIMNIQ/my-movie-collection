@@ -56,7 +56,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
-    emblaApi.on('pointerDown', addScrollingClass);
+    // Only add the scrolling class when the carousel is actually scrolling
     emblaApi.on('scroll', addScrollingClass);
     emblaApi.on('settle', removeScrollingClass);
 
@@ -64,7 +64,6 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
       if (emblaApi) {
         emblaApi.off('select', onSelect);
         emblaApi.off('reInit', onSelect);
-        emblaApi.off('pointerDown', addScrollingClass);
         emblaApi.off('scroll', addScrollingClass);
         emblaApi.off('settle', removeScrollingClass);
       }
