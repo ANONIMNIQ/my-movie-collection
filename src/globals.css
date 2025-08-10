@@ -134,3 +134,8 @@
 .custom-flip-wrapper .ReactFlipNumbers__number > div {
   background: transparent !important;
 }
+
+/* Custom Carousel Fix: Disable hover effects during scroll to prevent layout jump */
+.embla.is-scrolling .embla__slide {
+  pointer-events: none;
+}

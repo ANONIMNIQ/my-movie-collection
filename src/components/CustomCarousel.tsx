@@ -26,22 +26,10 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const isScrolling = useRef(false);
   const leaveTimeout = useRef<number | null>(null);
 
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) {
-      isScrolling.current = true;
-      emblaApi.scrollPrev();
-    }
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) {
-      isScrolling.current = true;
-      emblaApi.scrollNext();
-    }
-  }, [emblaApi]);
+  const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
+  const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -50,7 +38,6 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   }, [emblaApi]);
 
   const handleSlideMouseEnter = () => {
-    if (isScrolling.current) return; // Prevent hover effect during scroll
     if (leaveTimeout.current) clearTimeout(leaveTimeout.current);
     setIsOverflowVisible(true);
   };
@@ -61,27 +48,25 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   useEffect(() => {
     if (!emblaApi) return;
-    
-    const onPointerDown = () => {
-      isScrolling.current = true;
-    };
-    
-    const onSettle = () => {
-      isScrolling.current = false;
-    };
+
+    const rootNode = emblaApi.rootNode();
+    const addScrollingClass = () => rootNode.classList.add('is-scrolling');
+    const removeScrollingClass = () => rootNode.classList.remove('is-scrolling');
 
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
-    emblaApi.on('pointerDown', onPointerDown); // Catches drag-scrolling
-    emblaApi.on('settle', onSettle); // When scrolling has stopped
+    emblaApi.on('pointerDown', addScrollingClass);
+    emblaApi.on('scroll', addScrollingClass);
+    emblaApi.on('settle', removeScrollingClass);
 
     return () => {
       if (emblaApi) {
         emblaApi.off('select', onSelect);
         emblaApi.off('reInit', onSelect);
-        emblaApi.off('pointerDown', onPointerDown);
-        emblaApi.off('settle', onSettle);
+        emblaApi.off('pointerDown', addScrollingClass);
+        emblaApi.off('scroll', addScrollingClass);
+        emblaApi.off('settle', removeScrollingClass);
       }
     };
   }, [emblaApi, onSelect]);
