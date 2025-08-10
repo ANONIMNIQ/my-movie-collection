@@ -10,7 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import MovieDetailSkeleton from "@/components/MovieDetailSkeleton";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import React from "react"; // Import React for useEffect
+import React from "react";
+import YouTubePlayerBackground from "@/components/YouTubePlayerBackground"; // Import the new component
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -131,20 +132,18 @@ const MovieDetail = () => {
   
   const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
 
-  // Find movie logo
-  const movieLogo = tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0];
-  const logoUrl = movieLogo ? `https://image.tmdb.org/t/p/w500${movieLogo.file_path}` : null;
-
   // Find YouTube trailer
   const trailer = tmdbMovie?.videos?.results?.find(
     (video: any) => video.type === "Trailer" && video.site === "YouTube"
   );
-  const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
+  const trailerKey = trailer ? trailer.key : null;
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
-      {/* Backdrop Image with Overlay */}
-      {backdropUrl && (
+      {/* Backdrop Image or Video with Overlay */}
+      {trailerKey ? (
+        <YouTubePlayerBackground videoId={trailerKey} delay={3000} />
+      ) : backdropUrl ? (
         <div
           className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center"
           style={{ backgroundImage: `url(${backdropUrl})` }}
@@ -152,6 +151,11 @@ const MovieDetail = () => {
           {/* Dark overlay to make text readable */}
           <div className="absolute inset-0 bg-black opacity-70"></div>
           {/* Gradient overlay for bottom fade */}
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+        </div>
+      ) : (
+        // Fallback if no trailer and no backdrop image
+        <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900">
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
       )}
@@ -166,8 +170,9 @@ const MovieDetail = () => {
         </Link>
         
         <div className="max-w-3xl">
-          {logoUrl ? (
-            <img src={logoUrl} alt={`${movie.title} logo`} className="max-h-28 md:max-h-40 mb-4 object-contain" />
+          {/* Movie Title/Logo */}
+          {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
+            <img src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`} alt={`${movie.title} logo`} className="max-h-28 md:max-h-40 mb-4 object-contain" />
           ) : (
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
               {movie.title}
@@ -178,14 +183,13 @@ const MovieDetail = () => {
             <span>{movie.rating}</span>
             <span>{movie.runtime} min</span>
             <span>{movie.year}</span>
-            {/* Add 4K UHD if applicable, for now just a placeholder */}
-            {/* <span>4K UHD</span> */}
           </div>
 
-          {trailerUrl && (
-            <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
+          {/* Original Watch Trailer Button (now for full screen if needed, or can be removed) */}
+          {trailerKey && (
+            <a href={`https://www.youtube.com/watch?v=${trailerKey}`} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="mb-8">
-                <Play className="mr-2 h-5 w-5" /> Watch Trailer
+                <Youtube className="mr-2 h-5 w-5" /> Open Trailer in YouTube
               </Button>
             </a>
           )}
