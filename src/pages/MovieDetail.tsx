@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-router-dom";
+import { useParams, Link } from "react-router-dom"; // Corrected import path
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowLeft, Youtube, Play } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
@@ -9,7 +9,7 @@ import { useSession } from "@/contexts/SessionContext";
 import { useQuery } from "@tanstack/react-query";
 import MovieDetailSkeleton from "@/components/MovieDetailSkeleton";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button"; // <--- Added this import
+import { Button } from "@/components/ui/button";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
