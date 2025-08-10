@@ -180,7 +180,7 @@ const MovieDetail = () => {
 
       <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
         <Button
-          onClick={() => navigate(-1)} // Use navigate(-1) for back functionality
+          onClick={() => navigate('/')} {/* Changed to navigate('/') */}
           variant="ghost"
           className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
         >

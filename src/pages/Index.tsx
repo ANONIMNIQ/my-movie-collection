@@ -283,7 +283,7 @@ const Index = () => {
         )}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8, delay: 1, ease: "easeOut" }} {/* Added delay: 1 */}
       >
         <div className="container mx-auto px-4">
           <motion.h1
@@ -466,7 +466,7 @@ const Index = () => {
                         </SelectGroup>
                         {allCountries.length > 0 && <Separator className="my-1" />}
                         <SelectGroup>
-                          <SelectLabel>Filter by Country</SelectLabel>
+                          <SelectLabel>Filter by Country</Label>
                           {allCountries.map((country) => (
                             <SelectItem key={country} value={country}>{country}</SelectItem>
                           ))}
