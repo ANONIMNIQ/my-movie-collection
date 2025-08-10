@@ -164,7 +164,7 @@ const MovieDetail = () => {
             alt={`${movie.title} backdrop`}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-black opacity-70"></div>
+          <div className="absolute inset-0 bg-black opacity-50"></div>
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
         </div>
       ) : (
