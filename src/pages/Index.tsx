@@ -358,7 +358,7 @@ const Index = () => {
             />
           )}
 
-          <div className="px-4">
+          <div className="container mx-auto px-4 overflow-x-visible">
             {!loadingMovies && (
               <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <h2 className="text-3xl font-bold">All Movies</h2>
@@ -407,9 +407,7 @@ const Index = () => {
                 </div>
               </div>
             )}
-          </div>
 
-          <div className="container mx-auto px-4">
             {isAdmin && !loadingMovies && (
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
