@@ -175,12 +175,11 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
             {/* Trailer Button: hidden on xs/sm, visible on md+ */}
             <div className="hidden md:flex flex-row gap-1 mt-2">
               {trailerUrl && (
-                <a href={trailerUrl} target="_blank" rel="noopener noreferrer" className="flex-1"
-                   onClick={(e) => e.stopPropagation()}>
-                  <Button variant="outline" className="w-full justify-center gap-1 text-xs h-7 px-2">
+                <Button asChild variant="outline" className="flex-1 w-full justify-center gap-1 text-xs h-7 px-2" onClick={(e) => e.stopPropagation()}>
+                  <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
                     <Youtube className="h-3 w-3" /> Trailer
-                  </Button>
-                </a>
+                  </a>
+                </Button>
               )}
             </div>
           </div>
