@@ -90,7 +90,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
       <div className="relative z-10 mt-[-2rem]">
         <div className="relative group/carousel">
           <div className={cn("absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
-          <Button variant="ghost" size="icon" className={cn("absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity", "opacity-0 group-hover/carousel:opacity-100", !canScrollPrev && "invisible")} onClick={scrollPrev} disabled={!canScrollPrev}>
+          <Button variant="ghost" size="icon" className={cn("absolute left-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/60 hover:bg-black/75 text-white backdrop-blur-sm transition-opacity", "opacity-0 group-hover/carousel:opacity-100", !canScrollPrev && "invisible")} onClick={scrollPrev} disabled={!canScrollPrev}>
             <ChevronLeft className="h-8 w-8" />
           </Button>
           <div className={cn("embla px-12", isOverflowVisible && "!overflow-visible")} ref={emblaRef}>
@@ -102,7 +102,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
               ))}
             </div>
           </div>
-          <Button variant="ghost" size="icon" className={cn("absolute right-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/50 hover:bg-black/75 text-white transition-opacity", "opacity-0 group-hover/carousel:opacity-100", !canScrollNext && "invisible")} onClick={scrollNext} disabled={!canScrollNext}>
+          <Button variant="ghost" size="icon" className={cn("absolute right-2 top-1/2 -translate-y-1/2 z-40 h-12 w-12 rounded-full bg-black/60 hover:bg-black/75 text-white backdrop-blur-sm transition-opacity", "opacity-0 group-hover/carousel:opacity-100", !canScrollNext && "invisible")} onClick={scrollNext} disabled={!canScrollNext}>
             <ChevronRight className="h-8 w-8" />
           </Button>
           <div className={cn("absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />

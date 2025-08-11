@@ -104,7 +104,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-white/20 hover:bg-white/30 text-white"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-white/30 hover:bg-white/40 text-white backdrop-blur-sm"
         onClick={() => emblaApi?.scrollPrev()}
       >
         <ChevronLeft className="h-8 w-8" />
@@ -112,7 +112,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-white/20 hover:bg-white/30 text-white"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-white/30 hover:bg-white/40 text-white backdrop-blur-sm"
         onClick={() => emblaApi?.scrollNext()}
       >
         <ChevronRight className="h-8 w-8" />
@@ -161,7 +161,6 @@ const HeroSlide: React.FC<HeroSlideProps> = ({ movie, isActive, showTrailer, adm
       {isLoadingTmdb ? (
         <Skeleton className="w-full h-full absolute inset-0" />
       ) : (
-        // Removed the fragment here
         isActive && showTrailer && trailerKey ? (
           <YouTubePlayerBackground videoId={trailerKey} delay={0} />
         ) : (
