@@ -145,7 +145,9 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         {/* This div will be replaced by the iframe */}
         <div
           ref={iframeContainerRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[calc(50%+15px)] w-[177.77vh] min-w-full h-[56.25vw] min-h-full"
+          // Set width to 21/9 of its height, and height to 100% of parent
+          // This ensures 21:9 aspect ratio and covers the vertical space, cropping horizontally
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[233.33%] h-full"
         ></div>
       </div>
 
