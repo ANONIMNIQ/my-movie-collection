@@ -46,7 +46,7 @@ const BATCH_SIZE = 50;
 // Define new variants for header content
 const headerTextRevealVariants = {
   hidden: { opacity: 0, y: -20 }, // Changed y to -20 for top-to-bottom
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }, // Reduced duration
 };
 
 const headerContentContainerVariants = {
@@ -54,8 +54,8 @@ const headerContentContainerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2, // Increased stagger for more noticeable delay
-      delayChildren: 0.1,
+      staggerChildren: 0.1, // Reduced stagger
+      delayChildren: 0.05, // Reduced delay
     },
   },
 };
@@ -68,7 +68,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = new Set();
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -101,7 +101,7 @@ const Index = () => {
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 1500); // Adjusted delay to be after header's initial slide-in
+    }, 800); // Reduced delay to trigger after header's initial slide-in
 
     return () => clearTimeout(timer);
   }, []);
@@ -283,7 +283,7 @@ const Index = () => {
   // Variants for content sections (fade in and slight slide up)
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }, // Reduced duration
   };
 
   return (
@@ -295,7 +295,7 @@ const Index = () => {
       )}
       initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}} // Dark initial for mobile
       animate={isMobile && pageLoaded ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
-      transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Adjust delay to be after header
+      transition={{ duration: 0.6, ease: "easeOut", delay: 0.8 }} // Reduced duration and delay
     >
       <motion.header
         className={cn(
@@ -304,7 +304,7 @@ const Index = () => {
         )}
         initial={{ y: "-100%", opacity: 0 }} // Header slide-in
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
+        transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }} // Reduced duration and delay
       >
         <div className="container mx-auto px-4">
           <motion.div // This will be the container for staggered children
@@ -382,7 +382,7 @@ const Index = () => {
             opacity: 1,
             transition: {
               staggerChildren: 0.1,
-              delayChildren: 0.5, // Delay for children to start animating after main appears
+              delayChildren: 0.2, // Reduced delay for children to start animating after main appears
             },
           },
         }}
@@ -583,7 +583,7 @@ const Index = () => {
               className="text-3xl font-bold" // Removed conditional text color class
               initial={isMobile ? { color: "rgb(255,255,255)" } : {}} // Initial white color for mobile
               animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile
-              transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Match main background delay
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }} // Match main background delay
             >
               All Movies
             </motion.h2>
