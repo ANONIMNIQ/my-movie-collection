@@ -19,11 +19,37 @@ declare global {
 const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ videoId, delay = 0 }) => {
   const playerRef = useRef<any>(null);
   const iframeContainerRef = useRef<HTMLDivElement>(null); // Reference to the div that will become the iframe
+  const parentRef = useRef<HTMLDivElement>(null); // Reference to the immediate parent of the iframe container
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const controlsTimeoutRef = useRef<number | null>(null);
+  const [iframeDimensions, setIframeDimensions] = useState({ width: 0, height: 0 });
+
+  const calculateIframeDimensions = useCallback(() => {
+    if (!parentRef.current) return;
+
+    const parentWidth = parentRef.current.offsetWidth;
+    const parentHeight = parentRef.current.offsetHeight;
+
+    const parentAspectRatio = parentWidth / parentHeight;
+    const targetVideoAspectRatio = 21 / 9; // Optimize for cinemascope trailers
+
+    let newWidth, newHeight;
+
+    if (parentAspectRatio > targetVideoAspectRatio) {
+      // Parent is wider than target video aspect ratio, fill height and crop width
+      newHeight = parentHeight;
+      newWidth = parentHeight * targetVideoAspectRatio;
+    } else {
+      // Parent is taller or same aspect ratio as target video, fill width and crop height
+      newWidth = parentWidth;
+      newHeight = parentWidth / targetVideoAspectRatio;
+    }
+
+    setIframeDimensions({ width: newWidth, height: newHeight });
+  }, []);
 
   const loadYouTubeAPI = useCallback(() => {
     if (!window.YT) {
@@ -38,16 +64,18 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     } else {
       createPlayer();
     }
-  }, [videoId]);
+  }, [videoId, iframeDimensions]); // Add iframeDimensions to dependency array
 
   const createPlayer = useCallback(() => {
     if (playerRef.current) {
       playerRef.current.destroy(); // Destroy existing player if any
     }
-    if (!iframeContainerRef.current) return;
+    if (!iframeContainerRef.current || iframeDimensions.width === 0 || iframeDimensions.height === 0) return;
 
     playerRef.current = new window.YT.Player(iframeContainerRef.current, {
       videoId: videoId,
+      width: iframeDimensions.width, // Use calculated width
+      height: iframeDimensions.height, // Use calculated height
       playerVars: {
         autoplay: 0, // Start paused, we'll control it with API
         controls: 0, // Hide default controls
@@ -66,12 +94,16 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         onStateChange: onPlayerStateChange,
       },
     });
-  }, [videoId]);
+  }, [videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
 
   useEffect(() => {
     loadYouTubeAPI();
+    calculateIframeDimensions(); // Initial calculation
+
+    window.addEventListener('resize', calculateIframeDimensions);
 
     return () => {
+      window.removeEventListener('resize', calculateIframeDimensions);
       if (playerRef.current) {
         playerRef.current.destroy();
         playerRef.current = null;
@@ -80,7 +112,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [loadYouTubeAPI]);
+  }, [loadYouTubeAPI, calculateIframeDimensions]);
 
   const onPlayerReady = useCallback((event: any) => {
     setPlayerReady(true);
@@ -140,16 +172,19 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       className="absolute inset-0 overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      ref={parentRef} // Assign parentRef here
     >
-      <div className="absolute inset-0 flex items-center justify-center">
-        {/* This div will be replaced by the iframe */}
-        <div
-          ref={iframeContainerRef}
-          // Set width to 21/9 of its height, and height to 100% of parent
-          // This ensures 21:9 aspect ratio and covers the vertical space, cropping horizontally
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[233.33%] h-full"
-        ></div>
-      </div>
+      <div
+        ref={iframeContainerRef}
+        style={{
+          width: iframeDimensions.width,
+          height: iframeDimensions.height,
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      ></div>
 
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-black opacity-50"></div>
