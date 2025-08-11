@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import useQuery
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,9 +62,6 @@ const headerContentContainerVariants = {
 
 const Index = () => {
   const { session, loading: sessionLoading } = useSession();
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loadingMovies, setLoadingMovies] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
@@ -78,9 +75,10 @@ const Index = () => {
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      setLoadingMovies(true);
+  // Fetch movies using useQuery
+  const { data: movies, isLoading: loadingMovies, isError, error } = useQuery<Movie[], Error>({
+    queryKey: ["movies"],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("movies")
         .select("*")
@@ -88,16 +86,15 @@ const Index = () => {
         .limit(5000);
 
       if (error) {
-        console.error("Error fetching movies:", error);
-        setError("Failed to load movies.");
-      } else {
-        setMovies(data as Movie[]);
+        throw new Error(error.message);
       }
-      setLoadingMovies(false);
-    };
+      return data as Movie[];
+    },
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    retry: false, // Do not retry on error, handle it directly
+  });
 
-    fetchMovies();
-
+  useEffect(() => {
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
       setPageLoaded(true);
@@ -108,7 +105,7 @@ const Index = () => {
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
-    movies.forEach((movie) => {
+    movies?.forEach((movie) => { // Use optional chaining for movies
       if (Array.isArray(movie.genres)) {
         movie.genres.forEach((genre) => {
           if (genre) genres.add(genre);
@@ -120,7 +117,7 @@ const Index = () => {
 
   const allCountries = useMemo(() => {
     const countries = new Set<string>();
-    movies.forEach((movie) => {
+    movies?.forEach((movie) => { // Use optional chaining for movies
       if (Array.isArray(movie.origin_country)) {
         movie.origin_country.forEach((country) => {
           if (country) countries.add(country);
@@ -131,7 +128,7 @@ const Index = () => {
   }, [movies]);
 
   const filteredAndSortedMovies = useMemo(() => {
-    let result = [...movies];
+    let result = [...(movies || [])]; // Ensure movies is an array
 
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
@@ -183,7 +180,7 @@ const Index = () => {
 
     const currentYear = new Date().getFullYear().toString();
 
-    for (const movie of movies) {
+    (movies || []).forEach((movie) => { // Ensure movies is an array
       if (movie.year === currentYear) {
         newMovies.push(movie);
       }
@@ -199,7 +196,7 @@ const Index = () => {
       if (movie.genres.includes("Horror")) {
         horrorMovies.push(movie);
       }
-    }
+    });
 
     return { newMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies };
   }, [movies]);
@@ -553,8 +550,8 @@ const Index = () => {
                   <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
                 ))}
               </div>
-            ) : error ? (
-              <div className="text-center text-destructive">{error}</div>
+            ) : isError ? (
+              <div className="text-center text-destructive">{error?.message || "Failed to load movies."}</div>
             ) : filteredAndSortedMovies.length === 0 ? (
               <div className="text-center text-muted-foreground text-lg py-16">
                 No movies found matching your search.
@@ -641,8 +638,8 @@ const Index = () => {
               Array.from({ length: 5 }).map((_, index) => (
                 <Skeleton key={index} className="w-full h-80 rounded-lg" />
               ))
-            ) : error ? (
-              <div className="text-center text-destructive">{error}</div>
+            ) : isError ? (
+              <div className="text-center text-destructive">{error?.message || "Failed to load movies."}</div>
             ) : filteredAndSortedMovies.length === 0 ? (
               <div className="text-center text-gray-500 text-lg py-16">
                 No movies found matching your search.
