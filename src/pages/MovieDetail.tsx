@@ -225,28 +225,25 @@ const MovieDetail = () => {
               Back to Collection
             </motion.button>
             
+            {/* Movie Logo or Title (not animated with reveal) */}
+            {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`}
+                alt={`${movie.title} logo`}
+                className="max-h-28 md:max-h-40 mb-4 object-contain"
+              />
+            ) : (
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
+                {movie.title}
+              </h1>
+            )}
+            
             <motion.div
               initial="hidden"
               animate="visible"
               variants={containerVariants}
               className="max-w-3xl"
             >
-              {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
-                <motion.img
-                  // Removed variants={textRevealVariants}
-                  src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`}
-                  alt={`${movie.title} logo`}
-                  className="max-h-28 md:max-h-40 mb-4 object-contain"
-                />
-              ) : (
-                <motion.h1
-                  // Removed variants={textRevealVariants}
-                  className="text-4xl md:text-5xl font-bold tracking-tight mb-2"
-                >
-                  {movie.title}
-                </motion.h1>
-              )}
-              
               <motion.div
                 variants={textRevealVariants}
                 className="flex items-center flex-wrap gap-x-4 gap-y-2 text-lg text-muted-foreground mb-6"
@@ -270,10 +267,23 @@ const MovieDetail = () => {
               )}
 
               <motion.p
-                variants={textRevealVariants}
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants} // Apply container variants to the paragraph itself
                 className="text-lg text-muted-foreground mb-8"
               >
-                {synopsis || "No synopsis available."}
+                {(synopsis || "No synopsis available.")
+                  .split(/(?<=[.!?])\s+/) // Split by sentence-ending punctuation followed by space
+                  .filter(Boolean) // Remove empty strings
+                  .map((sentence, index) => (
+                    <motion.span
+                      key={index}
+                      variants={textRevealVariants}
+                      className="block" // Make each sentence a block to ensure new line
+                    >
+                      {sentence}
+                    </motion.span>
+                  ))}
               </motion.p>
 
               <motion.div variants={textRevealVariants}>
