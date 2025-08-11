@@ -70,6 +70,7 @@ const MovieDetail = () => {
   });
 
   const { data: tmdbMovie, isLoading: isLoadingTmdb, error: tmdbError } = useTmdbMovie(
+    id || "", // Pass movie ID
     movie?.title ?? "",
     movie?.year ?? "",
   );

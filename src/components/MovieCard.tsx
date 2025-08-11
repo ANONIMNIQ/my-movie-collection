@@ -39,7 +39,7 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
 export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis = true }: MovieCardProps) => {
   const navigate = useNavigate();
-  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.title, movie.year);
+  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.id, movie.title, movie.year);
   const { session } = useSession();
   const queryClient = useQueryClient();
   const userId = session?.user?.id;
@@ -128,7 +128,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
 
     // Prefetch TMDb data
     queryClient.prefetchQuery({
-        queryKey: ["tmdb", movie.title, movie.year],
+        queryKey: ["tmdb", movie.id], // Use movie.id for TMDb prefetch
         queryFn: async () => {
             let searchResults = await fetchFromTmdb("/search/movie", {
                 query: movie.title,

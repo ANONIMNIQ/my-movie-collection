@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchFromTmdb } from "@/lib/tmdb";
 
-export const useTmdbMovie = (title: string, year: string) => {
+export const useTmdbMovie = (movieId: string, title: string, year: string) => {
   return useQuery({
-    queryKey: ["tmdb", title, year],
+    queryKey: ["tmdb", movieId], // Use movieId as the primary cache key
     queryFn: async () => {
       let searchResults = await fetchFromTmdb("/search/movie", {
         query: title,
@@ -25,7 +25,7 @@ export const useTmdbMovie = (title: string, year: string) => {
       });
       return details;
     },
-    enabled: !!title,
+    enabled: !!movieId && !!title, // Enable if movieId and title are available
     staleTime: 1000 * 60 * 60 * 24, // Cache data for 24 hours
     retry: false,
   });
