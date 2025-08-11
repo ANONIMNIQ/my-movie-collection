@@ -19,7 +19,7 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific U
 // Animation variants for individual text elements
 const textRevealVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }, // Reduced duration
 };
 
 // Animation variants for containers to stagger children
@@ -28,8 +28,8 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1, // Stagger each child by 0.1 seconds
-      delayChildren: 0.2, // Delay before children start animating
+      staggerChildren: 0.05, // Reduced stagger
+      delayChildren: 0.1, // Reduced delay
     },
   },
 };
