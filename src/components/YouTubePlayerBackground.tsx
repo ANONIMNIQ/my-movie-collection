@@ -26,6 +26,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
   const [showControls, setShowControls] = useState(false);
   const controlsTimeoutRef = useRef<number | null>(null);
   const [iframeDimensions, setIframeDimensions] = useState({ width: 0, height: 0 });
+  const [isApiLoaded, setIsApiLoaded] = useState(false); // New state to track API loading
 
   const calculateIframeDimensions = useCallback(() => {
     if (!parentRef.current) return;
@@ -59,18 +60,21 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
 
       window.onYouTubeIframeAPIReady = () => {
-        createPlayer();
+        setIsApiLoaded(true); // Set state when API is ready
       };
     } else {
-      createPlayer();
+      setIsApiLoaded(true); // API already loaded
     }
-  }, [videoId, iframeDimensions]); // Add iframeDimensions to dependency array
+  }, []);
 
   const createPlayer = useCallback(() => {
+    if (!isApiLoaded || !iframeContainerRef.current || iframeDimensions.width === 0 || iframeDimensions.height === 0) {
+      return; // Only create player if API is loaded and refs/dims are ready
+    }
+
     if (playerRef.current) {
       playerRef.current.destroy(); // Destroy existing player if any
     }
-    if (!iframeContainerRef.current || iframeDimensions.width === 0 || iframeDimensions.height === 0) return;
 
     playerRef.current = new window.YT.Player(iframeContainerRef.current, {
       videoId: videoId,
@@ -94,7 +98,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         onStateChange: onPlayerStateChange,
       },
     });
-  }, [videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
+  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
 
   useEffect(() => {
     loadYouTubeAPI();
@@ -113,6 +117,11 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       }
     };
   }, [loadYouTubeAPI, calculateIframeDimensions]);
+
+  // New useEffect to create player when dependencies are met
+  useEffect(() => {
+    createPlayer();
+  }, [createPlayer]); // Depend on createPlayer memoized function
 
   const onPlayerReady = useCallback((event: any) => {
     setPlayerReady(true);
