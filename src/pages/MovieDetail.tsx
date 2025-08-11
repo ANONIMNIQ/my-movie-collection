@@ -12,7 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
-import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile"; // Import useIsMobile
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -41,6 +42,7 @@ const MovieDetail = () => {
   const userId = session?.user?.id;
   const [showTrailer, setShowTrailer] = useState(false);
   const [isExiting, setIsExiting] = useState(false); // New state to control exit animation
+  const isMobile = useIsMobile(); // Use the hook
 
   // Scroll to top on component mount
   useEffect(() => {
@@ -126,14 +128,16 @@ const MovieDetail = () => {
 
   // Timer to switch from backdrop to trailer
   useEffect(() => {
-    if (trailerKey) {
+    if (!isMobile && trailerKey) { // Only run on desktop
       const timer = setTimeout(() => {
         setShowTrailer(true);
       }, 10000); // 10 seconds
 
       return () => clearTimeout(timer); // Cleanup on unmount
+    } else {
+      setShowTrailer(false); // Ensure trailer is not shown on mobile
     }
-  }, [trailerKey]);
+  }, [trailerKey, isMobile]);
 
   // Combine all loading states
   const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb;
@@ -195,9 +199,9 @@ const MovieDetail = () => {
         >
           {/* Backdrop Image or Video with Overlay */}
           <div className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"> {/* This container ensures fixed height */}
-            {showTrailer && trailerKey ? (
+            {!isMobile && showTrailer && trailerKey ? ( // Conditionally render video on desktop
               <YouTubePlayerBackground videoId={trailerKey} />
-            ) : backdropUrl ? (
+            ) : backdropUrl ? ( // Fallback to backdrop image
               <>
                 <img
                   src={backdropUrl}
@@ -206,7 +210,7 @@ const MovieDetail = () => {
                 />
                 <div className="absolute inset-0 bg-black opacity-50"></div>
               </>
-            ) : (
+            ) : ( // Fallback to solid color if no backdrop
               <div className="w-full h-full bg-gray-900"></div>
             )}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>

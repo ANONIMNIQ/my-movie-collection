@@ -151,8 +151,8 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
             left: '50%',
             minWidth: '100%',
             minHeight: '100%',
-            transform: 'translate(-50%, -50%) scale(1.4)', // Scale up to crop letterbox
-            transformOrigin: 'center center', // Ensure scaling from center
+            transform: 'translate(-50%, -50%)', // Removed scale(1.4)
+            transformOrigin: 'center center',
           }}
         ></div>
       </div>
