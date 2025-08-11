@@ -65,7 +65,7 @@ const MovieDetail = () => {
       return data as Movie;
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
     retry: false,
   });
 
@@ -194,25 +194,23 @@ const MovieDetail = () => {
           transition={{ duration: 0.5 }}
         >
           {/* Backdrop Image or Video with Overlay */}
-          {showTrailer && trailerKey ? (
-            <YouTubePlayerBackground videoId={trailerKey} />
-          ) : backdropUrl ? (
-            <div
-              className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"
-            >
-              <img
-                src={backdropUrl}
-                alt={`${movie.title} backdrop`}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black opacity-50"></div>
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
-            </div>
-          ) : (
-            <div className="absolute inset-x-0 top-0 h-[60vh] bg-gray-900">
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
-            </div>
-          )}
+          <div className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"> {/* This container ensures fixed height */}
+            {showTrailer && trailerKey ? (
+              <YouTubePlayerBackground videoId={trailerKey} />
+            ) : backdropUrl ? (
+              <>
+                <img
+                  src={backdropUrl}
+                  alt={`${movie.title} backdrop`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black opacity-50"></div>
+              </>
+            ) : (
+              <div className="w-full h-full bg-gray-900"></div>
+            )}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
+          </div>
 
           <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
             <motion.button
