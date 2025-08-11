@@ -43,6 +43,23 @@ import { motion } from "framer-motion"; // Import motion
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
 
+// Define new variants for header content
+const headerTextRevealVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const headerContentContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15, // Slightly increased stagger for more noticeable effect
+      delayChildren: 0.1, // Small delay before first child animates
+    },
+  },
+};
+
 const Index = () => {
   const { session, loading: sessionLoading } = useSession();
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -51,7 +68,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set()); // Corrected initialization
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -84,7 +101,7 @@ const Index = () => {
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 500); // Adjust delay as needed
+    }, 1500); // Adjusted delay to be after header's initial slide-in
 
     return () => clearTimeout(timer);
   }, []);
@@ -285,74 +302,72 @@ const Index = () => {
           "w-full text-center py-8 shadow-md z-50",
           isMobile ? "bg-background" : "bg-white"
         )}
-        initial={{ y: "-100%", opacity: 0 }} // Start completely off-screen and invisible
-        animate={{ y: 0, opacity: 1 }} // Animate to visible and in place
+        initial={{ y: "-100%", opacity: 0 }} // Header slide-in
+        animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 1, ease: "easeOut" }}
       >
         <div className="container mx-auto px-4">
-          <motion.h1
-            className={cn(
-              "text-4xl md:text-5xl font-bold tracking-tight",
-              isMobile ? "text-foreground" : "text-headerTitle"
-            )}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: pageLoaded ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+          <motion.div // This will be the container for staggered children
+            initial="hidden"
+            animate={pageLoaded ? "visible" : "hidden"} // Animate based on pageLoaded
+            variants={headerContentContainerVariants}
           >
-            Georgi's Movie Collection
-          </motion.h1>
-          <motion.p
-            className={cn(
-              "mt-2 text-lg",
-              isMobile ? "text-muted-foreground" : "text-headerDescription"
-            )}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: pageLoaded ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-          >
-            A minimalist collection of cinematic gems.
-          </motion.p>
-          <motion.div
-            className="mt-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: pageLoaded ? 1 : 0, y: pageLoaded ? 0 : 20 }}
-            transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
-          >
-            <MovieCounter 
-              key={isMobile ? 'mobile' : 'desktop'}
-              count={filteredAndSortedMovies.length} 
-              numberColor={isMobile ? "white" : "#0F0F0F"}
-              labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
-            />
-          </motion.div>
-          <motion.div
-            className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: pageLoaded ? 1 : 0, y: pageLoaded ? 0 : 20 }}
-            transition={{ duration: 0.6, delay: 1.1, ease: "easeOut" }}
-          >
-            {sessionLoading ? (
-              <Skeleton className="w-32 h-10" />
-            ) : session ? (
-              <>
-                <Link to="/add-movie">
-                  <Button>Add New Movie</Button>
-                </Link>
-                {isAdmin && (
-                  <Link to="/import-movies">
-                    <Button variant="secondary">Import Movies (CSV)</Button>
+            <motion.h1
+              className={cn(
+                "text-4xl md:text-5xl font-bold tracking-tight",
+                isMobile ? "text-foreground" : "text-headerTitle"
+              )}
+              variants={headerTextRevealVariants} // Apply text reveal variant
+            >
+              Georgi's Movie Collection
+            </motion.h1>
+            <motion.p
+              className={cn(
+                "mt-2 text-lg",
+                isMobile ? "text-muted-foreground" : "text-headerDescription"
+              )}
+              variants={headerTextRevealVariants} // Apply text reveal variant
+            >
+              A minimalist collection of cinematic gems.
+            </motion.p>
+            <motion.div
+              className="mt-6"
+              variants={headerTextRevealVariants} // Apply text reveal variant
+            >
+              <MovieCounter 
+                key={isMobile ? 'mobile' : 'desktop'}
+                count={filteredAndSortedMovies.length} 
+                numberColor={isMobile ? "white" : "#0F0F0F"}
+                labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
+              />
+            </motion.div>
+            <motion.div
+              className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
+              variants={headerTextRevealVariants} // Apply text reveal variant
+            >
+              {sessionLoading ? (
+                <Skeleton className="w-32 h-10" />
+              ) : session ? (
+                <>
+                  <Link to="/add-movie">
+                    <Button>Add New Movie</Button>
                   </Link>
-                )}
-                <Link to="/import-ratings">
-                  <Button variant="outline">Import My Ratings</Button>
-                </Link>
-                <Button variant="outline" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <></>
-            )}
+                  {isAdmin && (
+                    <Link to="/import-movies">
+                      <Button variant="secondary">Import Movies (CSV)</Button>
+                    </Link>
+                  )}
+                  <Link to="/import-ratings">
+                    <Button variant="outline">Import My Ratings</Button>
+                  </Link>
+                  <Button variant="outline" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )}
+            </motion.div>
           </motion.div>
         </div>
       </motion.header>
