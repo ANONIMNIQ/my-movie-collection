@@ -45,7 +45,7 @@ const BATCH_SIZE = 50;
 
 // Define new variants for header content
 const headerTextRevealVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: -20 }, // Changed y to -20 for top-to-bottom
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
@@ -54,8 +54,8 @@ const headerContentContainerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15, // Slightly increased stagger for more noticeable effect
-      delayChildren: 0.1, // Small delay before first child animates
+      staggerChildren: 0.2, // Increased stagger for more noticeable delay
+      delayChildren: 0.1,
     },
   },
 };
@@ -68,7 +68,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
