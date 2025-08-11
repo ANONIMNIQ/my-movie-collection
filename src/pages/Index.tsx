@@ -436,7 +436,7 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0, y: 50 }} // Start slightly below and transparent
             animate={{ opacity: 1, y: 0 }} // Fade in and slide up
-            transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }} // Faster animation
+            transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }} // Delay starts after header animation
           >
             <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
           </motion.div>
