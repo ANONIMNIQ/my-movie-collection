@@ -35,16 +35,19 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     const parentHeight = parentRef.current.offsetHeight;
 
     const parentAspectRatio = parentWidth / parentHeight;
-    const targetVideoAspectRatio = 21 / 9;
+    const youtubePlayerAspectRatio = 16 / 9; // Standard YouTube player aspect ratio
 
     let newWidth, newHeight;
 
-    if (parentAspectRatio > targetVideoAspectRatio) {
-      newHeight = parentHeight;
-      newWidth = parentHeight * targetVideoAspectRatio;
-    } else {
+    // Logic to make the video player *cover* the parent container
+    if (parentAspectRatio > youtubePlayerAspectRatio) {
+      // Parent is wider than 16:9. Fill parent width, height will extend beyond and be cropped.
       newWidth = parentWidth;
-      newHeight = parentWidth / targetVideoAspectRatio;
+      newHeight = parentWidth / youtubePlayerAspectRatio;
+    } else {
+      // Parent is taller or same aspect ratio as 16:9. Fill parent height, width will extend beyond and be cropped.
+      newHeight = parentHeight;
+      newWidth = parentHeight * youtubePlayerAspectRatio;
     }
 
     setIframeDimensions({ width: newWidth, height: newHeight });
