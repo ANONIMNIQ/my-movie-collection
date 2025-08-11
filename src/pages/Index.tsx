@@ -433,7 +433,13 @@ const Index = () => {
       >
         {/* Desktop Hero Slider */}
         {!isMobile && heroSliderMovies.length > 0 && (
-          <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
+          <motion.div
+            initial={{ opacity: 0, y: 50 }} // Start slightly below and transparent
+            animate={{ opacity: 1, y: 0 }} // Fade in and slide up
+            transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // After header, slower than text
+          >
+            <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
+          </motion.div>
         )}
 
         {/* Desktop View */}

@@ -137,7 +137,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
 
   return (
     <div
-      className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"
+      className="absolute inset-0 overflow-hidden" // Changed to inset-0 to fill parent
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
