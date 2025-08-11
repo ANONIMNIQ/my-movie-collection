@@ -8,7 +8,6 @@ import YouTubePlayerBackground from './YouTubePlayerBackground';
 import { Movie } from '@/data/movies';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
-import { useIsMobile } from '@/hooks/use-mobile'; // Import useIsMobile
 
 interface HeroSliderProps {
   movies: Movie[];
@@ -22,7 +21,6 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [showTrailer, setShowTrailer] = useState<boolean[]>([]); // Array to manage trailer state for each slide
   const trailerTimers = useRef<Map<number, number>>(new Map()); // Map to store timers for each slide
-  const isMobile = useIsMobile(); // Use the hook
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -52,13 +50,14 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
     };
   }, [emblaApi, onSelect, onInit]);
 
-  // Manage trailer playback for the active slide (only on desktop)
+  // Manage trailer playback for the active slide
   useEffect(() => {
     // Clear all existing timers
     trailerTimers.current.forEach(timer => clearTimeout(timer));
     trailerTimers.current.clear();
 
-    if (!isMobile && movies[selectedIndex]) { // Only run on desktop
+    // Set up timer for the currently selected slide
+    if (movies[selectedIndex]) {
       const newShowTrailer = Array(movies.length).fill(false);
       newShowTrailer[selectedIndex] = false; // Start with backdrop
       setShowTrailer(newShowTrailer);
@@ -72,15 +71,13 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
       }, 10000); // 10 seconds delay
 
       trailerTimers.current.set(selectedIndex, timer);
-    } else {
-      setShowTrailer(Array(movies.length).fill(false)); // Ensure no trailers on mobile
     }
 
     return () => {
       trailerTimers.current.forEach(timer => clearTimeout(timer));
       trailerTimers.current.clear();
     };
-  }, [selectedIndex, movies, isMobile]);
+  }, [selectedIndex, movies]); // Re-run when selectedIndex or movies change
 
   if (movies.length === 0) {
     return null; // Or a skeleton for the whole slider
@@ -98,7 +95,6 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
               showTrailer={showTrailer[index]}
               adminUserId={adminUserId}
               onNavigate={() => navigate(`/movie/${movie.id}`)}
-              isMobile={isMobile} // Pass isMobile to HeroSlide
             />
           ))}
         </div>
@@ -145,10 +141,9 @@ interface HeroSlideProps {
   showTrailer: boolean;
   adminUserId: string;
   onNavigate: () => void;
-  isMobile: boolean; // New prop
 }
 
-const HeroSlide: React.FC<HeroSlideProps> = ({ movie, isActive, showTrailer, adminUserId, onNavigate, isMobile }) => {
+const HeroSlide: React.FC<HeroSlideProps> = ({ movie, isActive, showTrailer, adminUserId, onNavigate }) => {
   const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovie(movie.id, movie.title, movie.year, movie.tmdb_id);
 
   const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null;
@@ -166,7 +161,7 @@ const HeroSlide: React.FC<HeroSlideProps> = ({ movie, isActive, showTrailer, adm
       {isLoadingTmdb ? (
         <Skeleton className="w-full h-full absolute inset-0" />
       ) : (
-        isActive && showTrailer && trailerKey && !isMobile ? ( // Conditionally render video on desktop
+        isActive && showTrailer && trailerKey ? (
           <YouTubePlayerBackground videoId={trailerKey} delay={0} />
         ) : (
           <div
