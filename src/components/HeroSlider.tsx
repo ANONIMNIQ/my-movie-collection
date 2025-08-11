@@ -174,7 +174,7 @@ const HeroSlide: React.FC<HeroSlideProps> = ({ movie, isActive, showTrailer, adm
         )
       )}
 
-      <div className="absolute inset-0 flex items-center p-8 z-10">
+      <div className="absolute inset-0 flex items-end z-10 pb-24 px-8 md:px-24">
         <div className="max-w-3xl text-white">
           {logoUrl && (
             <img
