@@ -18,7 +18,7 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific U
 
 // Animation variants for individual text elements
 const textRevealVariants = {
-  hidden: { opacity: 0, y: -20 }, // Changed y to -20 for top-to-bottom
+  hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
@@ -254,22 +254,36 @@ const MovieDetail = () => {
               </motion.div>
 
               {trailerKey && (
-                <motion.button
-                  key="trailer-button" // Added a key for stability
+                <motion.a
                   variants={textRevealVariants}
-                  size="lg"
-                  className="mb-8"
-                  onClick={() => window.open(`https://www.youtube.com/watch?v=${trailerKey}`, "_blank")}
+                  href={`https://www.youtube.com/watch?v=${trailerKey}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <Youtube className="mr-2 h-5 w-5" /> Open Trailer in YouTube
-                </motion.button>
+                  <Button size="lg" className="mb-8">
+                    <Youtube className="mr-2 h-5 w-5" /> Open Trailer in YouTube
+                  </Button>
+                </motion.a>
               )}
 
               <motion.p
-                variants={textRevealVariants} // Apply text reveal variant directly to the paragraph
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants} // Apply container variants to the paragraph itself
                 className="text-lg text-muted-foreground mb-8"
               >
-                {synopsis || "No synopsis available."}
+                {(synopsis || "No synopsis available.")
+                  .split(/(?<=[.!?])\s+/) // Split by sentence-ending punctuation followed by space
+                  .filter(Boolean) // Remove empty strings
+                  .map((sentence, index) => (
+                    <motion.span
+                      key={index}
+                      variants={textRevealVariants}
+                      className="block" // Make each sentence a block to ensure new line
+                    >
+                      {sentence}
+                    </motion.span>
+                  ))}
               </motion.p>
 
               <motion.div variants={textRevealVariants}>
