@@ -266,23 +266,10 @@ const MovieDetail = () => {
               )}
 
               <motion.p
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants} // Apply container variants to the paragraph itself
+                variants={textRevealVariants} // Apply text reveal variant directly to the paragraph
                 className="text-lg text-muted-foreground mb-8"
               >
-                {(synopsis || "No synopsis available.")
-                  .split(/(?<=[.!?])\s+/) // Split by sentence-ending punctuation followed by space
-                  .filter(Boolean) // Remove empty strings
-                  .map((sentence, index) => (
-                    <motion.span
-                      key={index}
-                      variants={textRevealVariants}
-                      className="block" // Make each sentence a block to ensure new line
-                    >
-                      {sentence}
-                    </motion.span>
-                  ))}
+                {synopsis || "No synopsis available."}
               </motion.p>
 
               <motion.div variants={textRevealVariants}>
