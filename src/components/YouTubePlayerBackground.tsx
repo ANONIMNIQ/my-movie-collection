@@ -145,7 +145,10 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         {/* This div will be replaced by the iframe */}
         <div
           ref={iframeContainerRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[calc(50%+20px)] w-[177.77vh] min-w-[110%] h-[56.25vw] min-h-[110%]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full"
+          style={{
+            transform: 'translate(-50%, -50%) scale(1.35)', // Scale up to crop letterbox
+          }}
         ></div>
       </div>
 
