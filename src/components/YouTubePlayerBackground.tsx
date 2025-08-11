@@ -26,7 +26,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
   const [showControls, setShowControls] = useState(false);
   const controlsTimeoutRef = useRef<number | null>(null);
   const [iframeDimensions, setIframeDimensions] = useState({ width: 0, height: 0 });
-  const [isApiLoaded, setIsApiLoaded] = useState(false); // New state to track API loading
+  const [isApiLoaded, setIsApiLoaded] = useState(false); // State to track API loading
 
   const calculateIframeDimensions = useCallback(() => {
     if (!parentRef.current) return;
@@ -39,12 +39,14 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
 
     let newWidth, newHeight;
 
+    // Determine if the parent container is "wider" or "taller" than the target video aspect ratio
+    // This logic ensures the video always covers the container, cropping the excess
     if (parentAspectRatio > targetVideoAspectRatio) {
-      // Parent is wider than target video aspect ratio, fill height and crop width
+      // Parent is wider, so fill the height and calculate width based on target aspect ratio
       newHeight = parentHeight;
       newWidth = parentHeight * targetVideoAspectRatio;
     } else {
-      // Parent is taller or same aspect ratio as target video, fill width and crop height
+      // Parent is taller or same aspect ratio, so fill the width and calculate height
       newWidth = parentWidth;
       newHeight = parentWidth / targetVideoAspectRatio;
     }
@@ -52,62 +54,32 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     setIframeDimensions({ width: newWidth, height: newHeight });
   }, []);
 
-  const loadYouTubeAPI = useCallback(() => {
-    if (!window.YT) {
+  // Effect to load the YouTube Iframe API script and handle resize
+  useEffect(() => {
+    // Load YouTube API script only once
+    if (!window.YT && !document.getElementById('youtube-iframe-api-script')) {
       const tag = document.createElement('script');
+      tag.id = 'youtube-iframe-api-script'; // Add an ID to prevent multiple loads
       tag.src = 'https://www.youtube.com/iframe_api';
       const firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
 
+      // Set the global callback for when the API is ready
       window.onYouTubeIframeAPIReady = () => {
-        setIsApiLoaded(true); // Set state when API is ready
+        setIsApiLoaded(true);
       };
-    } else {
-      setIsApiLoaded(true); // API already loaded
-    }
-  }, []);
-
-  const createPlayer = useCallback(() => {
-    if (!isApiLoaded || !iframeContainerRef.current || iframeDimensions.width === 0 || iframeDimensions.height === 0) {
-      return; // Only create player if API is loaded and refs/dims are ready
+    } else if (window.YT) {
+      // If API is already loaded (e.g., component re-mounts), set state immediately
+      setIsApiLoaded(true);
     }
 
-    if (playerRef.current) {
-      playerRef.current.destroy(); // Destroy existing player if any
-    }
-
-    playerRef.current = new window.YT.Player(iframeContainerRef.current, {
-      videoId: videoId,
-      width: iframeDimensions.width, // Use calculated width
-      height: iframeDimensions.height, // Use calculated height
-      playerVars: {
-        autoplay: 0, // Start paused, we'll control it with API
-        controls: 0, // Hide default controls
-        disablekb: 1, // Disable keyboard controls
-        fs: 0, // Disable fullscreen button
-        loop: 1, // Loop the video
-        modestbranding: 1, // Hide YouTube logo
-        rel: 0, // Do not show related videos
-        showinfo: 0, // Hide video title and uploader info
-        iv_load_policy: 3, // Hide video annotations
-        playlist: videoId, // Required for looping
-        mute: 1, // Start muted
-      },
-      events: {
-        onReady: onPlayerReady,
-        onStateChange: onPlayerStateChange,
-      },
-    });
-  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
-
-  useEffect(() => {
-    loadYouTubeAPI();
-    calculateIframeDimensions(); // Initial calculation
-
+    // Add resize listener for responsive dimensions
     window.addEventListener('resize', calculateIframeDimensions);
+    calculateIframeDimensions(); // Initial calculation on mount
 
     return () => {
       window.removeEventListener('resize', calculateIframeDimensions);
+      // Cleanup player on unmount
       if (playerRef.current) {
         playerRef.current.destroy();
         playerRef.current = null;
@@ -116,12 +88,42 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [loadYouTubeAPI, calculateIframeDimensions]);
+  }, [calculateIframeDimensions]); // Only re-run if calculateIframeDimensions changes (it's memoized)
 
-  // New useEffect to create player when dependencies are met
+  // Effect to create the YouTube player instance once API is loaded and container is ready
   useEffect(() => {
-    createPlayer();
-  }, [createPlayer]); // Depend on createPlayer memoized function
+    if (isApiLoaded && iframeContainerRef.current && videoId && iframeDimensions.width > 0 && iframeDimensions.height > 0) {
+      // Ensure window.YT is available before creating player
+      if (typeof window.YT !== 'undefined' && window.YT.Player) {
+        if (playerRef.current) {
+          playerRef.current.destroy(); // Destroy existing player if any
+        }
+
+        playerRef.current = new window.YT.Player(iframeContainerRef.current, {
+          videoId: videoId,
+          width: iframeDimensions.width,
+          height: iframeDimensions.height,
+          playerVars: {
+            autoplay: 0, // Start paused, we'll control it with API
+            controls: 0, // Hide default controls
+            disablekb: 1, // Disable keyboard controls
+            fs: 0, // Disable fullscreen button
+            loop: 1, // Loop the video
+            modestbranding: 1, // Hide YouTube logo
+            rel: 0, // Do not show related videos
+            showinfo: 0, // Hide video title and uploader info
+            iv_load_policy: 3, // Hide video annotations
+            playlist: videoId, // Required for looping
+            mute: 1, // Start muted
+          },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+          },
+        });
+      }
+    }
+  }, [isApiLoaded, iframeContainerRef.current, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
 
   const onPlayerReady = useCallback((event: any) => {
     setPlayerReady(true);
