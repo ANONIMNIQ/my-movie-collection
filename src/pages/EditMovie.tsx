@@ -225,6 +225,7 @@ const EditMovie = () => {
     } else {
       // Invalidate caches to ensure fresh data is displayed on other pages
       queryClient.invalidateQueries({ queryKey: ["movies"] });
+      queryClient.invalidateQueries({ queryKey: ["movie", id] }); // Invalidate the specific movie detail query
       queryClient.invalidateQueries({ queryKey: ["tmdb", title, year] }); // Invalidate specific TMDb query
 
       // Update personal rating if changed
