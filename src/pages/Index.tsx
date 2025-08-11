@@ -204,7 +204,7 @@ const Index = () => {
           result.sort((a, b) => b.title.localeCompare(a.title));
           break;
         case "year-desc":
-          result.sort((a, b) => b.year.localeCompare(a.year));
+          result.sort((a, b) => b.year.localeCompare(b.year));
           break;
         case "year-asc":
           result.sort((a, b) => a.year.localeCompare(b.year));
@@ -436,7 +436,7 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0, y: 50 }} // Start slightly below and transparent
             animate={{ opacity: 1, y: 0 }} // Fade in and slide up
-            transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // After header, slower than text
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }} // Faster animation
           >
             <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
           </motion.div>
