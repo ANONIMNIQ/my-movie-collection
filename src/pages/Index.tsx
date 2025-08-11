@@ -39,13 +39,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion } from "framer-motion"; // Import motion
+import HeroSlider from "@/components/HeroSlider"; // Import HeroSlider
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
 
 // Define new variants for header content
 const headerTextRevealVariants = {
-  hidden: { opacity: 0, y: -20 }, // Changed y to -20 for top-to-bottom
+  hidden: { opacity: 0, y: 20 }, // Changed y to -20 for top-to-bottom
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }, // Reduced duration
 };
 
@@ -75,8 +76,8 @@ const Index = () => {
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
-  // Fetch movies using useQuery
-  const { data: movies, isLoading: loadingMovies, isError, error } = useQuery<Movie[], Error>({
+  // Fetch all movies using useQuery
+  const { data: allMovies, isLoading: loadingAllMovies, isError: isErrorAllMovies, error: errorAllMovies } = useQuery<Movie[], Error>({
     queryKey: ["movies"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -94,6 +95,52 @@ const Index = () => {
     retry: false, // Do not retry on error, handle it directly
   });
 
+  // Fetch admin's perfect-rated movies for the hero slider
+  const { data: adminPerfectRatedMovies, isLoading: loadingAdminRatings } = useQuery<Movie[], Error>({
+    queryKey: ["adminPerfectRatedMovies"],
+    queryFn: async () => {
+      if (!ADMIN_USER_ID) return []; // Ensure ADMIN_USER_ID is defined
+
+      const { data: ratings, error: ratingsError } = await supabase
+        .from('user_ratings')
+        .select('movie_id')
+        .eq('user_id', ADMIN_USER_ID)
+        .eq('rating', 10);
+
+      if (ratingsError) {
+        console.error("Error fetching admin's perfect ratings:", ratingsError);
+        return [];
+      }
+
+      const perfectMovieIds = ratings.map(r => r.movie_id);
+
+      if (perfectMovieIds.length === 0) return [];
+
+      const { data: moviesData, error: moviesError } = await supabase
+        .from('movies')
+        .select('*')
+        .in('id', perfectMovieIds);
+
+      if (moviesError) {
+        console.error("Error fetching perfect rated movies:", moviesError);
+        return [];
+      }
+      return moviesData as Movie[];
+    },
+    enabled: !sessionLoading, // Only fetch once session is loaded
+    staleTime: 1000 * 60 * 10, // Cache for 10 minutes
+    retry: false,
+  });
+
+  // Randomly select 5-6 perfect-rated movies for the hero slider
+  const heroSliderMovies = useMemo(() => {
+    if (!adminPerfectRatedMovies || adminPerfectRatedMovies.length === 0) return [];
+    
+    const shuffled = [...adminPerfectRatedMovies].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, Math.min(shuffled.length, 6)); // Get up to 6 random movies
+  }, [adminPerfectRatedMovies]);
+
+
   useEffect(() => {
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
@@ -105,7 +152,7 @@ const Index = () => {
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
-    movies?.forEach((movie) => { // Use optional chaining for movies
+    allMovies?.forEach((movie) => { // Use optional chaining for allMovies
       if (Array.isArray(movie.genres)) {
         movie.genres.forEach((genre) => {
           if (genre) genres.add(genre);
@@ -113,11 +160,11 @@ const Index = () => {
       }
     });
     return Array.from(genres).sort();
-  }, [movies]);
+  }, [allMovies]);
 
   const allCountries = useMemo(() => {
     const countries = new Set<string>();
-    movies?.forEach((movie) => { // Use optional chaining for movies
+    allMovies?.forEach((movie) => { // Use optional chaining for allMovies
       if (Array.isArray(movie.origin_country)) {
         movie.origin_country.forEach((country) => {
           if (country) countries.add(country);
@@ -125,10 +172,10 @@ const Index = () => {
       }
     });
     return Array.from(countries).sort();
-  }, [movies]);
+  }, [allMovies]);
 
   const filteredAndSortedMovies = useMemo(() => {
-    let result = [...(movies || [])]; // Ensure movies is an array
+    let result = [...(allMovies || [])]; // Ensure allMovies is an array
 
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
@@ -169,7 +216,7 @@ const Index = () => {
     }
 
     return result;
-  }, [movies, searchQuery, sortAndFilter, allGenres, allCountries]);
+  }, [allMovies, searchQuery, sortAndFilter, allGenres, allCountries]);
 
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
@@ -180,7 +227,7 @@ const Index = () => {
 
     const currentYear = new Date().getFullYear().toString();
 
-    (movies || []).forEach((movie) => { // Ensure movies is an array
+    (allMovies || []).forEach((movie) => { // Ensure allMovies is an array
       if (movie.year === currentYear) {
         newMovies.push(movie);
       }
@@ -199,7 +246,7 @@ const Index = () => {
     });
 
     return { newMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies };
-  }, [movies]);
+  }, [allMovies]);
 
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
@@ -384,9 +431,14 @@ const Index = () => {
           },
         }}
       >
+        {/* Desktop Hero Slider */}
+        {!isMobile && heroSliderMovies.length > 0 && (
+          <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
+        )}
+
         {/* Desktop View */}
         <div className="hidden md:block pt-8">
-          {loadingMovies ? (
+          {loadingAllMovies ? (
             <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
               <h2 className="text-3xl font-bold mb-4">New Movies</h2>
               <div className="flex overflow-hidden gap-4">
@@ -459,7 +511,7 @@ const Index = () => {
           )}
 
           <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
-            {!loadingMovies && (
+            {!loadingAllMovies && (
               <>
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8"> {/* Added pt-8 for spacing */}
                   <h2 className="text-3xl font-bold ml-3">All Movies</h2>
@@ -544,14 +596,14 @@ const Index = () => {
               </>
             )}
 
-            {loadingMovies ? (
+            {loadingAllMovies ? (
               <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
                 {Array.from({ length: 18 }).map((_, index) => (
                   <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />
                 ))}
               </div>
-            ) : isError ? (
-              <div className="text-center text-destructive">{error?.message || "Failed to load movies."}</div>
+            ) : isErrorAllMovies ? (
+              <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
             ) : filteredAndSortedMovies.length === 0 ? (
               <div className="text-center text-muted-foreground text-lg py-16">
                 No movies found matching your search.
@@ -593,7 +645,7 @@ const Index = () => {
             />
           </motion.div>
           
-          {isAdmin && !loadingMovies && (
+          {isAdmin && !loadingAllMovies && (
               <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -634,12 +686,12 @@ const Index = () => {
             )}
 
           <div className="flex flex-col gap-4">
-            {loadingMovies ? (
+            {loadingAllMovies ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <Skeleton key={index} className="w-full h-80 rounded-lg" />
               ))
-            ) : isError ? (
-              <div className="text-center text-destructive">{error?.message || "Failed to load movies."}</div>
+            ) : isErrorAllMovies ? (
+              <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
             ) : filteredAndSortedMovies.length === 0 ? (
               <div className="text-center text-gray-500 text-lg py-16">
                 No movies found matching your search.
