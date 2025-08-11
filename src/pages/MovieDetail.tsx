@@ -213,14 +213,17 @@ const MovieDetail = () => {
           )}
 
           <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
-            <Button
+            <motion.button
               onClick={handleBackClick} // Use the new handler
               variant="ghost"
               className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
+              initial="hidden"
+              animate="visible"
+              variants={textRevealVariants}
             >
               <ArrowLeft size={16} />
               Back to Collection
-            </Button>
+            </motion.button>
             
             <motion.div
               initial="hidden"
@@ -230,14 +233,14 @@ const MovieDetail = () => {
             >
               {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
                 <motion.img
-                  variants={textRevealVariants}
+                  // Removed variants={textRevealVariants}
                   src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`}
                   alt={`${movie.title} logo`}
                   className="max-h-28 md:max-h-40 mb-4 object-contain"
                 />
               ) : (
                 <motion.h1
-                  variants={textRevealVariants}
+                  // Removed variants={textRevealVariants}
                   className="text-4xl md:text-5xl font-bold tracking-tight mb-2"
                 >
                   {movie.title}
