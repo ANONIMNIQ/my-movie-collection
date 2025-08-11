@@ -188,7 +188,7 @@ const MovieDetail = () => {
           className="relative min-h-screen bg-background text-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.5 } }} // Fade out animation
+          exit={{ opacity: 0, transition: { duration: 0.3 } }} // Reduced duration to 0.3s
           transition={{ duration: 0.5 }}
         >
           {/* Backdrop Image or Video with Overlay */}
