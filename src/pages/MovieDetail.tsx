@@ -16,6 +16,24 @@ import { motion, AnimatePresence } from "framer-motion"; // Import motion and An
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
+// Animation variants for individual text elements
+const textRevealVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+// Animation variants for containers to stagger children
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1, // Stagger each child by 0.1 seconds
+      delayChildren: 0.2, // Delay before children start animating
+    },
+  },
+};
+
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate(); // Initialize useNavigate
@@ -204,74 +222,103 @@ const MovieDetail = () => {
               Back to Collection
             </Button>
             
-            <div className="max-w-3xl">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+              className="max-w-3xl"
+            >
               {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
-                <img src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`} alt={`${movie.title} logo`} className="max-h-28 md:max-h-40 mb-4 object-contain" />
+                <motion.img
+                  variants={textRevealVariants}
+                  src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`}
+                  alt={`${movie.title} logo`}
+                  className="max-h-28 md:max-h-40 mb-4 object-contain"
+                />
               ) : (
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
+                <motion.h1
+                  variants={textRevealVariants}
+                  className="text-4xl md:text-5xl font-bold tracking-tight mb-2"
+                >
                   {movie.title}
-                </h1>
+                </motion.h1>
               )}
               
-              <div className="flex items-center flex-wrap gap-x-4 gap-y-2 text-lg text-muted-foreground mb-6">
+              <motion.div
+                variants={textRevealVariants}
+                className="flex items-center flex-wrap gap-x-4 gap-y-2 text-lg text-muted-foreground mb-6"
+              >
                 <span>{movie.rating}</span>
                 <span>{movie.runtime} min</span>
                 <span>{movie.year}</span>
-              </div>
+              </motion.div>
 
               {trailerKey && (
-                <a href={`https://www.youtube.com/watch?v=${trailerKey}`} target="_blank" rel="noopener noreferrer">
+                <motion.a
+                  variants={textRevealVariants}
+                  href={`https://www.youtube.com/watch?v=${trailerKey}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button size="lg" className="mb-8">
                     <Youtube className="mr-2 h-5 w-5" /> Open Trailer in YouTube
                   </Button>
-                </a>
+                </motion.a>
               )}
 
-              <p className="text-lg text-muted-foreground mb-8">
+              <motion.p
+                variants={textRevealVariants}
+                className="text-lg text-muted-foreground mb-8"
+              >
                 {synopsis || "No synopsis available."}
-              </p>
+              </motion.p>
 
-              <Separator className="my-8 bg-muted-foreground/30" />
+              <motion.div variants={textRevealVariants}>
+                <Separator className="my-8 bg-muted-foreground/30" />
+              </motion.div>
 
-              <h2 className="text-2xl font-semibold mb-4">Details</h2>
+              <motion.h2 variants={textRevealVariants} className="text-2xl font-semibold mb-4">Details</motion.h2>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-lg">
-                <div>
+              <motion.div
+                variants={containerVariants}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-lg"
+              >
+                <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Genres</p>
                   <p className="text-muted-foreground">{genresToDisplay.join(", ") || "N/A"}</p>
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Community Rating</p>
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <Star className="text-yellow-400" size={18} />
                     <span>{movie.community_rating?.toFixed(1) ?? "N/A"}</span>
                   </div>
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Georgi's Rating</p>
                   <PersonalRating movieId={movie.id} initialRating={adminPersonalRatingData} readOnly={true} />
                   {adminPersonalRatingData === null && <span className="text-lg text-muted-foreground ml-1">N/A</span>}
-                </div>
+                </motion.div>
                 {userId && userId !== ADMIN_USER_ID && (
-                  <div>
+                  <motion.div variants={textRevealVariants}>
                     <p className="font-semibold">Your Rating</p>
                     <PersonalRating movieId={movie.id} initialRating={currentUserPersonalRatingData} />
-                  </div>
+                  </motion.div>
                 )}
-                <div>
+                <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Director</p>
                   <p className="text-muted-foreground">{director || "N/A"}</p>
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Origin Country</p>
                   <p className="text-muted-foreground">{originCountry || "N/A"}</p>
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Cast</p>
                   <p className="text-muted-foreground">{cast || "N/A"}</p>
-                </div>
-              </div>
-            </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
         </motion.div>
       )}
