@@ -35,22 +35,29 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     const parentHeight = parentRef.current.offsetHeight;
 
     const parentAspectRatio = parentWidth / parentHeight;
-    const youtubePlayerAspectRatio = 16 / 9; // Standard YouTube player aspect ratio
+    const youtubePlayerAspectRatio = 16 / 9; // YouTube player is always 16:9
 
     let newWidth, newHeight;
 
-    // Logic to make the video player *cover* the parent container
+    // This is the "cover" logic. It ensures the 16:9 player is large enough
+    // to fill the container without leaving any gaps.
     if (parentAspectRatio > youtubePlayerAspectRatio) {
-      // Parent is wider than 16:9. Fill parent width, height will extend beyond and be cropped.
+      // Parent is wider than 16:9. Match parent width, height will be larger.
       newWidth = parentWidth;
       newHeight = parentWidth / youtubePlayerAspectRatio;
     } else {
-      // Parent is taller or same aspect ratio as 16:9. Fill parent height, width will extend beyond and be cropped.
+      // Parent is taller than 16:9. Match parent height, width will be larger.
       newHeight = parentHeight;
       newWidth = parentHeight * youtubePlayerAspectRatio;
     }
 
-    setIframeDimensions({ width: newWidth, height: newHeight });
+    // Now, we apply an additional scale factor to "zoom in" on the video.
+    // This is to crop out the letterbox bars that YouTube adds to cinematic (e.g., 21:9) videos.
+    // A scale factor of ~1.35 is typically enough to hide the bars on a 21:9 video inside a 16:9 player.
+    // This will slightly crop the top/bottom of true 16:9 videos, but it's a common trade-off.
+    const zoomFactor = 1.35;
+
+    setIframeDimensions({ width: newWidth * zoomFactor, height: newHeight * zoomFactor });
   }, []);
 
   const onPlayerReady = useCallback((event: any) => {
