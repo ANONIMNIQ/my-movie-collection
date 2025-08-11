@@ -162,50 +162,44 @@ const HeroSlide: React.FC<HeroSlideProps> = ({ movie, isActive, showTrailer, adm
         <Skeleton className="w-full h-full absolute inset-0" />
       ) : (
         isActive && showTrailer && trailerKey ? (
-          <YouTubePlayerBackground videoId={trailerKey} />
+          <YouTubePlayerBackground videoId={trailerKey} delay={0} />
         ) : (
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
           >
-            <div className="absolute inset-0 bg-black opacity-50"></div> {/* Main dark overlay */}
+            <div className="absolute inset-0 bg-black opacity-50"></div>
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent"></div>
           </div>
         )
       )}
 
-      {/* Content Overlay - This is where the text and buttons will go */}
-      <div className="absolute inset-0 flex flex-col justify-end z-10">
-        {/* Gradient at the top of the content overlay to fade into the video */}
-        <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/70 to-transparent"></div>
-
-        {/* Main content area with a solid background for readability */}
-        <div className="relative w-full bg-black/80 p-8 pt-16 md:p-12 md:pt-20"> {/* Increased padding-top to ensure text is below the gradient */}
-          <div className="max-w-3xl text-white">
-            {logoUrl && (
-              <img
-                src={logoUrl}
-                alt={`${movie.title} logo`}
-                className="max-h-32 md:max-h-48 mb-4 object-contain"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            )}
-            {!logoUrl && (
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
-                {movie.title}
-              </h1>
-            )}
-            <p className="text-lg md:text-xl text-gray-200 mb-4 line-clamp-3">
-              {synopsis}
-            </p>
-            <div className="flex items-center gap-4 text-gray-300 text-lg mb-6">
-              <span>{movie.rating}</span>
-              <span>{movie.runtime ? `${movie.runtime} min` : "N/A min"}</span>
-              <span>{movie.year}</span>
-            </div>
-            <Button size="lg" onClick={onNavigate}>
-              <Info className="mr-2 h-5 w-5" /> View Details
-            </Button>
+      <div className="absolute inset-0 flex items-center p-8 z-10">
+        <div className="max-w-3xl text-white">
+          {logoUrl && (
+            <img
+              src={logoUrl}
+              alt={`${movie.title} logo`}
+              className="max-h-32 md:max-h-48 mb-4 object-contain"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          )}
+          {!logoUrl && (
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
+              {movie.title}
+            </h1>
+          )}
+          <p className="text-lg md:text-xl text-gray-200 mb-4 line-clamp-3">
+            {synopsis}
+          </p>
+          <div className="flex items-center gap-4 text-gray-300 text-lg mb-6">
+            <span>{movie.rating}</span>
+            <span>{movie.runtime ? `${movie.runtime} min` : "N/A min"}</span>
+            <span>{movie.year}</span>
           </div>
+          <Button size="lg" onClick={onNavigate}>
+            <Info className="mr-2 h-5 w-5" /> View Details
+          </Button>
         </div>
       </div>
     </div>
