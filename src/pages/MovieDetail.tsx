@@ -73,6 +73,7 @@ const MovieDetail = () => {
     id || "", // Pass movie ID
     movie?.title ?? "",
     movie?.year ?? "",
+    movie?.tmdb_id // New: Pass tmdb_id from movie data
   );
 
   // Fetch admin's personal rating for this movie (visible to all)
@@ -308,6 +309,7 @@ const MovieDetail = () => {
                     <span>{movie.community_rating?.toFixed(1) ?? "N/A"}</span>
                   </div>
                 </motion.div>
+                {/* Georgi's Rating */}
                 <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Georgi's Rating</p>
                   <PersonalRating movieId={movie.id} initialRating={adminPersonalRatingData} readOnly={true} />

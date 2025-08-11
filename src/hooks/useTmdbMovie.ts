@@ -1,31 +1,39 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchFromTmdb } from "@/lib/tmdb";
 
-export const useTmdbMovie = (movieId: string, title: string, year: string) => {
+export const useTmdbMovie = (supabaseMovieId: string, title: string, year: string, tmdbIdFromDb?: string | null) => {
   return useQuery({
-    queryKey: ["tmdb", movieId], // Use movieId as the primary cache key
+    queryKey: ["tmdb", supabaseMovieId], // Use Supabase movie ID as the primary cache key
     queryFn: async () => {
-      let searchResults = await fetchFromTmdb("/search/movie", {
-        query: title,
-        primary_release_year: year,
-      });
+      let finalTmdbId = tmdbIdFromDb;
 
-      if (!searchResults || searchResults.results.length === 0) {
-        // Fallback search without year if the first one fails
-        searchResults = await fetchFromTmdb("/search/movie", { query: title });
+      // If tmdbId is not provided from DB, try to search for it
+      if (!finalTmdbId) {
+        let searchResults = await fetchFromTmdb("/search/movie", {
+          query: title,
+          primary_release_year: year,
+        });
+
+        if (!searchResults || searchResults.results.length === 0) {
+          // Fallback search without year if the first one fails
+          searchResults = await fetchFromTmdb("/search/movie", { query: title });
+        }
+
+        if (searchResults && searchResults.results.length > 0) {
+          finalTmdbId = String(searchResults.results[0].id);
+        }
       }
 
-      if (!searchResults || searchResults.results.length === 0) {
-        return null; // Movie not found
+      if (!finalTmdbId) {
+        return null; // No TMDb ID found or provided
       }
 
-      const movieSummary = searchResults.results[0];
-      const details = await fetchFromTmdb(`/movie/${movieSummary.id}`, {
-        append_to_response: "credits,release_dates,images,videos", // Added images and videos
+      const details = await fetchFromTmdb(`/movie/${finalTmdbId}`, {
+        append_to_response: "credits,release_dates,images,videos",
       });
       return details;
     },
-    enabled: !!movieId && !!title, // Enable if movieId and title are available
+    enabled: !!supabaseMovieId && !!title, // Enable if Supabase movie ID and title are available
     staleTime: 1000 * 60 * 60 * 24, // Cache data for 24 hours
     retry: false,
   });

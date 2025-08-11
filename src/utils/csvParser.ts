@@ -26,12 +26,16 @@ export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<
                 const communityRating = parseFloat(row.CommunityRating);
                 
                 let origin_country: string[] = [];
+                let tmdb_id: string | null = null; // Initialize tmdb_id as null
                 try {
                   const searchResults = await fetchFromTmdb("/search/movie", { query: row.Name, primary_release_year: row.Year });
                   if (searchResults && searchResults.results.length > 0) {
                       const movieDetails = await fetchFromTmdb(`/movie/${searchResults.results[0].id}`);
-                      if (movieDetails && movieDetails.production_countries && movieDetails.production_countries.length > 0) {
-                          origin_country = movieDetails.production_countries.map((c: any) => c.name);
+                      if (movieDetails) {
+                          tmdb_id = String(movieDetails.id); // Store TMDb ID if found
+                          if (movieDetails.production_countries && movieDetails.production_countries.length > 0) {
+                              origin_country = movieDetails.production_countries.map((c: any) => c.name);
+                          }
                       }
                   }
                 } catch (e) {
@@ -51,6 +55,7 @@ export const parseMoviesCsv = (csvString: string, adminUserId: string): Promise<
                   director: "",
                   user_id: adminUserId,
                   origin_country: origin_country,
+                  tmdb_id: tmdb_id, // Include tmdb_id
                 } as Movie;
               })
           );

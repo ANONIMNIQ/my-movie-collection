@@ -31,6 +31,7 @@ const AddMovie = () => {
     movie_cast: "",
     director: "",
     origin_country: "",
+    tmdb_id: "", // New: Add tmdb_id to form data
   });
   const [personalRating, setPersonalRating] = useState<number | null>(null); // New state for personal rating
   const [loading, setLoading] = useState(false);
@@ -104,6 +105,7 @@ const AddMovie = () => {
         movie_cast: cast,
         director: director,
         origin_country: country,
+        tmdb_id: String(details.id), // Store TMDb ID
       });
       showSuccess("Movie details fetched from TMDb!");
     } catch (error: any) {
@@ -125,7 +127,7 @@ const AddMovie = () => {
       return;
     }
 
-    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director, origin_country } = formData;
+    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director, origin_country, tmdb_id } = formData;
 
     const parsedCommunityRating = community_rating ? parseFloat(community_rating) : null;
     const finalCommunityRating = isNaN(parsedCommunityRating as number) ? null : parsedCommunityRating;
@@ -143,6 +145,7 @@ const AddMovie = () => {
       director,
       origin_country: origin_country.split(",").map((c) => c.trim()).filter(Boolean),
       user_id: session?.user?.id,
+      tmdb_id: tmdb_id || null, // Include tmdb_id in the payload
     };
 
     const { data: insertedMovie, error } = await supabase.from("movies").insert([movieData]).select('id').single();

@@ -37,6 +37,7 @@ const EditMovie = () => {
     movie_cast: "",
     director: "",
     origin_country: "",
+    tmdb_id: "", // New: Add tmdb_id to form data
   });
   const [personalRating, setPersonalRating] = useState<number | null>(null); // State for personal rating
   const [loading, setLoading] = useState(true);
@@ -108,6 +109,7 @@ const EditMovie = () => {
           movie_cast: Array.isArray(movieData.movie_cast) ? movieData.movie_cast.join(", ") : "",
           director: movieData.director,
           origin_country: Array.isArray(movieData.origin_country) ? movieData.origin_country.join(", ") : "",
+          tmdb_id: movieData.tmdb_id || "", // Initialize tmdb_id from movieData
         });
         setLoading(false);
       }
@@ -174,6 +176,7 @@ const EditMovie = () => {
         movie_cast: cast,
         director: director,
         origin_country: country,
+        tmdb_id: String(details.id), // Store TMDb ID
       });
       showSuccess("Movie details fetched from TMDb!");
     } catch (error: any) {
@@ -195,7 +198,7 @@ const EditMovie = () => {
       return;
     }
 
-    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director, origin_country } = formData;
+    const { title, year, genres, rating, runtime, community_rating, poster_url, synopsis, movie_cast, director, origin_country, tmdb_id } = formData;
 
     const parsedCommunityRating = community_rating ? parseFloat(String(community_rating)) : null;
     const finalCommunityRating = isNaN(parsedCommunityRating as number) ? null : parsedCommunityRating;
@@ -212,6 +215,7 @@ const EditMovie = () => {
       movie_cast: movie_cast.split(",").map((c) => c.trim()).filter(Boolean),
       director,
       origin_country: origin_country.split(",").map((c) => c.trim()).filter(Boolean),
+      tmdb_id: tmdb_id || null, // Include tmdb_id in the payload
     };
 
     const { error: updateError } = await supabase

@@ -39,7 +39,7 @@ const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
 export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis = true }: MovieCardProps) => {
   const navigate = useNavigate();
-  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.id, movie.title, movie.year);
+  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.id, movie.title, movie.year, movie.tmdb_id);
   const { session } = useSession();
   const queryClient = useQueryClient();
   const userId = session?.user?.id;
@@ -130,18 +130,23 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     queryClient.prefetchQuery({
         queryKey: ["tmdb", movie.id], // Use movie.id for TMDb prefetch
         queryFn: async () => {
-            let searchResults = await fetchFromTmdb("/search/movie", {
-                query: movie.title,
-                primary_release_year: movie.year,
-            });
-            if (!searchResults || searchResults.results.length === 0) {
-                searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
+            let finalTmdbId = movie.tmdb_id;
+            if (!finalTmdbId) {
+              let searchResults = await fetchFromTmdb("/search/movie", {
+                  query: movie.title,
+                  primary_release_year: movie.year,
+              });
+              if (!searchResults || searchResults.results.length === 0) {
+                  searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
+              }
+              if (searchResults && searchResults.results.length > 0) {
+                  finalTmdbId = String(searchResults.results[0].id);
+              }
             }
-            if (!searchResults || searchResults.results.length === 0) {
+            if (!finalTmdbId) {
                 return null;
             }
-            const movieSummary = searchResults.results[0];
-            const details = await fetchFromTmdb(`/movie/${movieSummary.id}`, {
+            const details = await fetchFromTmdb(`/movie/${finalTmdbId}`, {
                 append_to_response: "credits,release_dates,images,videos",
             });
             return details;

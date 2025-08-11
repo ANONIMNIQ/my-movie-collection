@@ -12,6 +12,7 @@ export interface Movie {
   director: string;
   origin_country?: string[];
   user_id?: string | null;
+  tmdb_id?: string | null; // New: TMDb movie ID
 }
 
 export const movies: Movie[] = [
