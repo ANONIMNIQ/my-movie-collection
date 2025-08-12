@@ -340,18 +340,22 @@ const Index = () => {
     setIsDeleting(false);
   };
 
+  // Dynamically calculate shrunken header height for perfect fit
+  const shrunkenHeaderHeight = isMobile ? 48 : 56; // Mobile: 24px font + 24px padding. Desktop: 32px font + 24px padding.
+  const shrunkenHeaderPaddingY = '0.75rem'; // 12px top/bottom padding
+
   // Header variants for height and padding animation
   const headerVariants = {
     full: {
-      minHeight: "200px", // Initial full height
-      paddingTop: "2rem", // py-8
-      paddingBottom: "2rem", // py-8
+      minHeight: "200px",
+      paddingTop: "2rem",
+      paddingBottom: "2rem",
       transition: { duration: 0.5, ease: "easeOut" }
     },
     shrunk: {
-      minHeight: "60px", // Final shrunk height (reduced from 80px)
-      paddingTop: "0.25rem", // Reduced padding (from 0.5rem)
-      paddingBottom: "0.25rem", // Reduced padding (from 0.5rem)
+      minHeight: `${shrunkenHeaderHeight}px`,
+      paddingTop: shrunkenHeaderPaddingY,
+      paddingBottom: shrunkenHeaderPaddingY,
       transition: { duration: 0.5, ease: "easeOut" }
     },
   };
@@ -370,8 +374,8 @@ const Index = () => {
 
   // Main content wrapper variants for padding to align with shrinking header
   const mainContentAlignmentVariants = {
-    full: { paddingTop: "200px", transition: { duration: 0.5, ease: "easeOut" } }, // Initial padding to push content below full header
-    shrunk: { paddingTop: "60px", transition: { duration: 0.5, ease: "easeOut" } }, // Final padding to push content below shrunk header (updated from 80px)
+    full: { paddingTop: "200px", transition: { duration: 0.5, ease: "easeOut" } },
+    shrunk: { paddingTop: `${shrunkenHeaderHeight}px`, transition: { duration: 0.5, ease: "easeOut" } },
   };
 
   // Variants for content sections (fade in and slight slide up)
