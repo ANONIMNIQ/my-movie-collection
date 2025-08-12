@@ -435,7 +435,7 @@ const Index = () => {
             >
               <motion.h1
                 className={cn(
-                  "text-4xl md:text-5xl font-bold tracking-tight",
+                  "text-4xl md:text-5xl font-bold tracking-tight leading-none",
                   isMobile ? "text-foreground" : "text-headerTitle"
                 )}
                 animate={headerShrunk ? "shrunk" : "full"} // Apply title shrink animation
