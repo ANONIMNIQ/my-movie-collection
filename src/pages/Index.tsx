@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSession } from "@/contexts/SessionContext"; // Corrected import path
+import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
@@ -403,6 +403,7 @@ const Index = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
+        delayChildren: 1.2, // Added delay here for desktop content
       },
     },
   };
@@ -543,8 +544,8 @@ const Index = () => {
             {!isMobile && heroSliderMovies.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
-                animate={headerShrunk ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }} // Changed initial to 1,0 for hero slider
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                animate={pageLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }} // Changed animate condition
+                transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }} // Added delay
               >
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
@@ -553,7 +554,7 @@ const Index = () => {
             <motion.div
               className="hidden md:block pt-8"
               initial="hidden"
-              animate={headerShrunk ? "visible" : "hidden"}
+              animate={pageLoaded ? "visible" : "hidden"} // Changed animate condition
               variants={mainContainerVariants}
             >
               {loadingAllMovies ? (
