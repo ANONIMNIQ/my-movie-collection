@@ -66,7 +66,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -604,7 +604,7 @@ const Index = () => {
             )}
 
             <motion.div
-              ref={allMoviesSectionRef} {/* Attach ref here */}
+              ref={allMoviesSectionRef} 
               className="hidden md:block pt-8"
               initial="hidden"
               animate={pageLoaded ? "visible" : "hidden"}
