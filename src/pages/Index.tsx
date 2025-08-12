@@ -517,7 +517,7 @@ const Index = () => {
                       </Link>
                       {isAdmin && (
                         <Link to="/import-movies">
-                          <Button variant="secondary">Import Movies</Button>
+                          <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Movies</Button>
                         </Link>
                       )}
                       <Link to="/import-ratings">
