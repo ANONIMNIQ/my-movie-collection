@@ -345,9 +345,9 @@ const Index = () => {
       transition: { duration: 0.5, ease: "easeOut" }
     },
     shrunk: {
-      minHeight: "80px", // Final shrunk height
-      paddingTop: "0.5rem", // Reduced padding
-      paddingBottom: "0.5rem", // Reduced padding
+      minHeight: "60px", // Final shrunk height (reduced from 80px)
+      paddingTop: "0.25rem", // Reduced padding (from 0.5rem)
+      paddingBottom: "0.25rem", // Reduced padding (from 0.5rem)
       transition: { duration: 0.5, ease: "easeOut" }
     },
   };
@@ -367,7 +367,7 @@ const Index = () => {
   // Main content wrapper variants for padding to align with shrinking header
   const mainContentAlignmentVariants = {
     full: { paddingTop: "200px", transition: { duration: 0.5, ease: "easeOut" } }, // Initial padding to push content below full header
-    shrunk: { paddingTop: "80px", transition: { duration: 0.5, ease: "easeOut" } }, // Final padding to push content below shrunk header
+    shrunk: { paddingTop: "60px", transition: { duration: 0.5, ease: "easeOut" } }, // Final padding to push content below shrunk header (updated from 80px)
   };
 
   // Variants for content sections (fade in and slight slide up)
