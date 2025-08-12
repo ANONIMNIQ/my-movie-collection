@@ -661,20 +661,28 @@ const Index = () => {
                               <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
                               <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
                             </SelectGroup>
-                            {allGenres.length > 0 && <Separator className="my-1" />}
-                            <SelectGroup>
-                              <SelectLabel>Filter by Genre</SelectLabel>
-                              {allGenres.map((genre) => (
-                                <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                              ))}
-                            </SelectGroup>
-                            {allCountries.length > 0 && <Separator className="my-1" />}
-                            <SelectGroup>
-                              <SelectLabel>Filter by Country</Label>
-                              {allCountries.map((country) => (
-                                <SelectItem key={country} value={country}>{country}</SelectItem>
-                              ))}
-                            </SelectGroup>
+                            {allGenres.length > 0 && (
+                              <>
+                                <Separator className="my-1" />
+                                <SelectGroup>
+                                  <SelectLabel>Filter by Genre</SelectLabel>
+                                  {allGenres.map((genre) => (
+                                    <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </>
+                            )}
+                            {allCountries.length > 0 && (
+                              <>
+                                <Separator className="my-1" />
+                                <SelectGroup>
+                                  <SelectLabel>Filter by Country</Label>
+                                  {allCountries.map((country) => (
+                                    <SelectItem key={country} value={country}>{country}</SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </>
+                            )}
                           </SelectContent>
                         </Select>
                       </div>
