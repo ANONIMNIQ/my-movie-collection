@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import useQ
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel, // Added AlertDialogCancel here
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -76,8 +76,13 @@ const Index = () => {
   // New state to control header shrinking
   const [headerShrunk, setHeaderShrunk] = useState(false);
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
+  // New state for dynamic header color based on scroll
+  const [isHeaderDark, setIsHeaderDark] = useState(false); 
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
+
+  // Ref for the "All Movies" section to detect scroll overlap
+  const allMoviesSectionRef = useRef<HTMLDivElement>(null);
 
   // Fetch all movies using useQuery
   const { data: allMovies, isLoading: loadingAllMovies, isError: isErrorAllMovies, error: errorAllMovies } = useQuery<Movie[], Error>({
@@ -173,6 +178,38 @@ const Index = () => {
       return () => clearTimeout(shrinkTimer);
     }
   }, [pageLoaded, headerShrunk]);
+
+  // Callback for scroll event to determine header color
+  const handleScroll = useCallback(() => {
+    if (!allMoviesSectionRef.current || isMobile) {
+      // Only apply this logic on desktop
+      return;
+    }
+
+    const headerHeight = headerShrunk ? shrunkenHeaderHeight : 200; // Approximate header height
+    const scrollY = window.scrollY;
+
+    const allMoviesSectionTop = allMoviesSectionRef.current.offsetTop;
+    const allMoviesSectionBottom = allMoviesSectionRef.current.offsetTop + allMoviesSectionRef.current.offsetHeight;
+
+    // Check if the bottom of the fixed header is past the top of the all movies section
+    // AND if the top of the header is still above the bottom of the all movies section
+    const headerBottom = scrollY + headerHeight;
+
+    const shouldBeDark = headerBottom > allMoviesSectionTop && scrollY < allMoviesSectionBottom;
+
+    setIsHeaderDark(shouldBeDark);
+  }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    // Initial check in case user loads page already scrolled
+    handleScroll();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]); // Re-run effect if handleScroll changes (due to its dependencies)
+
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -439,11 +476,13 @@ const Index = () => {
           className={cn(
             "w-full text-center z-50 fixed top-0 left-0 right-0",
             "transition-colors duration-500 ease-out",
-            headerShrunk
-              ? isMobile
-                ? "bg-background/80 backdrop-blur-md shadow-md"
-                : "bg-white/80 backdrop-blur-md shadow-md"
-              : "bg-white backdrop-blur-md shadow-md" 
+            isMobile
+              ? "bg-background/80 backdrop-blur-md shadow-md" // Mobile header is always dark/frosted
+              : isHeaderDark // Desktop logic: dark when over all movies section
+                ? "bg-background/80 backdrop-blur-md shadow-md" 
+                : headerShrunk // Desktop logic: light frosted when shrunk but not over all movies section
+                  ? "bg-white/80 backdrop-blur-md shadow-md" 
+                  : "bg-white backdrop-blur-md shadow-md" // Desktop logic: light opaque when full and not over all movies section
           )}
           initial={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -565,6 +604,7 @@ const Index = () => {
             )}
 
             <motion.div
+              ref={allMoviesSectionRef} {/* Attach ref here */}
               className="hidden md:block pt-8"
               initial="hidden"
               animate={pageLoaded ? "visible" : "hidden"}
