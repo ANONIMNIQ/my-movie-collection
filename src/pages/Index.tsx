@@ -442,7 +442,7 @@ const Index = () => {
               ? isMobile
                 ? "bg-background/80 backdrop-blur-md shadow-md"
                 : "bg-white/80 backdrop-blur-md shadow-md"
-              : "bg-white/0 backdrop-blur-md shadow-md" // Changed this line for desktop full state
+              : "bg-white backdrop-blur-md shadow-md" // Reverted to bg-white
           )}
           initial={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
