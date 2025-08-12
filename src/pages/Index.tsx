@@ -164,7 +164,7 @@ const Index = () => {
     if (pageLoaded && !headerShrunk) {
       const shrinkTimer = setTimeout(() => {
         setHeaderShrunk(true);
-      }, 2000); // Wait 2 seconds before shrinking
+      }, 800); // Wait 0.8 seconds before shrinking
       return () => clearTimeout(shrinkTimer);
     }
   }, [pageLoaded, headerShrunk]);
