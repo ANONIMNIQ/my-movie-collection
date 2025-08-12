@@ -430,12 +430,8 @@ const Index = () => {
           variants={headerVariants}
           className="h-full flex flex-col justify-center"
         >
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial="hidden"
-              animate={pageLoaded ? "visible" : "hidden"}
-              variants={headerContentContainerVariants}
-            >
+          <div className="container mx-auto px-4 relative h-full">
+            <div className="flex items-center justify-center md:justify-between h-full">
               <motion.h1
                 className={cn(
                   "text-4xl md:text-5xl font-bold tracking-tight",
@@ -446,6 +442,37 @@ const Index = () => {
               >
                 Georgi's Movie Collection
               </motion.h1>
+
+              {/* Desktop Buttons - always visible */}
+              <div className="hidden md:flex items-center gap-2">
+                {session && (
+                  <>
+                    <Link to="/add-movie">
+                      <Button className="bg-black text-white hover:bg-gray-800">Add New Movie</Button>
+                    </Link>
+                    {isAdmin && (
+                      <Link to="/import-movies">
+                        <Button variant="secondary">Import Movies</Button>
+                      </Link>
+                    )}
+                    <Link to="/import-ratings">
+                      <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Ratings</Button>
+                    </Link>
+                    <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
+                      Logout
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Centered content that fades out */}
+            <motion.div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-4"
+              initial="hidden"
+              animate={pageLoaded ? "visible" : "hidden"}
+              variants={headerContentContainerVariants}
+            >
               <motion.p
                 className={cn(
                   "mt-2 text-lg",
@@ -468,17 +495,16 @@ const Index = () => {
                   labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
                 />
               </motion.div>
+              {/* Mobile Buttons - fade out */}
               <motion.div
-                className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
+                className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 md:hidden"
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
               >
-                {sessionLoading ? (
-                  <Skeleton className="w-32 h-10" />
-                ) : session ? (
+                {session && (
                   <>
                     <Link to="/add-movie">
-                      <Button className={cn(!isMobile && "bg-black text-white hover:bg-gray-800")}>Add New Movie</Button>
+                      <Button>Add New Movie</Button>
                     </Link>
                     {isAdmin && (
                       <Link to="/import-movies">
@@ -486,14 +512,12 @@ const Index = () => {
                       </Link>
                     )}
                     <Link to="/import-ratings">
-                      <Button variant="outline" className={cn((!isMobile || !headerShrunk) && "text-black border-black hover:bg-gray-200 hover:text-black")}>Import My Ratings</Button>
+                      <Button variant="outline">Import My Ratings</Button>
                     </Link>
-                    <Button variant="outline" onClick={handleLogout} className={cn((!isMobile || !headerShrunk) && "text-black border-black hover:bg-gray-200 hover:text-black")}>
+                    <Button variant="outline" onClick={handleLogout}>
                       Logout
                     </Button>
                   </>
-                ) : (
-                  <></>
                 )}
               </motion.div>
             </motion.div>
@@ -713,7 +737,7 @@ const Index = () => {
           <motion.div
             className="md:hidden px-4 pt-8"
             initial="hidden"
-            animate={headerShrunk ? "visible" : "hidden"}
+            animate={pageLoaded ? "visible" : "hidden"}
             variants={mainContainerVariants}
           >
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
