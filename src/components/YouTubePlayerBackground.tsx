@@ -52,15 +52,8 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     setPlayerReady(true);
     event.target.mute(); // Ensure it's muted for autoplay on mobile
     setIsMuted(true);
-    // Initial play attempt after delay, if not manually paused and in viewport
-    if (!userPaused && isInViewport) {
-      setTimeout(() => {
-        if (playerRef.current) { // Re-check playerRef.current
-          playerRef.current.playVideo();
-        }
-      }, delay + 100); // Add a small buffer, e.g., 100ms
-    }
-  }, [userPaused, isInViewport, delay]);
+    // No immediate play here. The useEffect below will handle it.
+  }, []);
 
   const onPlayerStateChange = useCallback((event: any) => {
     if (event.data === window.YT.PlayerState.PLAYING) {
@@ -74,9 +67,11 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     if (!isApiLoaded || !window.YT || typeof window.YT.Player === 'undefined' || !iframeContainerRef.current || iframeDimensions.width === 0) {
       return;
     }
+    // Destroy existing player if any
     if (playerRef.current) {
       playerRef.current.destroy();
     }
+    // Create new player and assign to ref
     playerRef.current = new window.YT.Player(iframeContainerRef.current, {
       videoId: videoId,
       width: iframeDimensions.width,
@@ -96,7 +91,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       },
       events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange },
     });
-  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange, iframeContainerRef]); // Add iframeContainerRef here
+  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange, iframeContainerRef]);
 
   useEffect(() => {
     // Load YouTube Iframe API script
@@ -154,29 +149,32 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
   }, [calculateIframeDimensions, isApiLoaded, isInViewport, isPlaying, playerReady, userPaused, videoId]);
 
   useEffect(() => {
-    // Recreate player when API is loaded or dimensions change
+    // This effect is responsible for creating/recreating the player
     createYouTubePlayer();
-  }, [createYouTubePlayer]);
+  }, [createYouTubePlayer]); // Depend on createYouTubePlayer
 
   useEffect(() => {
-    // Handle play/pause based on viewport and user interaction
+    // This effect is solely responsible for playing/pausing based on state
     if (playerReady && playerRef.current) {
-      if (isInViewport) {
-        if (!userPaused) {
-          if (!isPlaying) { // Only play if not already playing
-            const playTimer = setTimeout(() => {
-              if (playerRef.current) { // Re-check playerRef.current
-                playerRef.current.playVideo();
-              }
-            }, 50); // Small delay
-            return () => clearTimeout(playTimer); // Cleanup timer
-          }
+      if (isInViewport && !userPaused) {
+        // Only play if in viewport and not manually paused
+        if (playerRef.current.getPlayerState() !== window.YT.PlayerState.PLAYING) {
+          // Add a small delay to ensure player is fully ready for command
+          const playTimer = setTimeout(() => {
+            if (playerRef.current) { // Re-check playerRef.current
+              playerRef.current.playVideo();
+            }
+          }, 50); // Small delay
+          return () => clearTimeout(playTimer); // Cleanup timer
         }
       } else {
-        playerRef.current.pauseVideo();
+        // Pause if not in viewport or manually paused
+        if (playerRef.current.getPlayerState() === window.YT.PlayerState.PLAYING) {
+          playerRef.current.pauseVideo();
+        }
       }
     }
-  }, [isInViewport, playerReady, userPaused, isPlaying]);
+  }, [isInViewport, playerReady, userPaused, videoId]); // Added videoId to ensure effect re-runs if video changes
 
   const togglePlayPause = useCallback(() => {
     if (playerRef.current) {
