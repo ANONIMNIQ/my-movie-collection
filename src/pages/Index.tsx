@@ -15,7 +15,6 @@ import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import useQ
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -483,7 +482,7 @@ const Index = () => {
                         count={filteredAndSortedMovies.length} 
                         numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
                         labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
-                        animateOnLoad={pageLoaded} {/* Pass pageLoaded to control animation */}
+                        animateOnLoad={pageLoaded} /* Pass pageLoaded to control animation */
                       />
                     </div>
                     {/* Mobile Buttons - fade out */}
