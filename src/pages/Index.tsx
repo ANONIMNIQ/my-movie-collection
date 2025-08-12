@@ -420,7 +420,7 @@ const Index = () => {
               : "bg-white/80 backdrop-blur-lg shadow-md"
             : isMobile
               ? "bg-background shadow-md"
-              : "bg-gradient-to-b from-black/60 to-transparent"
+              : "bg-white shadow-md"
         )}
         initial={{ y: "-100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -441,7 +441,7 @@ const Index = () => {
               <motion.h1
                 className={cn(
                   "text-4xl md:text-5xl font-bold tracking-tight",
-                  isMobile || !headerShrunk ? "text-foreground" : "text-headerTitle"
+                  isMobile ? "text-foreground" : "text-headerTitle"
                 )}
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={titleShrinkVariants}
@@ -451,7 +451,7 @@ const Index = () => {
               <motion.p
                 className={cn(
                   "mt-2 text-lg",
-                  isMobile || !headerShrunk ? "text-muted-foreground" : "text-headerDescription"
+                  isMobile ? "text-muted-foreground" : "text-headerDescription"
                 )}
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
@@ -466,8 +466,8 @@ const Index = () => {
                 <MovieCounter 
                   key={isMobile ? 'mobile' : 'desktop'}
                   count={filteredAndSortedMovies.length} 
-                  numberColor={isMobile || !headerShrunk ? "white" : "#0F0F0F"}
-                  labelColor={isMobile || !headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
+                  numberColor={isMobile ? "white" : "#0F0F0F"}
+                  labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
                 />
               </motion.div>
               <motion.div
@@ -480,7 +480,7 @@ const Index = () => {
                 ) : session ? (
                   <>
                     <Link to="/add-movie">
-                      <Button className={cn(!isMobile && headerShrunk && "bg-black text-white hover:bg-gray-800")}>Add New Movie</Button>
+                      <Button className={cn(!isMobile && "bg-black text-white hover:bg-gray-800")}>Add New Movie</Button>
                     </Link>
                     {isAdmin && (
                       <Link to="/import-movies">
@@ -488,9 +488,9 @@ const Index = () => {
                       </Link>
                     )}
                     <Link to="/import-ratings">
-                      <Button variant="outline" className={cn(!isMobile && headerShrunk && "text-black border-black hover:bg-gray-200 hover:text-black")}>Import My Ratings</Button>
+                      <Button variant="outline" className={cn(!isMobile && "text-black border-black hover:bg-gray-200 hover:text-black")}>Import My Ratings</Button>
                     </Link>
-                    <Button variant="outline" onClick={handleLogout} className={cn(!isMobile && headerShrunk && "text-black border-black hover:bg-gray-200 hover:text-black")}>
+                    <Button variant="outline" onClick={handleLogout} className={cn(!isMobile && "text-black border-black hover:bg-gray-200 hover:text-black")}>
                       Logout
                     </Button>
                   </>
