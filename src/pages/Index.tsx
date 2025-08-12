@@ -412,7 +412,7 @@ const Index = () => {
     >
       <motion.header
         className={cn(
-          "w-full text-center z-50 fixed top-0 left-0 right-0",
+          "w-full z-50 fixed top-0 left-0 right-0",
           "transition-colors duration-500 ease-out",
           headerShrunk
             ? isMobile
@@ -434,7 +434,8 @@ const Index = () => {
             <div className="flex items-center justify-center md:justify-between h-full">
               <motion.h1
                 className={cn(
-                  "text-4xl md:text-5xl font-bold tracking-tight",
+                  "font-bold tracking-tight",
+                  headerShrunk && !isMobile ? "text-left" : "text-center",
                   isMobile && headerShrunk ? "text-foreground" : "text-headerTitle"
                 )}
                 animate={headerShrunk ? "shrunk" : "full"}
@@ -468,7 +469,7 @@ const Index = () => {
 
             {/* Centered content that fades out */}
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-4"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-4 text-center"
               initial="hidden"
               animate={pageLoaded ? "visible" : "hidden"}
               variants={headerContentContainerVariants}
@@ -737,7 +738,7 @@ const Index = () => {
           <motion.div
             className="md:hidden px-4 pt-8"
             initial="hidden"
-            animate={pageLoaded ? "visible" : "hidden"}
+            animate="visible"
             variants={mainContainerVariants}
           >
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
