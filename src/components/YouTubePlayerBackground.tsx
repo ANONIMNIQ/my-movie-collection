@@ -55,10 +55,10 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     // Initial play attempt after delay, if not manually paused and in viewport
     if (!userPaused && isInViewport) {
       setTimeout(() => {
-        if (playerRef.current) {
+        if (playerRef.current) { // Re-check playerRef.current
           playerRef.current.playVideo();
         }
-      }, delay);
+      }, delay + 100); // Add a small buffer, e.g., 100ms
     }
   }, [userPaused, isInViewport, delay]);
 
@@ -96,7 +96,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       },
       events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange },
     });
-  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
+  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange, iframeContainerRef]); // Add iframeContainerRef here
 
   useEffect(() => {
     // Load YouTube Iframe API script
@@ -164,7 +164,12 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       if (isInViewport) {
         if (!userPaused) {
           if (!isPlaying) { // Only play if not already playing
-            playerRef.current.playVideo();
+            const playTimer = setTimeout(() => {
+              if (playerRef.current) { // Re-check playerRef.current
+                playerRef.current.playVideo();
+              }
+            }, 50); // Small delay
+            return () => clearTimeout(playTimer); // Cleanup timer
           }
         }
       } else {
