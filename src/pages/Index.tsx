@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion } from "framer-motion"; // Import motion
 import HeroSlider from "@/components/HeroSlider"; // Import HeroSlider
+import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader"; // Import new component
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
@@ -482,6 +483,7 @@ const Index = () => {
                         count={filteredAndSortedMovies.length} 
                         numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
                         labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
+                        animateOnLoad={pageLoaded} {/* Pass pageLoaded to control animation */}
                       />
                     </div>
                     {/* Mobile Buttons - fade out */}
@@ -632,7 +634,14 @@ const Index = () => {
                 {!loadingAllMovies && (
                   <>
                     <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
-                      <h2 className="text-3xl font-bold ml-3">All Movies</h2>
+                      {/* Replaced static h2 with DynamicMovieCountHeader */}
+                      <DynamicMovieCountHeader
+                        count={filteredAndSortedMovies.length}
+                        searchQuery={searchQuery}
+                        sortAndFilter={sortAndFilter}
+                        allGenres={allGenres}
+                        allCountries={allCountries}
+                      />
                       <div className="flex w-full sm:w-auto items-center gap-2">
                         <Input
                           type="text"

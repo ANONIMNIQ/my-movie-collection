@@ -7,9 +7,10 @@ interface MovieCounterProps {
   count: number;
   numberColor?: string; // New prop for FlipNumbers color
   labelColor?: string;  // New prop for the "Movies in Collection" label color
+  animateOnLoad?: boolean; // New prop to control animation start
 }
 
-const MovieCounter: React.FC<MovieCounterProps> = ({ count, numberColor, labelColor }) => {
+const MovieCounter: React.FC<MovieCounterProps> = ({ count, numberColor, labelColor, animateOnLoad = true }) => {
   const isMobile = useIsMobile();
   const numberHeight = isMobile ? 60 : 90;
   const numberWidth = isMobile ? 40 : 60;
@@ -29,7 +30,7 @@ const MovieCounter: React.FC<MovieCounterProps> = ({ count, numberColor, labelCo
           width={numberWidth}
           color={numberColor || "black"} // Use numberColor prop or default to black
           background="transparent"
-          play
+          play={animateOnLoad} {/* Use animateOnLoad here */}
           perspective={1000}
           numbers={numberString}
         />
