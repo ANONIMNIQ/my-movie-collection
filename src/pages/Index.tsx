@@ -397,13 +397,25 @@ const Index = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
   };
 
-  const mainContainerVariants = {
+  // Separate main container variants for desktop and mobile
+  const desktopMainContainerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 1.2, // Added delay here for desktop content
+        delayChildren: 1.2, // Desktop specific delay
+      },
+    },
+  };
+
+  const mobileMainContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1, // Mobile specific delay (or no delay)
       },
     },
   };
@@ -555,7 +567,7 @@ const Index = () => {
               className="hidden md:block pt-8"
               initial="hidden"
               animate={pageLoaded ? "visible" : "hidden"} // Changed animate condition
-              variants={mainContainerVariants}
+              variants={desktopMainContainerVariants} // Use desktop specific variants
             >
               {loadingAllMovies ? (
                 <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
@@ -763,7 +775,7 @@ const Index = () => {
               className="md:hidden px-4 pt-8"
               initial="hidden"
               animate={headerShrunk ? "visible" : "hidden"}
-              variants={mainContainerVariants}
+              variants={mobileMainContainerVariants} // Use mobile specific variants
             >
               <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <motion.h2
