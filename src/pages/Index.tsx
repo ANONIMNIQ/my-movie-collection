@@ -370,7 +370,6 @@ const Index = () => {
 
   // Main content wrapper variants for padding to align with shrinking header
   const mainContentAlignmentVariants = {
-    full: { paddingTop: "200px", transition: { duration: 0.5, ease: "easeOut" } }, // Initial padding to push content below full header
     shrunk: { paddingTop: "60px", transition: { duration: 0.5, ease: "easeOut" } }, // Final padding to push content below shrunk header (updated from 80px)
   };
 
@@ -478,12 +477,11 @@ const Index = () => {
       </motion.header>
 
       <motion.div // This is the new wrapper for main content to handle padding
-        initial="full"
-        animate={headerShrunk ? "shrunk" : "full"}
-        variants={mainContentAlignmentVariants}
+        className="pt-[200px]" // Static initial padding
+        animate={headerShrunk ? "shrunk" : { paddingTop: "200px" }} // Animate to shrunk, or stay at 200px
+        variants={mainContentAlignmentVariants} // Only defines 'shrunk'
       >
         <motion.main
-          // Removed className="pt-0" from here
           initial="hidden"
           animate={pageLoaded ? "visible" : "hidden"}
           variants={{
