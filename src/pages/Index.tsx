@@ -673,10 +673,10 @@ const Index = () => {
                               </>
                             )}
                             {allCountries.length > 0 && (
-                              <>
+                              <> {/* Added React.Fragment here */}
                                 <Separator className="my-1" />
                                 <SelectGroup>
-                                  <SelectLabel>Filter by Country</Label>
+                                  <SelectLabel>Filter by Country</SelectLabel>
                                   {allCountries.map((country) => (
                                     <SelectItem key={country} value={country}>{country}</SelectItem>
                                   ))}
