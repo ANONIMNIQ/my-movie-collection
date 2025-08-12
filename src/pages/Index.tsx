@@ -151,7 +151,7 @@ const Index = () => {
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 800); // Reduced delay to trigger after header's initial slide-in
+    }, 1200); // Increased delay to 1.2s to ensure header slide-in completes
 
     return () => clearTimeout(timer);
   }, []); // Empty dependency array means it runs once on mount
@@ -161,7 +161,7 @@ const Index = () => {
     if (pageLoaded) {
       const shrinkTimer = setTimeout(() => {
         setHeaderShrunk(true);
-      }, 2000); // Start shrinking 2 seconds after initial page load animation
+      }, 1000); // Reduced delay to 1s for faster shrinking
       return () => clearTimeout(shrinkTimer);
     }
   }, [pageLoaded]);
@@ -352,7 +352,7 @@ const Index = () => {
       minHeight: "60px", // Final shrunk height (reduced from 80px)
       paddingTop: "0.25rem", // Reduced padding (from 0.5rem)
       paddingBottom: "0.25rem", // Reduced padding (from 0.5rem)
-      transition: { duration: 0.5, ease: "easeOut" }
+      transition: { duration: 0.3, ease: "easeOut" } // Reduced duration for shrinking
     },
   };
 
@@ -698,7 +698,7 @@ const Index = () => {
           </div>
 
           {/* Mobile View */}
-          <div className="md:hidden px-4"> {/* Removed pt-8 from here */}
+          <div className="md:hidden px-4">
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <motion.h2
                 className="text-3xl font-bold" // Removed conditional text color class
