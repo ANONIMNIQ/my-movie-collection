@@ -75,6 +75,8 @@ const Index = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
   // New state to control header shrinking
   const [headerShrunk, setHeaderShrunk] = useState(false);
+  // New state to trigger main content animation after header is fully animated
+  const [mainContentVisible, setMainContentVisible] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -144,27 +146,28 @@ const Index = () => {
 
 
   useEffect(() => {
-    // Explicitly reset headerShrunk and pageLoaded to false every time the component mounts
-    setHeaderShrunk(false); 
-    setPageLoaded(false); // Reset pageLoaded to ensure full re-animation
+    // Reset all animation states on mount
+    setHeaderShrunk(false);
+    setPageLoaded(false);
+    setMainContentVisible(false);
 
-    // Set pageLoaded to true after a short delay to trigger animations
-    const timer = setTimeout(() => {
+    // Start the first part of the header animation after a short delay
+    const pageLoadTimer = setTimeout(() => {
       setPageLoaded(true);
-    }, 800); // Reduced delay to trigger after header's initial slide-in
+    }, 800);
 
-    return () => clearTimeout(timer);
-  }, []); // Empty dependency array means it runs once on mount
+    return () => clearTimeout(pageLoadTimer);
+  }, []);
 
-  // Effect to trigger header shrinking after initial page load animation
   useEffect(() => {
-    if (pageLoaded) {
+    // This effect triggers the shrink animation after the initial header content has been visible for a while.
+    if (pageLoaded && !headerShrunk) {
       const shrinkTimer = setTimeout(() => {
         setHeaderShrunk(true);
-      }, 2000); // Start shrinking 2 seconds after initial page load animation
+      }, 2000); // Wait 2 seconds before shrinking
       return () => clearTimeout(shrinkTimer);
     }
-  }, [pageLoaded]);
+  }, [pageLoaded, headerShrunk]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -404,6 +407,11 @@ const Index = () => {
           initial="full"
           animate={headerShrunk ? "shrunk" : "full"}
           variants={headerVariants}
+          onAnimationComplete={() => {
+            if (headerShrunk) {
+              setMainContentVisible(true);
+            }
+          }}
           className="h-full flex flex-col justify-center" // Ensure content is centered vertically
         >
           <div className="container mx-auto px-4">
@@ -483,16 +491,15 @@ const Index = () => {
         variants={mainContentAlignmentVariants}
       >
         <motion.main
-          // Removed className="pt-0" from here
           initial="hidden"
-          animate={pageLoaded ? "visible" : "hidden"}
+          animate={mainContentVisible ? "visible" : "hidden"}
           variants={{
             hidden: { opacity: 0 },
             visible: {
               opacity: 1,
               transition: {
                 staggerChildren: 0.1,
-                delayChildren: 0.2, // Reduced delay for children to start animating after main appears
+                delayChildren: 0.2,
               },
             },
           }}
@@ -500,9 +507,9 @@ const Index = () => {
           {/* Desktop Hero Slider */}
           {!isMobile && heroSliderMovies.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 50 }} // Start slightly below and transparent
-              animate={{ opacity: 1, y: 0 }} // Fade in and slide up
-              transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }} // Delay starts after header animation
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}
             >
               <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
             </motion.div>
@@ -585,7 +592,7 @@ const Index = () => {
             <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
               {!loadingAllMovies && (
                 <>
-                  <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8"> {/* Added pt-8 for spacing */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
                     <h2 className="text-3xl font-bold ml-3">All Movies</h2>
                     <div className="flex w-full sm:w-auto items-center gap-2">
                       <Input
@@ -688,7 +695,7 @@ const Index = () => {
                 />
               )}
               {visibleCount < filteredAndSortedMovies.length && (
-                <motion.div variants={contentVariants} className="text-center mt-12 pb-12"> {/* Added pb-12 for spacing */}
+                <motion.div variants={contentVariants} className="text-center mt-12 pb-12">
                   <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
                     Load More
                   </Button>
@@ -698,13 +705,13 @@ const Index = () => {
           </div>
 
           {/* Mobile View */}
-          <div className="md:hidden px-4"> {/* Removed pt-8 from here */}
+          <div className="md:hidden px-4">
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <motion.h2
-                className="text-3xl font-bold" // Removed conditional text color class
-                initial={isMobile ? { color: "rgb(255,255,255)" } : {}} // Initial white color for mobile
-                animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }} // Match main background delay
+                className="text-3xl font-bold"
+                initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
+                animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
               >
                 All Movies
               </motion.h2>
@@ -781,7 +788,7 @@ const Index = () => {
               )}
             </div>
             {visibleCount < filteredAndSortedMovies.length && (
-              <motion.div variants={contentVariants} className="text-center mt-12 pb-12"> {/* Added pb-12 for spacing */}
+              <motion.div variants={contentVariants} className="text-center mt-12 pb-12">
                 <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">
                   Load More
                 </Button>
@@ -793,7 +800,7 @@ const Index = () => {
       <motion.footer
         className="py-8"
         initial="hidden"
-        animate={pageLoaded ? "visible" : "hidden"}
+        animate={mainContentVisible ? "visible" : "hidden"}
         variants={contentVariants}
       >
         <MadeWithDyad />
