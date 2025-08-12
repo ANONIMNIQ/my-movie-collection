@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowLeft, Youtube, Play } from "lucide-react";
+import { Star, ArrowLeft, Youtube, Play, ExternalLink } from "lucide-react"; // Import ExternalLink icon
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
@@ -123,6 +123,10 @@ const MovieDetail = () => {
     (video: any) => video.type === "Trailer" && video.site === "YouTube"
   );
   const trailerKey = trailer ? trailer.key : null;
+
+  // Get IMDb ID
+  const imdbId = tmdbMovie?.imdb_id;
+  const imdbUrl = imdbId ? `https://www.imdb.com/title/${imdbId}/` : null;
 
   // Timer to switch from backdrop to trailer
   useEffect(() => {
@@ -253,18 +257,30 @@ const MovieDetail = () => {
                 <span>{movie.year}</span>
               </motion.div>
 
-              {trailerKey && (
-                <motion.a
-                  variants={textRevealVariants}
-                  href={`https://www.youtube.com/watch?v=${trailerKey}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button size="lg" className="mb-8">
-                    <Youtube className="mr-2 h-5 w-5" /> Open Trailer in YouTube
-                  </Button>
-                </motion.a>
-              )}
+              <motion.div variants={textRevealVariants} className="flex flex-wrap gap-4 mb-8">
+                {trailerKey && (
+                  <a
+                    href={`https://www.youtube.com/watch?v=${trailerKey}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button size="lg">
+                      <Youtube className="mr-2 h-5 w-5" /> Open Trailer in YouTube
+                    </Button>
+                  </a>
+                )}
+                {imdbUrl && (
+                  <a
+                    href={imdbUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button size="lg" variant="outline">
+                      <ExternalLink className="mr-2 h-5 w-5" /> Open on IMDb
+                    </Button>
+                  </a>
+                )}
+              </motion.div>
 
               <motion.p
                 initial="hidden"
