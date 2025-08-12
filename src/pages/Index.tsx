@@ -422,6 +422,7 @@ const Index = () => {
         transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
       >
         <motion.div // Inner div to handle height/padding animation
+          layout
           initial="full"
           animate={headerShrunk ? "shrunk" : "full"}
           variants={headerVariants}
@@ -434,6 +435,7 @@ const Index = () => {
               variants={headerContentContainerVariants}
             >
               <motion.h1
+                layout
                 className={cn(
                   "text-4xl md:text-5xl font-bold tracking-tight leading-none",
                   isMobile ? "text-foreground" : "text-headerTitle"
