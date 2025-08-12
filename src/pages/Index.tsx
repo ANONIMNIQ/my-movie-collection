@@ -612,7 +612,6 @@ const Index = () => {
             )}
 
             <motion.div
-              ref={allMoviesSectionRef} 
               className="hidden md:block pt-8"
               initial="hidden"
               animate={pageLoaded ? "visible" : "hidden"}
@@ -657,7 +656,7 @@ const Index = () => {
                         title="Thriller"
                         movies={categorizedMovies.thrillerMovies}
                         selectedMovieIds={selectedMovieIds}
-                        onSelectMovie={handleSelectMovie}
+                        onSelectMovie={onSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
                       />
@@ -669,7 +668,7 @@ const Index = () => {
                         title="Sci-Fi"
                         movies={categorizedMovies.scifiMovies}
                         selectedMovieIds={selectedMovieIds}
-                        onSelectMovie={handleSelectMovie}
+                        onSelectMovie={onSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
                       />
@@ -681,7 +680,7 @@ const Index = () => {
                         title="Horror"
                         movies={categorizedMovies.horrorMovies}
                         selectedMovieIds={selectedMovieIds}
-                        onSelectMovie={handleSelectMovie}
+                        onSelectMovie={onSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
                       />
@@ -690,7 +689,11 @@ const Index = () => {
                 </>
               )}
 
-              <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
+              <motion.div 
+                ref={allMoviesSectionRef} // Ref moved here
+                variants={contentVariants} 
+                className="px-4 overflow-x-visible md:bg-gray-200 md:text-black"
+              >
                 {!loadingAllMovies && (
                   <>
                     <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
