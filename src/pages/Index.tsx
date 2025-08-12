@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import useQ
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
+  AlertDialogCancel, // Added AlertDialogCancel here
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -71,22 +71,13 @@ const Index = () => {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  // Dynamically calculate shrunken header height for perfect fit
-  const shrunkenHeaderHeight = isMobile ? 48 : 72;
-  const shrunkenHeaderPaddingY = '0.5rem';
-
   // State to control when main content animations start
   const [pageLoaded, setPageLoaded] = useState(false);
   // New state to control header shrinking
   const [headerShrunk, setHeaderShrunk] = useState(false);
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
-  // New state for dynamic header color based on scroll
-  const [isHeaderDarkBackground, setIsHeaderDarkBackground] = useState(false); 
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
-
-  // Ref for the "All Movies" section to detect scroll overlap
-  const allMoviesSectionRef = useRef<HTMLDivElement>(null);
 
   // Fetch all movies using useQuery
   const { data: allMovies, isLoading: loadingAllMovies, isError: isErrorAllMovies, error: errorAllMovies } = useQuery<Movie[], Error>({
@@ -182,41 +173,6 @@ const Index = () => {
       return () => clearTimeout(shrinkTimer);
     }
   }, [pageLoaded, headerShrunk]);
-
-  // Callback for scroll event to determine header color
-  const handleScroll = useCallback(() => {
-    if (!allMoviesSectionRef.current) {
-      return;
-    }
-
-    const headerHeight = headerShrunk ? shrunkenHeaderHeight : 200;
-    const scrollY = window.scrollY;
-
-    const allMoviesSectionTop = allMoviesSectionRef.current.offsetTop;
-    const allMoviesSectionBottom = allMoviesSectionRef.current.offsetTop + allMoviesSectionRef.current.offsetHeight;
-
-    const headerBottom = scrollY + headerHeight;
-
-    let shouldBeDark = false;
-    if (isMobile) {
-      // On mobile, header becomes dark when it shrinks
-      shouldBeDark = headerShrunk;
-    } else {
-      // On desktop, header becomes dark when it overlaps the 'All Movies' section
-      shouldBeDark = headerBottom > allMoviesSectionTop && scrollY < allMoviesSectionBottom;
-    }
-    setIsHeaderDarkBackground(shouldBeDark);
-  }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    // Initial check in case user loads page already scrolled
-    handleScroll();
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [handleScroll]);
-
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -392,6 +348,10 @@ const Index = () => {
     setIsDeleting(false);
   };
 
+  // Dynamically calculate shrunken header height for perfect fit
+  const shrunkenHeaderHeight = isMobile ? 48 : 72;
+  const shrunkenHeaderPaddingY = '0.5rem';
+
   // Header variants for height and padding animation
   const headerVariants = {
     full: {
@@ -469,20 +429,21 @@ const Index = () => {
       <motion.div
         className={cn(
           "min-h-screen w-full overflow-x-hidden",
-          "bg-background text-foreground", // Always dark background, light text for the main app wrapper
+          !isMobile && "bg-background text-foreground",
         )}
+        initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}}
+        animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <motion.header
           className={cn(
             "w-full text-center z-50 fixed top-0 left-0 right-0",
             "transition-colors duration-500 ease-out",
-            isMobile
-              ? (headerShrunk ? "bg-background/80 backdrop-blur-md shadow-md" : "bg-white/80 backdrop-blur-md shadow-md") // Mobile header: dark when shrunk, light when full
-              : isHeaderDarkBackground // Desktop logic: dark when over all movies section (which is light)
-                ? "bg-background/80 backdrop-blur-md shadow-md" 
-                : headerShrunk // Desktop logic: light frosted when shrunk but not over all movies section
-                  ? "bg-white/80 backdrop-blur-md shadow-md" 
-                  : "bg-white backdrop-blur-md shadow-md" // Desktop logic: light opaque when full and not over all movies section
+            headerShrunk
+              ? isMobile
+                ? "bg-background/80 backdrop-blur-md shadow-md"
+                : "bg-white/80 backdrop-blur-md shadow-md"
+              : "bg-white backdrop-blur-md shadow-md" 
           )}
           initial={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -506,8 +467,7 @@ const Index = () => {
                   <motion.h1
                     className={cn(
                       "text-4xl md:text-5xl font-bold tracking-tight",
-                      // Text color: light if header background is dark, dark if header background is light
-                      isHeaderDarkBackground ? "text-foreground" : "text-headerTitle"
+                      isMobile && headerShrunk ? "text-foreground" : "text-headerTitle"
                     )}
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
@@ -524,8 +484,7 @@ const Index = () => {
                     <p
                       className={cn(
                         "mt-2 text-lg",
-                        // Text color: light if header background is dark, dark if header background is light
-                        isHeaderDarkBackground ? "text-muted-foreground" : "text-headerDescription"
+                        isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"
                       )}
                     >
                       A minimalist collection of cinematic gems.
@@ -534,9 +493,8 @@ const Index = () => {
                       <MovieCounter 
                         key={isMobile ? 'mobile' : 'desktop'}
                         count={filteredAndSortedMovies.length} 
-                        // MovieCounter colors: light if header background is dark, dark if header background is light
-                        numberColor={isHeaderDarkBackground ? "white" : "#0F0F0F"}
-                        labelColor={isHeaderDarkBackground ? "text-muted-foreground" : "text-headerDescription"}
+                        numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
+                        labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
                         animateOnLoad={pageLoaded} /* Pass pageLoaded to control animation */
                       />
                     </div>
@@ -631,7 +589,6 @@ const Index = () => {
                       onSelectMovie={handleSelectMovie}
                       isMobile={isMobile}
                       pageLoaded={pageLoaded}
-                      headerShrunk={headerShrunk} // Pass headerShrunk
                     />
                   </motion.div>
                   {categorizedMovies.dramaMovies.length > 0 && (
@@ -643,7 +600,6 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
-                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
@@ -656,7 +612,6 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
-                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
@@ -669,7 +624,6 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
-                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
@@ -682,18 +636,13 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
-                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
                 </>
               )}
 
-              <motion.div 
-                ref={allMoviesSectionRef} // Ref moved here
-                variants={contentVariants} 
-                className="px-4 overflow-x-visible md:bg-gray-200 md:text-black"
-              >
+              <motion.div variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
                 {!loadingAllMovies && (
                   <>
                     <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
@@ -825,16 +774,15 @@ const Index = () => {
 
             <motion.div
               className="md:hidden px-4 pt-8"
-              initial={{ backgroundColor: "hsl(var(--background))", color: "hsl(var(--foreground))" }}
-              animate={headerShrunk ? { backgroundColor: "rgb(255,255,255)", color: "rgb(0,0,0)" } : {}}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              initial="hidden"
+              animate={headerShrunk ? "visible" : "hidden"}
               variants={mobileMainContainerVariants} // Use mobile specific variants
             >
               <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <motion.h2
                   className="text-3xl font-bold"
                   initial={{ color: "rgb(255,255,255)" }}
-                  animate={headerShrunk ? { color: "rgb(0,0,0)" } : { color: "rgb(255,255,255)" }}
+                  animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
                 >
                   {searchQuery ? "Found Movies" : "All Movies"} {/* Dynamic title */}
@@ -851,8 +799,8 @@ const Index = () => {
                 <motion.div variants={contentVariants} className="mb-4">
                   <MovieCounter 
                     count={filteredAndSortedMovies.length} 
-                    numberColor={headerShrunk ? "#0F0F0F" : "white"} // Change color based on headerShrunk
-                    labelColor={headerShrunk ? "text-headerDescription" : "text-muted-foreground"} // Change label color
+                    numberColor={"#0F0F0F"} // Force black for search results
+                    labelColor={"hidden"} // Hide label for search results
                     animateOnLoad={pageLoaded}
                   />
                 </motion.div>
