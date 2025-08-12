@@ -471,15 +471,18 @@ const Index = () => {
           "min-h-screen w-full overflow-x-hidden",
           "bg-background text-foreground", // Always dark background, light text for the main app wrapper
         )}
-        // Removed initial/animate for background color here, as it's handled by header
       >
         <motion.header
           className={cn(
             "w-full text-center z-50 fixed top-0 left-0 right-0",
             "transition-colors duration-500 ease-out",
-            isHeaderDarkBackground // This now correctly reflects the desired state for both mobile and desktop
-              ? "bg-background/80 backdrop-blur-md shadow-md" // Dark frosted header
-              : "bg-white/80 backdrop-blur-md shadow-md" // Light frosted header
+            isMobile
+              ? (headerShrunk ? "bg-background/80 backdrop-blur-md shadow-md" : "bg-white/80 backdrop-blur-md shadow-md") // Mobile header: dark when shrunk, light when full
+              : isHeaderDarkBackground // Desktop logic: dark when over all movies section (which is light)
+                ? "bg-background/80 backdrop-blur-md shadow-md" 
+                : headerShrunk // Desktop logic: light frosted when shrunk but not over all movies section
+                  ? "bg-white/80 backdrop-blur-md shadow-md" 
+                  : "bg-white backdrop-blur-md shadow-md" // Desktop logic: light opaque when full and not over all movies section
           )}
           initial={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -822,16 +825,16 @@ const Index = () => {
 
             <motion.div
               className="md:hidden px-4 pt-8"
-              initial="hidden"
-              animate={headerShrunk ? "visible" : "hidden"}
+              initial={{ backgroundColor: "hsl(var(--background))", color: "hsl(var(--foreground))" }}
+              animate={headerShrunk ? { backgroundColor: "rgb(255,255,255)", color: "rgb(0,0,0)" } : {}}
+              transition={{ duration: 0.6, ease: "easeOut" }}
               variants={mobileMainContainerVariants} // Use mobile specific variants
             >
               <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
                 <motion.h2
                   className="text-3xl font-bold"
-                  // Mobile header text should always be light as its background is dark
                   initial={{ color: "rgb(255,255,255)" }}
-                  animate={{ color: "rgb(255,255,255)" }} // Keep it white
+                  animate={headerShrunk ? { color: "rgb(0,0,0)" } : { color: "rgb(255,255,255)" }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
                 >
                   {searchQuery ? "Found Movies" : "All Movies"} {/* Dynamic title */}
@@ -848,8 +851,8 @@ const Index = () => {
                 <motion.div variants={contentVariants} className="mb-4">
                   <MovieCounter 
                     count={filteredAndSortedMovies.length} 
-                    numberColor={"#0F0F0F"} // Force black for search results
-                    labelColor={"hidden"} // Hide label for search results
+                    numberColor={headerShrunk ? "#0F0F0F" : "white"} // Change color based on headerShrunk
+                    labelColor={headerShrunk ? "text-headerDescription" : "text-muted-foreground"} // Change label color
                     animateOnLoad={pageLoaded}
                   />
                 </motion.div>
