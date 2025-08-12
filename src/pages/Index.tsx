@@ -352,7 +352,7 @@ const Index = () => {
     },
   };
 
-  // Title variants (for movement and font size within the shrinking header)
+  // Title variants (for font size within the shrinking header)
   const titleShrinkVariants = {
     full: { fontSize: isMobile ? "2.25rem" : "3rem", transition: { duration: 0.5, ease: "easeOut" } },
     shrunk: { fontSize: isMobile ? "1.5rem" : "2rem", transition: { duration: 0.5, ease: "easeOut" } },
@@ -479,7 +479,7 @@ const Index = () => {
         variants={mainContentAlignmentVariants}
       >
         <motion.main
-          className="pt-0" // Keep pt-0 here, padding is handled by wrapper
+          // Removed className="pt-0" from here
           initial="hidden"
           animate={pageLoaded ? "visible" : "hidden"}
           variants={{
