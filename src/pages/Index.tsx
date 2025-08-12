@@ -403,10 +403,17 @@ const Index = () => {
     >
       <motion.header
         className={cn(
-          "w-full text-center shadow-md z-50 overflow-hidden fixed top-0 left-0 right-0", // Added fixed positioning
-          isMobile ? "bg-background" : "bg-white"
+          "w-full text-center shadow-md z-50 overflow-hidden fixed top-0 left-0 right-0",
+          "transition-all duration-500 ease-out",
+          headerShrunk
+            ? isMobile
+              ? "bg-background/80 backdrop-blur-lg"
+              : "bg-white/80 backdrop-blur-lg"
+            : isMobile
+              ? "bg-background"
+              : "bg-white"
         )}
-        initial={{ y: "-100%", opacity: 0 }} // Initial slide-in for the header itself
+        initial={{ y: "-100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
       >
