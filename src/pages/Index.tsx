@@ -711,7 +711,7 @@ const Index = () => {
 
           {/* Mobile View */}
           <motion.div
-            className="md:hidden px-4"
+            className="md:hidden px-4 pt-4"
             initial="hidden"
             animate={headerShrunk ? "visible" : "hidden"}
             variants={mainContainerVariants}
