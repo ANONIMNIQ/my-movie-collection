@@ -440,8 +440,8 @@ const Index = () => {
             "transition-colors duration-500 ease-out",
             headerShrunk
               ? isMobile
-                ? "bg-background/80 backdrop-blur-lg shadow-md"
-                : "bg-white/80 backdrop-blur-lg shadow-md"
+                ? "bg-background/80 backdrop-blur-md shadow-md" // Changed backdrop-blur-lg to backdrop-blur-md
+                : "bg-white/80 backdrop-blur-md shadow-md" // Changed backdrop-blur-lg to backdrop-blur-md
               : "bg-white shadow-md"
           )}
           initial={{ y: "-100%", opacity: 0 }}
