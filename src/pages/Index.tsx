@@ -341,8 +341,8 @@ const Index = () => {
   };
 
   // Dynamically calculate shrunken header height for perfect fit
-  const shrunkenHeaderHeight = isMobile ? 60 : 72;
-  const shrunkenHeaderPaddingY = '0.75rem';
+  const shrunkenHeaderHeight = isMobile ? 48 : 72;
+  const shrunkenHeaderPaddingY = '0.5rem';
 
   // Header variants for height and padding animation
   const headerVariants = {
