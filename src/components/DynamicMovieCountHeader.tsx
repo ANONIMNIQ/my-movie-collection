@@ -39,7 +39,7 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
         {displayTitle}
       </h2>
       <div className="font-roboto-mono font-bold tracking-wider text-headerNumber text-3xl">
-        (<FlipNumbers
+        <FlipNumbers
           height={28} // Adjust height for smaller display
           width={18}  // Adjust width for smaller display
           color="#0F0F0F" // Black color for numbers
@@ -47,7 +47,7 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
           play
           perspective={1000}
           numbers={numberString}
-        />)
+        />
       </div>
     </div>
   );
