@@ -430,95 +430,94 @@ const Index = () => {
           variants={headerVariants}
           className="h-full flex flex-col justify-center"
         >
-          <div className="container mx-auto px-4 relative h-full">
-            <div className="flex items-center justify-center md:justify-between h-full">
-              <motion.h1
-                className={cn(
-                  "text-4xl md:text-5xl font-bold tracking-tight",
-                  isMobile && headerShrunk ? "text-foreground" : "text-headerTitle"
-                )}
-                animate={headerShrunk ? "shrunk" : "full"}
-                variants={titleShrinkVariants}
-              >
-                Georgi's Movie Collection
-              </motion.h1>
-
-              {/* Desktop Buttons - always visible */}
-              <div className="hidden md:flex items-center gap-2">
-                {session && (
-                  <>
-                    <Link to="/add-movie">
-                      <Button className="bg-black text-white hover:bg-gray-800">Add New Movie</Button>
-                    </Link>
-                    {isAdmin && (
-                      <Link to="/import-movies">
-                        <Button variant="secondary">Import Movies</Button>
-                      </Link>
-                    )}
-                    <Link to="/import-ratings">
-                      <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Ratings</Button>
-                    </Link>
-                    <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
-                      Logout
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Centered content that fades out */}
+          <div className="container mx-auto px-4">
             <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-4"
               initial="hidden"
               animate={pageLoaded ? "visible" : "hidden"}
               variants={headerContentContainerVariants}
             >
-              <motion.p
-                className={cn(
-                  "mt-2 text-lg",
-                  isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"
-                )}
-                animate={headerShrunk ? "shrunk" : "full"}
-                variants={fadeOutShrinkVariants}
-              >
-                A minimalist collection of cinematic gems.
-              </motion.p>
-              <motion.div
-                className="mt-6"
-                animate={headerShrunk ? "shrunk" : "full"}
-                variants={fadeOutShrinkVariants}
-              >
-                <MovieCounter 
-                  key={isMobile ? 'mobile' : 'desktop'}
-                  count={filteredAndSortedMovies.length} 
-                  numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
-                  labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
-                />
-              </motion.div>
-              {/* Mobile Buttons - fade out */}
-              <motion.div
-                className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 md:hidden"
-                animate={headerShrunk ? "shrunk" : "full"}
-                variants={fadeOutShrinkVariants}
-              >
-                {session && (
-                  <>
-                    <Link to="/add-movie">
-                      <Button>Add New Movie</Button>
-                    </Link>
-                    {isAdmin && (
-                      <Link to="/import-movies">
-                        <Button variant="secondary">Import Movies (CSV)</Button>
+              {/* Title and Desktop buttons in one row */}
+              <div className="flex items-center justify-center md:justify-between">
+                <motion.h1
+                  className={cn(
+                    "text-4xl md:text-5xl font-bold tracking-tight",
+                    isMobile && headerShrunk ? "text-foreground" : "text-headerTitle"
+                  )}
+                  animate={headerShrunk ? "shrunk" : "full"}
+                  variants={titleShrinkVariants}
+                >
+                  Georgi's Movie Collection
+                </motion.h1>
+
+                <div className="hidden md:flex items-center gap-2">
+                  {session && (
+                    <>
+                      <Link to="/add-movie">
+                        <Button className="bg-black text-white hover:bg-gray-800">Add New Movie</Button>
                       </Link>
-                    )}
-                    <Link to="/import-ratings">
-                      <Button variant="outline">Import My Ratings</Button>
-                    </Link>
-                    <Button variant="outline" onClick={handleLogout}>
-                      Logout
-                    </Button>
-                  </>
-                )}
+                      {isAdmin && (
+                        <Link to="/import-movies">
+                          <Button variant="secondary">Import Movies</Button>
+                        </Link>
+                      )}
+                      <Link to="/import-ratings">
+                        <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Ratings</Button>
+                      </Link>
+                      <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
+                        Logout
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Fading content */}
+              <motion.div
+                className="overflow-hidden"
+                animate={headerShrunk ? "shrunk" : "full"}
+                variants={fadeOutShrinkVariants}
+              >
+                <motion.p
+                  className={cn(
+                    "mt-2 text-lg",
+                    isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"
+                  )}
+                >
+                  A minimalist collection of cinematic gems.
+                </motion.p>
+                <motion.div
+                  className="mt-6"
+                >
+                  <MovieCounter 
+                    key={isMobile ? 'mobile' : 'desktop'}
+                    count={filteredAndSortedMovies.length} 
+                    numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
+                    labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
+                  />
+                </motion.div>
+                {/* Mobile Buttons - fade out */}
+                <motion.div
+                  className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 md:hidden"
+                >
+                  {session && (
+                    <>
+                      <Link to="/add-movie">
+                        <Button>Add New Movie</Button>
+                      </Link>
+                      {isAdmin && (
+                        <Link to="/import-movies">
+                          <Button variant="secondary">Import Movies (CSV)</Button>
+                        </Link>
+                      )}
+                      <Link to="/import-ratings">
+                        <Button variant="outline">Import My Ratings</Button>
+                      </Link>
+                      <Button variant="outline" onClick={handleLogout}>
+                        Logout
+                      </Button>
+                    </>
+                  )}
+                </motion.div>
               </motion.div>
             </motion.div>
           </div>
