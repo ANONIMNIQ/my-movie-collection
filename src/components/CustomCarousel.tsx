@@ -15,9 +15,10 @@ interface CustomCarouselProps {
   onSelectMovie: (id: string, isSelected: boolean) => void;
   isMobile: boolean; // New prop
   pageLoaded: boolean; // New prop
+  headerShrunk: boolean; // New prop
 }
 
-export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie, isMobile, pageLoaded }) => {
+export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie, isMobile, pageLoaded, headerShrunk }) => {
   const isMobileHook = useIsMobile(); // Use the hook here, but also use the prop for consistency with parent
   const slidesToScroll = isMobileHook ? 2 : 5; // Use the hook's value for carousel behavior
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -79,10 +80,10 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     <section className="mb-12 relative">
       <div className="px-10">
         <motion.h2
-          className="text-3xl font-bold ml-3" // Removed conditional text color class
+          className="text-3xl font-bold ml-3"
           initial={isMobile ? { color: "rgb(255,255,255)" } : {}} // Initial white color for mobile
-          animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile
-          transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Match main background delay
+          animate={isMobile && headerShrunk ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile when header shrinks
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0 }} // No delay needed here, it should follow headerShrunk
         >
           {title}
         </motion.h2>

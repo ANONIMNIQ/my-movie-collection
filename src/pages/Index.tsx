@@ -189,24 +189,23 @@ const Index = () => {
       return;
     }
 
-    if (!isMobile) {
-      const headerHeight = headerShrunk ? shrunkenHeaderHeight : 200; // Approximate header height
-      const scrollY = window.scrollY;
+    const headerHeight = headerShrunk ? shrunkenHeaderHeight : 200;
+    const scrollY = window.scrollY;
 
-      const allMoviesSectionTop = allMoviesSectionRef.current.offsetTop;
-      const allMoviesSectionBottom = allMoviesSectionRef.current.offsetTop + allMoviesSectionRef.current.offsetHeight;
+    const allMoviesSectionTop = allMoviesSectionRef.current.offsetTop;
+    const allMoviesSectionBottom = allMoviesSectionRef.current.offsetTop + allMoviesSectionRef.current.offsetHeight;
 
-      // Check if the bottom of the fixed header is past the top of the all movies section
-      // AND if the top of the header is still above the bottom of the all movies section
-      const headerBottom = scrollY + headerHeight;
+    const headerBottom = scrollY + headerHeight;
 
-      // isHeaderDarkBackground means the header's background should be dark (to contrast with light grid section)
-      const shouldBeDark = headerBottom > allMoviesSectionTop && scrollY < allMoviesSectionBottom;
-      setIsHeaderDarkBackground(shouldBeDark);
+    let shouldBeDark = false;
+    if (isMobile) {
+      // On mobile, header becomes dark when it shrinks
+      shouldBeDark = headerShrunk;
     } else {
-      // Mobile header is always dark, so its background should be considered dark for text color logic
-      setIsHeaderDarkBackground(true); 
+      // On desktop, header becomes dark when it overlaps the 'All Movies' section
+      shouldBeDark = headerBottom > allMoviesSectionTop && scrollY < allMoviesSectionBottom;
     }
+    setIsHeaderDarkBackground(shouldBeDark);
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
   useEffect(() => {
@@ -470,24 +469,17 @@ const Index = () => {
       <motion.div
         className={cn(
           "min-h-screen w-full overflow-x-hidden",
-          // On desktop, the main background is dark. On mobile, it animates to white when header shrinks.
-          !isMobile && "bg-background text-foreground",
+          "bg-background text-foreground", // Always dark background, light text for the main app wrapper
         )}
-        initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}}
-        animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        // Removed initial/animate for background color here, as it's handled by header
       >
         <motion.header
           className={cn(
             "w-full text-center z-50 fixed top-0 left-0 right-0",
             "transition-colors duration-500 ease-out",
-            isMobile
-              ? "bg-background/80 backdrop-blur-md shadow-md" // Mobile header is always dark/frosted
-              : isHeaderDarkBackground // Desktop logic: dark when over all movies section (which is light)
-                ? "bg-background/80 backdrop-blur-md shadow-md" 
-                : headerShrunk // Desktop logic: light frosted when shrunk but not over all movies section
-                  ? "bg-white/80 backdrop-blur-md shadow-md" 
-                  : "bg-white backdrop-blur-md shadow-md" // Desktop logic: light opaque when full and not over all movies section
+            isHeaderDarkBackground // This now correctly reflects the desired state for both mobile and desktop
+              ? "bg-background/80 backdrop-blur-md shadow-md" // Dark frosted header
+              : "bg-white/80 backdrop-blur-md shadow-md" // Light frosted header
           )}
           initial={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -512,7 +504,7 @@ const Index = () => {
                     className={cn(
                       "text-4xl md:text-5xl font-bold tracking-tight",
                       // Text color: light if header background is dark, dark if header background is light
-                      isMobile || isHeaderDarkBackground ? "text-foreground" : "text-headerTitle"
+                      isHeaderDarkBackground ? "text-foreground" : "text-headerTitle"
                     )}
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
@@ -530,7 +522,7 @@ const Index = () => {
                       className={cn(
                         "mt-2 text-lg",
                         // Text color: light if header background is dark, dark if header background is light
-                        isMobile || isHeaderDarkBackground ? "text-muted-foreground" : "text-headerDescription"
+                        isHeaderDarkBackground ? "text-muted-foreground" : "text-headerDescription"
                       )}
                     >
                       A minimalist collection of cinematic gems.
@@ -540,8 +532,8 @@ const Index = () => {
                         key={isMobile ? 'mobile' : 'desktop'}
                         count={filteredAndSortedMovies.length} 
                         // MovieCounter colors: light if header background is dark, dark if header background is light
-                        numberColor={isMobile || isHeaderDarkBackground ? "white" : "#0F0F0F"}
-                        labelColor={isMobile || isHeaderDarkBackground ? "text-muted-foreground" : "text-headerDescription"}
+                        numberColor={isHeaderDarkBackground ? "white" : "#0F0F0F"}
+                        labelColor={isHeaderDarkBackground ? "text-muted-foreground" : "text-headerDescription"}
                         animateOnLoad={pageLoaded} /* Pass pageLoaded to control animation */
                       />
                     </div>
@@ -636,6 +628,7 @@ const Index = () => {
                       onSelectMovie={handleSelectMovie}
                       isMobile={isMobile}
                       pageLoaded={pageLoaded}
+                      headerShrunk={headerShrunk} // Pass headerShrunk
                     />
                   </motion.div>
                   {categorizedMovies.dramaMovies.length > 0 && (
@@ -647,6 +640,7 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
+                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
@@ -659,6 +653,7 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
+                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
@@ -671,6 +666,7 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
+                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
@@ -683,6 +679,7 @@ const Index = () => {
                         onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
+                        headerShrunk={headerShrunk} // Pass headerShrunk
                       />
                     </motion.div>
                   )}
