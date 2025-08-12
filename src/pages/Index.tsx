@@ -66,10 +66,15 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = new Set();
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+
+  // Dynamically calculate shrunken header height for perfect fit
+  // Moved these definitions here so they are available before useCallbacks/useMemos
+  const shrunkenHeaderHeight = isMobile ? 48 : 72;
+  const shrunkenHeaderPaddingY = '0.5rem';
 
   // State to control when main content animations start
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -199,7 +204,7 @@ const Index = () => {
     const shouldBeDark = headerBottom > allMoviesSectionTop && scrollY < allMoviesSectionBottom;
 
     setIsHeaderDark(shouldBeDark);
-  }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
+  }, [isMobile, headerShrunk, shrunkenHeaderHeight]); // shrunkenHeaderHeight is now correctly in scope
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -384,10 +389,6 @@ const Index = () => {
     queryClient.invalidateQueries({ queryKey: ["movies"] });
     setIsDeleting(false);
   };
-
-  // Dynamically calculate shrunken header height for perfect fit
-  const shrunkenHeaderHeight = isMobile ? 48 : 72;
-  const shrunkenHeaderPaddingY = '0.5rem';
 
   // Header variants for height and padding animation
   const headerVariants = {
@@ -729,7 +730,7 @@ const Index = () => {
                               <>
                                 <Separator className="my-1" />
                                 <SelectGroup>
-                                  <SelectLabel>Filter by Country</SelectLabel>
+                                  <SelectLabel>Filter by Country</Label>
                                   {allCountries.map((country) => (
                                     <SelectItem key={country} value={country}>{country}</SelectItem>
                                   ))}
