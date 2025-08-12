@@ -380,6 +380,16 @@ const Index = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }, // Reduced duration
   };
 
+  const mainContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
   return (
     <motion.div
       className={cn(
@@ -482,32 +492,25 @@ const Index = () => {
         animate={headerShrunk ? "shrunk" : "full"}
         variants={mainContentAlignmentVariants}
       >
-        <motion.main
-          initial="hidden"
-          animate={headerShrunk ? "visible" : "hidden"}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: {
-              opacity: 1,
-              transition: {
-                staggerChildren: 0.1,
-              },
-            },
-          }}
-        >
+        <main>
           {/* Desktop Hero Slider */}
           {!isMobile && heroSliderMovies.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}
+              animate={headerShrunk ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
             >
               <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
             </motion.div>
           )}
 
           {/* Desktop View */}
-          <div className="hidden md:block pt-8">
+          <motion.div
+            className="hidden md:block pt-8"
+            initial="hidden"
+            animate={headerShrunk ? "visible" : "hidden"}
+            variants={mainContainerVariants}
+          >
             {loadingAllMovies ? (
               <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
                 <h2 className="text-3xl font-bold mb-4">New Movies</h2>
@@ -693,10 +696,15 @@ const Index = () => {
                 </motion.div>
               )}
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Mobile View */}
-          <div className="md:hidden px-4">
+          <motion.div
+            className="md:hidden px-4"
+            initial="hidden"
+            animate={headerShrunk ? "visible" : "hidden"}
+            variants={mainContainerVariants}
+          >
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <motion.h2
                 className="text-3xl font-bold"
@@ -785,8 +793,8 @@ const Index = () => {
                 </Button>
               </motion.div>
             )}
-          </div>
-        </motion.main>
+          </motion.div>
+        </main>
       </motion.div>
       <motion.footer
         className="py-8"
