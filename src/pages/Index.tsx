@@ -555,9 +555,9 @@ const Index = () => {
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={pageLoaded ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }} // Changed animate condition
-                transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }} // Added delay
+                initial={{ opacity: 0 }} // Removed y: 50
+                animate={pageLoaded ? { opacity: 1 } : { opacity: 0 }} // Removed y: 0 and y: 50
+                transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}
               >
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
