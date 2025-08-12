@@ -98,9 +98,29 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       setIsApiLoaded(true);
     }
 
-    const observer = new IntersectionObserver(([entry]) => setIsInViewport(entry.isIntersecting), { threshold: 0.5 });
+    // Changed threshold to 0 for more aggressive detection
+    const observer = new IntersectionObserver(([entry]) => setIsInViewport(entry.isIntersecting), { threshold: 0 });
     const currentParentRef = parentRef.current;
     if (currentParentRef) observer.observe(currentParentRef);
+
+    // Add visibility change listener for tab focus/blur
+    const handleVisibilityChange = () => {
+      if (playerRef.current && playerReady) {
+        if (document.hidden) {
+          // Tab is hidden, pause video
+          if (isPlaying) { // Only pause if currently playing
+            playerRef.current.pauseVideo();
+          }
+        } else {
+          // Tab is visible, resume if in viewport and not manually paused
+          if (isInViewport && !userPaused) {
+            playerRef.current.playVideo();
+          }
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
 
     window.addEventListener('resize', calculateIframeDimensions);
     calculateIframeDimensions();
@@ -110,8 +130,9 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       if (currentParentRef) observer.unobserve(currentParentRef);
       if (playerRef.current) playerRef.current.destroy();
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+      document.removeEventListener('visibilitychange', handleVisibilityChange); // Cleanup visibility listener
     };
-  }, [calculateIframeDimensions]);
+  }, [calculateIframeDimensions, isApiLoaded, isInViewport, isPlaying, playerReady, userPaused, videoId]); // Added isPlaying to dependencies
 
   useEffect(() => {
     createYouTubePlayer();
@@ -121,9 +142,11 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     if (playerReady && playerRef.current) {
       if (isInViewport) {
         if (!userPaused) {
+          // Only play if not manually paused
           setTimeout(() => playerRef.current.playVideo(), delay);
         }
       } else {
+        // Always pause if not in viewport
         playerRef.current.pauseVideo();
       }
     }
