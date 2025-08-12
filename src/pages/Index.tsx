@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSession } from "@/contexts/SessionContext";
+import { useSession } from "@/contexts/Session/SessionContext";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
@@ -676,7 +676,7 @@ const Index = () => {
                               <>
                                 <Separator className="my-1" />
                                 <SelectGroup>
-                                  <SelectLabel>Filter by Country</Label>
+                                  <SelectLabel>Filter by Country</SelectLabel>
                                   {allCountries.map((country) => (
                                     <SelectItem key={country} value={country}>{country}</SelectItem>
                                   ))}
