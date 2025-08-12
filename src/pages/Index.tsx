@@ -151,7 +151,7 @@ const Index = () => {
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 800); // Reduced delay to trigger after header's initial slide-in
+    }, 3400); // Increased delay to ensure content animates AFTER header finishes shrinking
 
     return () => clearTimeout(timer);
   }, []); // Empty dependency array means it runs once on mount
@@ -698,7 +698,7 @@ const Index = () => {
           </div>
 
           {/* Mobile View */}
-          <div className="md:hidden px-4"> {/* Removed pt-8 from here */}
+          <div className="md:hidden px-4">
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <motion.h2
                 className="text-3xl font-bold" // Removed conditional text color class
