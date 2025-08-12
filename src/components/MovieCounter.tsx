@@ -30,7 +30,7 @@ const MovieCounter: React.FC<MovieCounterProps> = ({ count, numberColor, labelCo
           width={numberWidth}
           color={numberColor || "black"} // Use numberColor prop or default to black
           background="transparent"
-          play={animateOnLoad} {/* Use animateOnLoad here */}
+          play={animateOnLoad /* Use animateOnLoad here */}
           perspective={1000}
           numbers={numberString}
         />
