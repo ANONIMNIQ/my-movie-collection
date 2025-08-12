@@ -673,10 +673,10 @@ const Index = () => {
                               </>
                             )}
                             {allCountries.length > 0 && (
-                              <> {/* Added React.Fragment here */}
+                              <>
                                 <Separator className="my-1" />
                                 <SelectGroup>
-                                  <SelectLabel>Filter by Country</SelectLabel>
+                                  <SelectLabel>Filter by Country</Label>
                                   {allCountries.map((country) => (
                                     <SelectItem key={country} value={country}>{country}</SelectItem>
                                   ))}
@@ -786,8 +786,8 @@ const Index = () => {
                 <motion.div variants={contentVariants} className="mb-4">
                   <MovieCounter 
                     count={filteredAndSortedMovies.length} 
-                    numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
-                    labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
+                    numberColor={"#0F0F0F"} // Force black for search results
+                    labelColor={"hidden"} // Hide label for search results
                     animateOnLoad={pageLoaded}
                   />
                 </motion.div>
