@@ -20,7 +20,7 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
 }) => {
   const displayTitle = React.useMemo(() => {
     if (searchQuery) {
-      return "Searched Movies";
+      return "Found Movies"; // Changed from "Searched Movies" to "Found Movies"
     }
     if (allGenres.includes(sortAndFilter)) {
       return sortAndFilter; // Genre name

@@ -670,7 +670,7 @@ const Index = () => {
                             </SelectGroup>
                             {allCountries.length > 0 && <Separator className="my-1" />}
                             <SelectGroup>
-                              <SelectLabel>Filter by Country</SelectLabel>
+                              <SelectLabel>Filter by Country</Label>
                               {allCountries.map((country) => (
                                 <SelectItem key={country} value={country}>{country}</SelectItem>
                               ))}
@@ -764,7 +764,7 @@ const Index = () => {
                   animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
                 >
-                  All Movies
+                  {searchQuery ? "Found Movies" : "All Movies"} {/* Dynamic title */}
                 </motion.h2>
                 <Input
                   type="text"
@@ -774,6 +774,16 @@ const Index = () => {
                   className="w-full sm:w-auto"
                 />
               </motion.div>
+              {searchQuery && ( // Show counter only when search query is active
+                <motion.div variants={contentVariants} className="mb-4">
+                  <MovieCounter 
+                    count={filteredAndSortedMovies.length} 
+                    numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
+                    labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
+                    animateOnLoad={pageLoaded}
+                  />
+                </motion.div>
+              )}
               
               {isAdmin && !loadingAllMovies && (
                   <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
