@@ -28,7 +28,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
   const [iframeDimensions, setIframeDimensions] = useState({ width: 0, height: 0 });
   const [isApiLoaded, setIsApiLoaded] = useState(false);
   const [isInViewport, setIsInViewport] = useState(false);
-  const [userPaused, setUserPaused] = useState(false);
+  const [userPaused, setUserPaused] = useState(false); // Tracks if user manually paused
 
   const calculateIframeDimensions = useCallback(() => {
     if (!parentRef.current) return;
@@ -50,9 +50,17 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
 
   const onPlayerReady = useCallback((event: any) => {
     setPlayerReady(true);
-    event.target.mute();
+    event.target.mute(); // Ensure it's muted for autoplay on mobile
     setIsMuted(true);
-  }, []);
+    // Initial play attempt after delay, if not manually paused and in viewport
+    if (!userPaused && isInViewport) {
+      setTimeout(() => {
+        if (playerRef.current) {
+          playerRef.current.playVideo();
+        }
+      }, delay);
+    }
+  }, [userPaused, isInViewport, delay]);
 
   const onPlayerStateChange = useCallback((event: any) => {
     if (event.data === window.YT.PlayerState.PLAYING) {
@@ -73,12 +81,25 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       videoId: videoId,
       width: iframeDimensions.width,
       height: iframeDimensions.height,
-      playerVars: { autoplay: 0, controls: 0, disablekb: 1, fs: 0, loop: 1, modestbranding: 1, rel: 0, showinfo: 0, iv_load_policy: 3, playlist: videoId, mute: 1 },
+      playerVars: { 
+        autoplay: 1, // Set to 1 for automatic playback
+        controls: 0, 
+        disablekb: 1, 
+        fs: 0, 
+        loop: 1, 
+        modestbranding: 1, 
+        rel: 0, 
+        showinfo: 0, 
+        iv_load_policy: 3, 
+        playlist: videoId, 
+        mute: 1 // Ensure it's muted for autoplay
+      },
       events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange },
     });
   }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
 
   useEffect(() => {
+    // Load YouTube Iframe API script
     if (typeof window.onYouTubeIframeAPIReady === 'undefined') {
       window.onYouTubeIframeAPIReady = () => setIsApiLoaded(true);
     } else {
@@ -98,21 +119,19 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       setIsApiLoaded(true);
     }
 
-    // Changed threshold to 0 for more aggressive detection
+    // Intersection Observer for viewport visibility
     const observer = new IntersectionObserver(([entry]) => setIsInViewport(entry.isIntersecting), { threshold: 0 });
     const currentParentRef = parentRef.current;
     if (currentParentRef) observer.observe(currentParentRef);
 
-    // Add visibility change listener for tab focus/blur
+    // Visibility change listener for tab focus/blur
     const handleVisibilityChange = () => {
       if (playerRef.current && playerReady) {
         if (document.hidden) {
-          // Tab is hidden, pause video
-          if (isPlaying) { // Only pause if currently playing
+          if (isPlaying) {
             playerRef.current.pauseVideo();
           }
         } else {
-          // Tab is visible, resume if in viewport and not manually paused
           if (isInViewport && !userPaused) {
             playerRef.current.playVideo();
           }
@@ -121,7 +140,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-
+    // Resize listener for iframe dimensions
     window.addEventListener('resize', calculateIframeDimensions);
     calculateIframeDimensions();
 
@@ -130,27 +149,29 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       if (currentParentRef) observer.unobserve(currentParentRef);
       if (playerRef.current) playerRef.current.destroy();
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
-      document.removeEventListener('visibilitychange', handleVisibilityChange); // Cleanup visibility listener
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [calculateIframeDimensions, isApiLoaded, isInViewport, isPlaying, playerReady, userPaused, videoId]); // Added isPlaying to dependencies
+  }, [calculateIframeDimensions, isApiLoaded, isInViewport, isPlaying, playerReady, userPaused, videoId]);
 
   useEffect(() => {
+    // Recreate player when API is loaded or dimensions change
     createYouTubePlayer();
   }, [createYouTubePlayer]);
 
   useEffect(() => {
+    // Handle play/pause based on viewport and user interaction
     if (playerReady && playerRef.current) {
       if (isInViewport) {
         if (!userPaused) {
-          // Only play if not manually paused
-          setTimeout(() => playerRef.current.playVideo(), delay);
+          if (!isPlaying) { // Only play if not already playing
+            playerRef.current.playVideo();
+          }
         }
       } else {
-        // Always pause if not in viewport
         playerRef.current.pauseVideo();
       }
     }
-  }, [isInViewport, playerReady, userPaused, delay]);
+  }, [isInViewport, playerReady, userPaused, isPlaying]);
 
   const togglePlayPause = useCallback(() => {
     if (playerRef.current) {
