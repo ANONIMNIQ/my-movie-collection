@@ -489,7 +489,7 @@ const Index = () => {
                       {session && (
                         <>
                           <Link to="/add-movie">
-                            <Button>Add New Movie</Button>
+                            <Button className="bg-black text-white hover:bg-gray-800">Add New Movie</Button>
                           </Link>
                           {isAdmin && (
                             <Link to="/import-movies">
@@ -497,9 +497,9 @@ const Index = () => {
                             </Link>
                           )}
                           <Link to="/import-ratings">
-                            <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import My Ratings</Button>
+                            <Button variant="outline" className="bg-transparent text-black border-black hover:bg-gray-200 hover:text-black">Import My Ratings</Button>
                           </Link>
-                          <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
+                          <Button variant="outline" onClick={handleLogout} className="bg-transparent text-black border-black hover:bg-gray-200 hover:text-black">
                             Logout
                           </Button>
                         </>
