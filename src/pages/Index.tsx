@@ -151,7 +151,7 @@ const Index = () => {
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
       setPageLoaded(true);
-    }, 1200); // Increased delay to 1.2s to ensure header slide-in completes
+    }, 800); // Reduced delay to trigger after header's initial slide-in
 
     return () => clearTimeout(timer);
   }, []); // Empty dependency array means it runs once on mount
@@ -161,7 +161,7 @@ const Index = () => {
     if (pageLoaded) {
       const shrinkTimer = setTimeout(() => {
         setHeaderShrunk(true);
-      }, 1000); // Reduced delay to 1s for faster shrinking
+      }, 2000); // Start shrinking 2 seconds after initial page load animation
       return () => clearTimeout(shrinkTimer);
     }
   }, [pageLoaded]);
@@ -352,7 +352,7 @@ const Index = () => {
       minHeight: "60px", // Final shrunk height (reduced from 80px)
       paddingTop: "0.25rem", // Reduced padding (from 0.5rem)
       paddingBottom: "0.25rem", // Reduced padding (from 0.5rem)
-      transition: { duration: 0.3, ease: "easeOut" } // Reduced duration for shrinking
+      transition: { duration: 0.5, ease: "easeOut" }
     },
   };
 
@@ -370,6 +370,7 @@ const Index = () => {
 
   // Main content wrapper variants for padding to align with shrinking header
   const mainContentAlignmentVariants = {
+    full: { paddingTop: "200px", transition: { duration: 0.5, ease: "easeOut" } }, // Initial padding to push content below full header
     shrunk: { paddingTop: "60px", transition: { duration: 0.5, ease: "easeOut" } }, // Final padding to push content below shrunk header (updated from 80px)
   };
 
@@ -477,11 +478,12 @@ const Index = () => {
       </motion.header>
 
       <motion.div // This is the new wrapper for main content to handle padding
-        className="pt-[200px]" // Static initial padding
-        animate={headerShrunk ? "shrunk" : { paddingTop: "200px" }} // Animate to shrunk, or stay at 200px
-        variants={mainContentAlignmentVariants} // Only defines 'shrunk'
+        initial="full"
+        animate={headerShrunk ? "shrunk" : "full"}
+        variants={mainContentAlignmentVariants}
       >
         <motion.main
+          // Removed className="pt-0" from here
           initial="hidden"
           animate={pageLoaded ? "visible" : "hidden"}
           variants={{
@@ -696,7 +698,7 @@ const Index = () => {
           </div>
 
           {/* Mobile View */}
-          <div className="md:hidden px-4">
+          <div className="md:hidden px-4"> {/* Removed pt-8 from here */}
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <motion.h2
                 className="text-3xl font-bold" // Removed conditional text color class
