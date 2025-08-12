@@ -75,8 +75,6 @@ const Index = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
   // New state to control header shrinking
   const [headerShrunk, setHeaderShrunk] = useState(false);
-  // New state to trigger main content animation after header is fully animated
-  const [mainContentVisible, setMainContentVisible] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -149,7 +147,6 @@ const Index = () => {
     // Reset all animation states on mount
     setHeaderShrunk(false);
     setPageLoaded(false);
-    setMainContentVisible(false);
 
     // Start the first part of the header animation after a short delay
     const pageLoadTimer = setTimeout(() => {
@@ -391,7 +388,7 @@ const Index = () => {
         !isMobile && "bg-background text-foreground",
       )}
       initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}} // Dark initial for mobile
-      animate={isMobile && mainContentVisible ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
+      animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
       transition={{ duration: 0.6, ease: "easeOut" }} // Removed delay
     >
       <motion.header
@@ -407,11 +404,6 @@ const Index = () => {
           initial="full"
           animate={headerShrunk ? "shrunk" : "full"}
           variants={headerVariants}
-          onAnimationComplete={() => {
-            if (headerShrunk) {
-              setMainContentVisible(true);
-            }
-          }}
           className="h-full flex flex-col justify-center" // Ensure content is centered vertically
         >
           <div className="container mx-auto px-4">
@@ -492,7 +484,7 @@ const Index = () => {
       >
         <motion.main
           initial="hidden"
-          animate={mainContentVisible ? "visible" : "hidden"}
+          animate={headerShrunk ? "visible" : "hidden"}
           variants={{
             hidden: { opacity: 0 },
             visible: {
@@ -800,7 +792,7 @@ const Index = () => {
       <motion.footer
         className="py-8"
         initial="hidden"
-        animate={mainContentVisible ? "visible" : "hidden"}
+        animate={headerShrunk ? "visible" : "hidden"}
         variants={contentVariants}
       >
         <MadeWithDyad />
