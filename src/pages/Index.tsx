@@ -363,7 +363,7 @@ const Index = () => {
   // Title variants (for font size within the shrinking header)
   const titleShrinkVariants = {
     full: { fontSize: isMobile ? "2.25rem" : "3rem", transition: { duration: 0.5, ease: "easeOut" } },
-    shrunk: { fontSize: isMobile ? "1.5rem" : "2rem", transition: { duration: 0.5, ease: "easeOut" } },
+    shrunk: { fontSize: isMobile ? "1.25rem" : "2rem", transition: { duration: 0.5, ease: "easeOut" } },
   };
 
   // Other header content variants (description, counter, buttons)
