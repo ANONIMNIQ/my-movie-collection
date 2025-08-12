@@ -144,8 +144,9 @@ const Index = () => {
 
 
   useEffect(() => {
-    // Explicitly reset headerShrunk to false every time the component mounts
+    // Explicitly reset headerShrunk and pageLoaded to false every time the component mounts
     setHeaderShrunk(false); 
+    setPageLoaded(false); // Reset pageLoaded to ensure full re-animation
 
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
@@ -697,7 +698,7 @@ const Index = () => {
           </div>
 
           {/* Mobile View */}
-          <div className="md:hidden pt-8 px-4">
+          <div className="md:hidden px-4"> {/* Removed pt-8 from here */}
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <motion.h2
                 className="text-3xl font-bold" // Removed conditional text color class
