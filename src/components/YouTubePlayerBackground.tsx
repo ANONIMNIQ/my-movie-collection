@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 
 interface YouTubePlayerBackgroundProps {
   videoId: string;
-  delay?: number; // Delay in ms before auto-playing
 }
 
 // Declare YT globally for TypeScript
@@ -63,12 +62,14 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
   }, []);
 
   const createYouTubePlayer = useCallback(() => {
+    // This check is crucial here: ensure iframeContainerRef.current is available
     if (!isApiLoaded || !window.YT || typeof window.YT.Player === 'undefined' || !iframeContainerRef.current || iframeDimensions.width === 0) {
       return;
     }
     // Destroy existing player if any
     if (playerRef.current) {
       playerRef.current.destroy();
+      playerRef.current = null; // Explicitly nullify to prevent stale references
     }
     // Create new player and assign to ref
     playerRef.current = new window.YT.Player(iframeContainerRef.current, {
@@ -90,7 +91,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       },
       events: { onReady: onPlayerReady, onStateChange: onPlayerStateChange },
     });
-  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange, iframeContainerRef]);
+  }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange]);
 
   // Helper function to attempt playing video with retry logic
   const attemptPlayVideo = useCallback(() => {
@@ -156,7 +157,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     return () => {
       window.removeEventListener('resize', calculateIframeDimensions);
       if (currentParentRef) observer.unobserve(currentParentRef);
-      if (playerRef.current) playerRef.current.destroy();
+      // Player destruction is now handled in the player creation useEffect
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -164,8 +165,19 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
 
   useEffect(() => {
     // This effect is responsible for creating/recreating the player
-    createYouTubePlayer();
-  }, [createYouTubePlayer]); // Depend on createYouTubePlayer
+    // It now explicitly depends on iframeContainerRef.current
+    if (isApiLoaded && iframeContainerRef.current && iframeDimensions.width > 0) {
+      createYouTubePlayer();
+    }
+
+    // Cleanup function for player destruction
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.destroy();
+        playerRef.current = null; // Explicitly nullify the ref
+      }
+    };
+  }, [isApiLoaded, videoId, iframeDimensions, createYouTubePlayer, iframeContainerRef.current]); // Added iframeContainerRef.current as dependency
 
   useEffect(() => {
     // This effect is solely responsible for playing/pausing based on state
