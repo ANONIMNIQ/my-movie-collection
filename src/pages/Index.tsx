@@ -4,9 +4,8 @@ import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Movie } from "@/data/movies";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSession } from "@/contexts/Session/SessionContext";
+import { useSession } from "@/contexts/SessionContext"; // Corrected import path
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2 } from "lucide-react";
@@ -544,7 +543,7 @@ const Index = () => {
             {!isMobile && heroSliderMovies.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
-                animate={headerShrunk ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                animate={headerShrunk ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }} // Changed initial to 1,0 for hero slider
                 transition={{ duration: 0.5, ease: "easeOut" }}
               >
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
