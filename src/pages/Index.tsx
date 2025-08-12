@@ -656,7 +656,7 @@ const Index = () => {
                         title="Thriller"
                         movies={categorizedMovies.thrillerMovies}
                         selectedMovieIds={selectedMovieIds}
-                        onSelectMovie={onSelectMovie}
+                        onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
                       />
@@ -668,7 +668,7 @@ const Index = () => {
                         title="Sci-Fi"
                         movies={categorizedMovies.scifiMovies}
                         selectedMovieIds={selectedMovieIds}
-                        onSelectMovie={onSelectMovie}
+                        onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
                       />
@@ -680,7 +680,7 @@ const Index = () => {
                         title="Horror"
                         movies={categorizedMovies.horrorMovies}
                         selectedMovieIds={selectedMovieIds}
-                        onSelectMovie={onSelectMovie}
+                        onSelectMovie={handleSelectMovie}
                         isMobile={isMobile}
                         pageLoaded={pageLoaded}
                       />
