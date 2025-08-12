@@ -700,9 +700,9 @@ const Index = () => {
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
               <motion.h2
                 className="text-3xl font-bold"
-                initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
-                animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
-                transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
+                initial={{ color: "rgb(255,255,255)" }}
+                animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
               >
                 All Movies
               </motion.h2>
