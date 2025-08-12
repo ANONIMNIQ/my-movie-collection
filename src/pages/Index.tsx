@@ -517,13 +517,13 @@ const Index = () => {
                       </Link>
                       {isAdmin && (
                         <Link to="/import-movies">
-                          <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Movies</Button>
+                          <Button variant="outline" className="bg-transparent border-black text-black hover:bg-gray-200">Import Movies</Button>
                         </Link>
                       )}
                       <Link to="/import-ratings">
-                        <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Ratings</Button>
+                        <Button variant="outline" className="bg-transparent border-black text-black hover:bg-gray-200">Import Ratings</Button>
                       </Link>
-                      <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
+                      <Button variant="outline" onClick={handleLogout} className="bg-transparent border-black text-black hover:bg-gray-200">
                         Logout
                       </Button>
                     </>
