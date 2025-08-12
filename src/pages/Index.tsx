@@ -231,7 +231,7 @@ const Index = () => {
 
   const mainContentVariants = {
     initial: { paddingTop: "200px" },
-    animate: { paddingTop: headerShrunk ? `${shrunkenHeaderHeight}px` : '200px' },
+    animate: { paddingTop: headerShrunk ? `${shrunkenHeaderHeight + 24}px` : '200px' },
     transition: { duration: 0.5, ease: "easeOut" },
   };
 
@@ -246,12 +246,17 @@ const Index = () => {
   };
 
   return (
-    <div className={cn("min-h-screen w-full overflow-x-hidden", isMobile ? "bg-background text-foreground" : "bg-white text-black")}>
+    <motion.div
+      className={cn("min-h-screen w-full overflow-x-hidden", !isMobile && "bg-white text-black")}
+      initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}}
+      animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
       <motion.header
         layout
         className={cn(
           "w-full text-center shadow-md z-50 overflow-hidden fixed top-0 left-0 right-0",
-          headerShrunk ? "bg-white/80 backdrop-blur-lg" : "bg-white"
+          headerShrunk ? (isMobile ? "bg-background/80 backdrop-blur-lg" : "bg-white/80 backdrop-blur-lg") : (isMobile ? "bg-background" : "bg-white")
         )}
         initial={{ y: "-100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -265,20 +270,27 @@ const Index = () => {
         >
           <div className="container mx-auto px-4">
             <motion.div
+              layout
               initial="hidden"
               animate={pageLoaded ? "visible" : "hidden"}
               variants={contentContainerVariants}
             >
               <motion.h1
-                layout
-                className="font-bold tracking-tight leading-none text-headerTitle"
+                layout="position"
+                className={cn(
+                  "font-bold tracking-tight leading-none",
+                  isMobile ? "text-foreground" : "text-headerTitle"
+                )}
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={titleShrinkVariants}
               >
                 Georgi's Movie Collection
               </motion.h1>
               <motion.p
-                className="mt-2 text-lg text-headerDescription"
+                className={cn(
+                  "mt-2 text-lg",
+                  isMobile ? "text-muted-foreground" : "text-headerDescription"
+                )}
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
               >
@@ -289,7 +301,11 @@ const Index = () => {
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
               >
-                <MovieCounter count={filteredAndSortedMovies.length} numberColor={"#0F0F0F"} labelColor={"text-headerDescription"} />
+                <MovieCounter 
+                  count={filteredAndSortedMovies.length} 
+                  numberColor={isMobile ? "white" : "#0F0F0F"}
+                  labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
+                />
               </motion.div>
               <motion.div
                 className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
@@ -427,7 +443,7 @@ const Index = () => {
       >
         <MadeWithDyad />
       </motion.footer>
-    </div>
+    </motion.div>
   );
 };
 
