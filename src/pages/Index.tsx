@@ -391,8 +391,8 @@ const Index = () => {
         !isMobile && "bg-background text-foreground",
       )}
       initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}} // Dark initial for mobile
-      animate={isMobile && pageLoaded ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
-      transition={{ duration: 0.6, ease: "easeOut", delay: 0.8 }} // Reduced duration and delay
+      animate={isMobile && mainContentVisible ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
+      transition={{ duration: 0.6, ease: "easeOut" }} // Removed delay
     >
       <motion.header
         className={cn(
