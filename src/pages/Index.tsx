@@ -440,9 +440,9 @@ const Index = () => {
             "transition-colors duration-500 ease-out",
             headerShrunk
               ? isMobile
-                ? "bg-background/80 backdrop-blur-md shadow-md" // Changed backdrop-blur-lg to backdrop-blur-md
-                : "bg-white/80 backdrop-blur-md shadow-md" // Changed backdrop-blur-lg to backdrop-blur-md
-              : "bg-white shadow-md"
+                ? "bg-background/80 backdrop-blur-md shadow-md"
+                : "bg-white/80 backdrop-blur-md shadow-md"
+              : "bg-white/0 backdrop-blur-md shadow-md" // Changed this line for desktop full state
           )}
           initial={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -555,8 +555,8 @@ const Index = () => {
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
               <motion.div
-                initial={{ opacity: 0 }} // Removed y: 50
-                animate={pageLoaded ? { opacity: 1 } : { opacity: 0 }} // Removed y: 0 and y: 50
+                initial={{ opacity: 0 }}
+                animate={pageLoaded ? { opacity: 1 } : { opacity: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}
               >
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
@@ -566,8 +566,8 @@ const Index = () => {
             <motion.div
               className="hidden md:block pt-8"
               initial="hidden"
-              animate={pageLoaded ? "visible" : "hidden"} // Changed animate condition
-              variants={desktopMainContainerVariants} // Use desktop specific variants
+              animate={pageLoaded ? "visible" : "hidden"}
+              variants={desktopMainContainerVariants}
             >
               {loadingAllMovies ? (
                 <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
