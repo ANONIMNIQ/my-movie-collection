@@ -386,7 +386,7 @@ const Index = () => {
       transition: { duration: 0.5, ease: "easeOut" } 
     },
     shrunk: { 
-      paddingTop: `${shrunkenHeaderHeight}px`, 
+      paddingTop: isMobile ? `${shrunkenHeaderHeight}px` : "0px", // Set desktop paddingTop to 0px for overlap
       transition: { duration: 0.5, ease: "easeOut" } 
     },
   };
