@@ -16,7 +16,7 @@ declare global {
   }
 }
 
-const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ videoId, delay = 0 }) => {
+const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ videoId }) => {
   const playerRef = useRef<any>(null);
   const iframeContainerRef = useRef<HTMLDivElement>(null);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -52,7 +52,6 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     setPlayerReady(true);
     event.target.mute(); // Ensure it's muted for autoplay on mobile
     setIsMuted(true);
-    // No immediate play here. The useEffect below will handle it.
   }, []);
 
   const onPlayerStateChange = useCallback((event: any) => {
@@ -93,6 +92,21 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     });
   }, [isApiLoaded, videoId, iframeDimensions, onPlayerReady, onPlayerStateChange, iframeContainerRef]);
 
+  // Helper function to attempt playing video with retry logic
+  const attemptPlayVideo = useCallback(() => {
+    if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
+      // Check if already playing to avoid unnecessary calls
+      if (playerRef.current.getPlayerState() !== window.YT.PlayerState.PLAYING) {
+        playerRef.current.playVideo();
+      }
+    } else {
+      // If player or method not ready, retry after a short delay
+      setTimeout(() => {
+        attemptPlayVideo();
+      }, 100); // Retry after 100ms
+    }
+  }, []);
+
   useEffect(() => {
     // Load YouTube Iframe API script
     if (typeof window.onYouTubeIframeAPIReady === 'undefined') {
@@ -128,7 +142,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
           }
         } else {
           if (isInViewport && !userPaused) {
-            playerRef.current.playVideo();
+            attemptPlayVideo(); // Use the retry function here
           }
         }
       }
@@ -146,7 +160,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [calculateIframeDimensions, isApiLoaded, isInViewport, isPlaying, playerReady, userPaused, videoId]);
+  }, [calculateIframeDimensions, isApiLoaded, isInViewport, isPlaying, playerReady, userPaused, videoId, attemptPlayVideo]);
 
   useEffect(() => {
     // This effect is responsible for creating/recreating the player
@@ -157,16 +171,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
     // This effect is solely responsible for playing/pausing based on state
     if (playerReady && playerRef.current) {
       if (isInViewport && !userPaused) {
-        // Only play if in viewport and not manually paused
-        if (playerRef.current.getPlayerState() !== window.YT.PlayerState.PLAYING) {
-          // Add a small delay to ensure player is fully ready for command
-          const playTimer = setTimeout(() => {
-            if (playerRef.current) { // Re-check playerRef.current
-              playerRef.current.playVideo();
-            }
-          }, 50); // Small delay
-          return () => clearTimeout(playTimer); // Cleanup timer
-        }
+        attemptPlayVideo(); // Use the retry function here
       } else {
         // Pause if not in viewport or manually paused
         if (playerRef.current.getPlayerState() === window.YT.PlayerState.PLAYING) {
@@ -174,7 +179,7 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         }
       }
     }
-  }, [isInViewport, playerReady, userPaused, videoId]); // Added videoId to ensure effect re-runs if video changes
+  }, [isInViewport, playerReady, userPaused, videoId, attemptPlayVideo]); // Add attemptPlayVideo to dependencies
 
   const togglePlayPause = useCallback(() => {
     if (playerRef.current) {
@@ -182,11 +187,11 @@ const YouTubePlayerBackground: React.FC<YouTubePlayerBackgroundProps> = ({ video
         playerRef.current.pauseVideo();
         setUserPaused(true);
       } else {
-        playerRef.current.playVideo();
+        attemptPlayVideo(); // Use the retry function here
         setUserPaused(false);
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, attemptPlayVideo]);
 
   const toggleMuteUnmute = useCallback(() => {
     if (playerRef.current) {
