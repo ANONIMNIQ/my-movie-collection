@@ -341,8 +341,8 @@ const Index = () => {
   };
 
   // Dynamically calculate shrunken header height for perfect fit
-  const shrunkenHeaderHeight = isMobile ? 60 : 72; // Increased height for better spacing
-  const shrunkenHeaderPaddingY = '0.75rem'; // 12px top/bottom padding
+  const shrunkenHeaderHeight = isMobile ? 60 : 72;
+  const shrunkenHeaderPaddingY = '0.75rem';
 
   // Header variants for height and padding animation
   const headerVariants = {
@@ -374,14 +374,20 @@ const Index = () => {
 
   // Main content wrapper variants for padding to align with shrinking header
   const mainContentAlignmentVariants = {
-    full: { paddingTop: "200px", transition: { duration: 0.5, ease: "easeOut" } },
-    shrunk: { paddingTop: `${shrunkenHeaderHeight}px`, transition: { duration: 0.5, ease: "easeOut" } },
+    full: { 
+      paddingTop: isMobile ? "200px" : "0px", 
+      transition: { duration: 0.5, ease: "easeOut" } 
+    },
+    shrunk: { 
+      paddingTop: `${shrunkenHeaderHeight}px`, 
+      transition: { duration: 0.5, ease: "easeOut" } 
+    },
   };
 
   // Variants for content sections (fade in and slight slide up)
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }, // Reduced duration
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
   };
 
   const mainContainerVariants = {
@@ -398,47 +404,46 @@ const Index = () => {
     <motion.div
       className={cn(
         "min-h-screen w-full overflow-x-hidden",
-        // On desktop, always use dark background and light foreground
         !isMobile && "bg-background text-foreground",
       )}
-      initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}} // Dark initial for mobile
-      animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}} // Animate to white for mobile
-      transition={{ duration: 0.6, ease: "easeOut" }} // Removed delay
+      initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}}
+      animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
+      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <motion.header
         className={cn(
-          "w-full text-center shadow-md z-50 overflow-hidden fixed top-0 left-0 right-0",
-          "transition-all duration-500 ease-out",
+          "w-full text-center z-50 fixed top-0 left-0 right-0",
+          "transition-colors duration-500 ease-out",
           headerShrunk
             ? isMobile
-              ? "bg-background/80 backdrop-blur-lg"
-              : "bg-white/80 backdrop-blur-lg"
+              ? "bg-background/80 backdrop-blur-lg shadow-md"
+              : "bg-white/80 backdrop-blur-lg shadow-md"
             : isMobile
-              ? "bg-background"
-              : "bg-white"
+              ? "bg-background shadow-md"
+              : "bg-gradient-to-b from-black/60 to-transparent"
         )}
         initial={{ y: "-100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
       >
-        <motion.div // Inner div to handle height/padding animation
+        <motion.div
           initial="full"
           animate={headerShrunk ? "shrunk" : "full"}
           variants={headerVariants}
-          className="h-full flex flex-col justify-center" // Ensure content is centered vertically
+          className="h-full flex flex-col justify-center"
         >
           <div className="container mx-auto px-4">
-            <motion.div // This will be the container for staggered children
+            <motion.div
               initial="hidden"
-              animate={pageLoaded ? "visible" : "hidden"} // Animate based on pageLoaded
+              animate={pageLoaded ? "visible" : "hidden"}
               variants={headerContentContainerVariants}
             >
               <motion.h1
                 className={cn(
                   "text-4xl md:text-5xl font-bold tracking-tight",
-                  isMobile ? "text-foreground" : "text-headerTitle"
+                  isMobile || !headerShrunk ? "text-foreground" : "text-headerTitle"
                 )}
-                animate={headerShrunk ? "shrunk" : "full"} // Apply title shrink animation
+                animate={headerShrunk ? "shrunk" : "full"}
                 variants={titleShrinkVariants}
               >
                 Georgi's Movie Collection
@@ -446,28 +451,28 @@ const Index = () => {
               <motion.p
                 className={cn(
                   "mt-2 text-lg",
-                  isMobile ? "text-muted-foreground" : "text-headerDescription"
+                  isMobile || !headerShrunk ? "text-muted-foreground" : "text-headerDescription"
                 )}
-                animate={headerShrunk ? "shrunk" : "full"} // Apply fade out animation
+                animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
               >
                 A minimalist collection of cinematic gems.
               </motion.p>
               <motion.div
                 className="mt-6"
-                animate={headerShrunk ? "shrunk" : "full"} // Apply fade out animation
+                animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
               >
                 <MovieCounter 
                   key={isMobile ? 'mobile' : 'desktop'}
                   count={filteredAndSortedMovies.length} 
-                  numberColor={isMobile ? "white" : "#0F0F0F"}
-                  labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
+                  numberColor={isMobile || !headerShrunk ? "white" : "#0F0F0F"}
+                  labelColor={isMobile || !headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
                 />
               </motion.div>
               <motion.div
                 className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4"
-                animate={headerShrunk ? "shrunk" : "full"} // Apply fade out animation
+                animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
               >
                 {sessionLoading ? (
@@ -475,7 +480,7 @@ const Index = () => {
                 ) : session ? (
                   <>
                     <Link to="/add-movie">
-                      <Button>Add New Movie</Button>
+                      <Button className={cn(!isMobile && headerShrunk && "bg-black text-white hover:bg-gray-800")}>Add New Movie</Button>
                     </Link>
                     {isAdmin && (
                       <Link to="/import-movies">
@@ -483,9 +488,9 @@ const Index = () => {
                       </Link>
                     )}
                     <Link to="/import-ratings">
-                      <Button variant="outline">Import My Ratings</Button>
+                      <Button variant="outline" className={cn(!isMobile && headerShrunk && "text-black border-black hover:bg-gray-200 hover:text-black")}>Import My Ratings</Button>
                     </Link>
-                    <Button variant="outline" onClick={handleLogout}>
+                    <Button variant="outline" onClick={handleLogout} className={cn(!isMobile && headerShrunk && "text-black border-black hover:bg-gray-200 hover:text-black")}>
                       Logout
                     </Button>
                   </>
@@ -498,13 +503,12 @@ const Index = () => {
         </motion.div>
       </motion.header>
 
-      <motion.div // This is the new wrapper for main content to handle padding
+      <motion.div
         initial="full"
         animate={headerShrunk ? "shrunk" : "full"}
         variants={mainContentAlignmentVariants}
       >
         <main>
-          {/* Desktop Hero Slider */}
           {!isMobile && heroSliderMovies.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -515,7 +519,6 @@ const Index = () => {
             </motion.div>
           )}
 
-          {/* Desktop View */}
           <motion.div
             className="hidden md:block pt-8"
             initial="hidden"
@@ -709,7 +712,6 @@ const Index = () => {
             </motion.div>
           </motion.div>
 
-          {/* Mobile View */}
           <motion.div
             className="md:hidden px-4 pt-4"
             initial="hidden"
