@@ -430,14 +430,15 @@ const Index = () => {
           variants={headerVariants}
           className="h-full flex flex-col justify-center"
         >
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial="hidden"
-              animate={pageLoaded ? "visible" : "hidden"}
-              variants={headerContentContainerVariants}
-            >
-              {/* Title and Desktop buttons in one row */}
-              <div className="flex items-center justify-center md:justify-between">
+          <div className="container mx-auto px-4 h-full">
+            <div className="relative flex items-center justify-center h-full">
+              {/* Centered content block */}
+              <motion.div
+                className="text-center"
+                initial="hidden"
+                animate={pageLoaded ? "visible" : "hidden"}
+                variants={headerContentContainerVariants}
+              >
                 <motion.h1
                   className={cn(
                     "text-4xl md:text-5xl font-bold tracking-tight",
@@ -449,77 +450,74 @@ const Index = () => {
                   Georgi's Movie Collection
                 </motion.h1>
 
-                <div className="hidden md:flex items-center gap-2">
-                  {session && (
-                    <>
-                      <Link to="/add-movie">
-                        <Button className="bg-black text-white hover:bg-gray-800">Add New Movie</Button>
-                      </Link>
-                      {isAdmin && (
-                        <Link to="/import-movies">
-                          <Button variant="secondary">Import Movies</Button>
-                        </Link>
-                      )}
-                      <Link to="/import-ratings">
-                        <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Ratings</Button>
-                      </Link>
-                      <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
-                        Logout
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Fading content */}
-              <motion.div
-                className="overflow-hidden"
-                animate={headerShrunk ? "shrunk" : "full"}
-                variants={fadeOutShrinkVariants}
-              >
-                <motion.p
-                  className={cn(
-                    "mt-2 text-lg",
-                    isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"
-                  )}
-                >
-                  A minimalist collection of cinematic gems.
-                </motion.p>
+                {/* Fading content */}
                 <motion.div
-                  className="mt-6"
+                  className="overflow-hidden"
+                  animate={headerShrunk ? "shrunk" : "full"}
+                  variants={fadeOutShrinkVariants}
                 >
-                  <MovieCounter 
-                    key={isMobile ? 'mobile' : 'desktop'}
-                    count={filteredAndSortedMovies.length} 
-                    numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
-                    labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
-                  />
-                </motion.div>
-                {/* Mobile Buttons - fade out */}
-                <motion.div
-                  className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 md:hidden"
-                >
-                  {session && (
-                    <>
-                      <Link to="/add-movie">
-                        <Button>Add New Movie</Button>
-                      </Link>
-                      {isAdmin && (
-                        <Link to="/import-movies">
-                          <Button variant="secondary">Import Movies (CSV)</Button>
+                  <p
+                    className={cn(
+                      "mt-2 text-lg",
+                      isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"
+                    )}
+                  >
+                    A minimalist collection of cinematic gems.
+                  </p>
+                  <div className="mt-6">
+                    <MovieCounter 
+                      key={isMobile ? 'mobile' : 'desktop'}
+                      count={filteredAndSortedMovies.length} 
+                      numberColor={isMobile && headerShrunk ? "white" : "#0F0F0F"}
+                      labelColor={isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription"}
+                    />
+                  </div>
+                  {/* Mobile Buttons - fade out */}
+                  <div className="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 md:hidden">
+                    {session && (
+                      <>
+                        <Link to="/add-movie">
+                          <Button>Add New Movie</Button>
                         </Link>
-                      )}
-                      <Link to="/import-ratings">
-                        <Button variant="outline">Import My Ratings</Button>
-                      </Link>
-                      <Button variant="outline" onClick={handleLogout}>
-                        Logout
-                      </Button>
-                    </>
-                  )}
+                        {isAdmin && (
+                          <Link to="/import-movies">
+                            <Button variant="secondary">Import Movies (CSV)</Button>
+                          </Link>
+                        )}
+                        <Link to="/import-ratings">
+                          <Button variant="outline">Import My Ratings</Button>
+                        </Link>
+                        <Button variant="outline" onClick={handleLogout}>
+                          Logout
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </motion.div>
               </motion.div>
-            </motion.div>
+
+              {/* Absolutely positioned desktop buttons */}
+              <div className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 items-center gap-2">
+                {session && (
+                  <>
+                    <Link to="/add-movie">
+                      <Button className="bg-black text-white hover:bg-gray-800">Add New Movie</Button>
+                    </Link>
+                    {isAdmin && (
+                      <Link to="/import-movies">
+                        <Button variant="secondary">Import Movies</Button>
+                      </Link>
+                    )}
+                    <Link to="/import-ratings">
+                      <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import Ratings</Button>
+                    </Link>
+                    <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
+                      Logout
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </motion.div>
       </motion.header>
@@ -736,7 +734,7 @@ const Index = () => {
           <motion.div
             className="md:hidden px-4 pt-8"
             initial="hidden"
-            animate={pageLoaded ? "visible" : "hidden"}
+            animate={headerShrunk ? "visible" : "hidden"}
             variants={mainContainerVariants}
           >
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
