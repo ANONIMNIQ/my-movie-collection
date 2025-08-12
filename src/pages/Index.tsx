@@ -341,7 +341,7 @@ const Index = () => {
   };
 
   // Dynamically calculate shrunken header height for perfect fit
-  const shrunkenHeaderHeight = isMobile ? 48 : 56; // Mobile: 24px font + 24px padding. Desktop: 32px font + 24px padding.
+  const shrunkenHeaderHeight = isMobile ? 60 : 72; // Increased height for better spacing
   const shrunkenHeaderPaddingY = '0.75rem'; // 12px top/bottom padding
 
   // Header variants for height and padding animation
