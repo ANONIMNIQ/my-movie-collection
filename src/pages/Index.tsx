@@ -401,26 +401,19 @@ const Index = () => {
   };
 
   return (
-    <motion.div
+    <div
       className={cn(
         "min-h-screen w-full overflow-x-hidden",
-        !isMobile && "bg-background text-foreground",
+        isMobile ? "bg-white text-black" : "bg-background text-foreground"
       )}
-      initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}}
-      animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
-      transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <motion.header
         className={cn(
           "w-full text-center z-50 fixed top-0 left-0 right-0",
           "transition-colors duration-500 ease-out",
           headerShrunk
-            ? isMobile
-              ? "bg-background/80 backdrop-blur-lg shadow-md"
-              : "bg-white/80 backdrop-blur-lg shadow-md"
-            : isMobile
-              ? "bg-background shadow-md"
-              : "bg-white shadow-md"
+            ? "bg-white/80 backdrop-blur-lg shadow-md"
+            : "bg-white shadow-md"
         )}
         initial={{ y: "-100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -441,7 +434,7 @@ const Index = () => {
               <motion.h1
                 className={cn(
                   "text-4xl md:text-5xl font-bold tracking-tight",
-                  isMobile ? "text-foreground" : "text-headerTitle"
+                  "text-headerTitle"
                 )}
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={titleShrinkVariants}
@@ -451,7 +444,7 @@ const Index = () => {
               <motion.p
                 className={cn(
                   "mt-2 text-lg",
-                  isMobile ? "text-muted-foreground" : "text-headerDescription"
+                  "text-headerDescription"
                 )}
                 animate={headerShrunk ? "shrunk" : "full"}
                 variants={fadeOutShrinkVariants}
@@ -466,8 +459,8 @@ const Index = () => {
                 <MovieCounter 
                   key={isMobile ? 'mobile' : 'desktop'}
                   count={filteredAndSortedMovies.length} 
-                  numberColor={isMobile ? "white" : "#0F0F0F"}
-                  labelColor={isMobile ? "text-muted-foreground" : "text-headerDescription"}
+                  numberColor={"#0F0F0F"}
+                  labelColor={"text-headerDescription"}
                 />
               </motion.div>
               <motion.div
@@ -480,7 +473,7 @@ const Index = () => {
                 ) : session ? (
                   <>
                     <Link to="/add-movie">
-                      <Button className={cn(!isMobile && "bg-black text-white hover:bg-gray-800")}>Add New Movie</Button>
+                      <Button className="bg-black text-white hover:bg-gray-800">Add New Movie</Button>
                     </Link>
                     {isAdmin && (
                       <Link to="/import-movies">
@@ -488,9 +481,9 @@ const Index = () => {
                       </Link>
                     )}
                     <Link to="/import-ratings">
-                      <Button variant="outline" className={cn(!isMobile && "text-black border-black hover:bg-gray-200 hover:text-black")}>Import My Ratings</Button>
+                      <Button variant="outline" className="text-black border-black hover:bg-gray-200 hover:text-black">Import My Ratings</Button>
                     </Link>
-                    <Button variant="outline" onClick={handleLogout} className={cn(!isMobile && "text-black border-black hover:bg-gray-200 hover:text-black")}>
+                    <Button variant="outline" onClick={handleLogout} className="text-black border-black hover:bg-gray-200 hover:text-black">
                       Logout
                     </Button>
                   </>
@@ -719,14 +712,9 @@ const Index = () => {
             variants={mainContainerVariants}
           >
             <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-              <motion.h2
-                className="text-3xl font-bold"
-                initial={{ color: "rgb(255,255,255)" }}
-                animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-              >
+              <h2 className="text-3xl font-bold text-black">
                 All Movies
-              </motion.h2>
+              </h2>
               <Input
                 type="text"
                 placeholder="Search movies..."
@@ -817,7 +805,7 @@ const Index = () => {
       >
         <MadeWithDyad />
       </motion.footer>
-    </motion.div>
+    </div>
   );
 };
 
