@@ -14,6 +14,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query"; // Import useQ
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel, // Added AlertDialogCancel here
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -442,7 +443,7 @@ const Index = () => {
               ? isMobile
                 ? "bg-background/80 backdrop-blur-md shadow-md"
                 : "bg-white/80 backdrop-blur-md shadow-md"
-              : "bg-white backdrop-blur-md shadow-md" // Reverted to bg-white
+              : "bg-white backdrop-blur-md shadow-md" 
           )}
           initial={{ y: "-100%", opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
