@@ -144,13 +144,16 @@ const Index = () => {
 
 
   useEffect(() => {
+    // Explicitly reset headerShrunk to false every time the component mounts
+    setHeaderShrunk(false); 
+
     // Set pageLoaded to true after a short delay to trigger animations
     const timer = setTimeout(() => {
       setPageLoaded(true);
     }, 800); // Reduced delay to trigger after header's initial slide-in
 
     return () => clearTimeout(timer);
-  }, []);
+  }, []); // Empty dependency array means it runs once on mount
 
   // Effect to trigger header shrinking after initial page load animation
   useEffect(() => {
