@@ -378,7 +378,7 @@ const Index = () => {
           {isFilterOpen && (
             <motion.div
               key="backdrop"
-              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm"
+              className="fixed inset-0 z-[49] bg-black/10 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -389,7 +389,7 @@ const Index = () => {
           {(!isMobile && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
               key="floating-search-bar"
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+              className="fixed bottom-6 inset-x-0 z-50 flex justify-center"
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 100 }}
