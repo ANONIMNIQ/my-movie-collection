@@ -67,7 +67,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE); // Initialize with BATCH_SIZE
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -169,7 +169,29 @@ const Index = () => {
       return;
     }
 
-    // Observer for the main header background change
+    // Single observer for the allMoviesSectionRef to manage both floating headers
+    const sectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        const currentScrollY = window.scrollY;
+        const sectionTopRelativeToViewport = entry.boundingClientRect.top;
+        const sectionTopAbsolute = sectionTopRelativeToViewport + currentScrollY;
+
+        // Determine if the "All Movies" section is generally visible in the viewport
+        setIsAllMoviesSectionVisible(entry.isIntersecting);
+
+        // Determine if the floating top-left header should be visible
+        // It should be visible when the section's top has scrolled *above* the shrunken header's bottom edge
+        // AND the main header is actually shrunk.
+        setIsFloatingAllMoviesHeaderVisible(sectionTopAbsolute <= shrunkenHeaderHeight && headerShrunk);
+      },
+      {
+        // Observe the entire viewport to get updates as the element moves in/out of view
+        threshold: 0,
+        rootMargin: '0px 0px 0px 0px'
+      }
+    );
+
+    // Observer for the main header background change (still separate as it has different rootMargin)
     const headerDarkObserver = new IntersectionObserver(
       ([entry]) => {
         if (headerShrunk) {
@@ -181,39 +203,17 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
-    // Observer for the floating "All Movies" header
-    const floatingHeaderVisibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        // The floating header should be visible when the top of the "All Movies" section
-        // has scrolled *above* the bottom edge of the shrunken main header.
-        // `entry.boundingClientRect.top` is the distance from the viewport top to the element's top.
-        // If it's less than or equal to `shrunkenHeaderHeight`, it means the section's top is now
-        // either behind the shrunken header, or completely out of view above it.
-        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top <= shrunkenHeaderHeight);
-      },
-      {
-        // The rootMargin defines the area where intersection is checked.
-        // Setting top margin to `-${shrunkenHeaderHeight}px` means the "intersection root"
-        // starts `shrunkenHeaderHeight` pixels down from the top of the viewport.
-        // So, `entry.isIntersecting` will be true when the element is within this modified root.
-        // We are using `boundingClientRect.top` directly, so `rootMargin` is less critical here,
-        // but `threshold: 0` ensures we get updates as soon as the element crosses the boundary.
-        threshold: 0,
-        rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`, // This helps define the "trigger line"
-      }
-    );
-
 
     const currentRef = allMoviesSectionRef.current;
     if (currentRef) {
+      sectionObserver.observe(currentRef);
       headerDarkObserver.observe(currentRef);
-      floatingHeaderVisibilityObserver.observe(currentRef); // Observe for floating header visibility
     }
 
     return () => {
       if (currentRef) {
+        sectionObserver.unobserve(currentRef);
         headerDarkObserver.unobserve(currentRef);
-        floatingHeaderVisibilityObserver.unobserve(currentRef);
       }
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
@@ -469,7 +469,7 @@ const Index = () => {
           )}
         </AnimatePresence>
         <AnimatePresence>
-          {(!isMobile && (isAllMoviesSectionVisible || searchQuery)) && (
+          {(!isMobile && !isFloatingAllMoviesHeaderVisible && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
               key="floating-search-bar"
               className={cn(
@@ -689,7 +689,7 @@ const Index = () => {
                           <AlertDialog>
                             <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
                             <AlertDialogContent>
-                              <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
+                              <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deconstruct</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
                               <AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
