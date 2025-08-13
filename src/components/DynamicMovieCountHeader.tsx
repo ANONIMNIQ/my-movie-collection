@@ -35,14 +35,14 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
 
   return (
     <div className="flex items-center gap-2">
-      <h2 className="text-3xl font-bold">
+      <h2 className="text-2xl font-bold"> {/* Changed from text-3xl to text-2xl */}
         {displayTitle}
       </h2>
-      <div className="font-roboto-mono font-bold tracking-wider text-headerNumber text-3xl">
+      <div className="font-roboto-mono font-bold tracking-wider text-white text-2xl"> {/* Changed text-headerNumber to text-white, and text-3xl to text-2xl */}
         <FlipNumbers
-          height={28} // Adjust height for smaller display
-          width={18}  // Adjust width for smaller display
-          color="#0F0F0F" // Black color for numbers
+          height={24} // Adjusted height for smaller display
+          width={16}  // Adjusted width for smaller display
+          color="white" // Changed color to white
           background="transparent"
           play
           perspective={1000}
