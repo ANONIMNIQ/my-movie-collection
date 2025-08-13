@@ -204,13 +204,19 @@ const Index = () => {
       { threshold: 0 }
     );
 
-    // Observer for the 'All Movies' title container's top edge (for floating header entry)
+    // Observer for the 'All Movies' title container's top edge (for floating header entry/exit)
     const titleTopObserver = new IntersectionObserver(
       ([entry]) => {
-        // This will be true when the top of the title container is above the shrunken header's height
-        setIsTitleScrolledPastTop(entry.boundingClientRect.top < shrunkenHeaderHeight);
+        // When the title container is NOT intersecting the viewport area BELOW the main header,
+        // it means it has scrolled up behind it.
+        setIsTitleScrolledPastTop(!entry.isIntersecting);
       },
-      { threshold: 0 } // Observe any intersection
+      {
+        // The root is the viewport. The margin shrinks the viewport's top boundary
+        // down to the bottom of the shrunken header.
+        rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`,
+        threshold: 0,
+      }
     );
 
     // Observer for Hero Slider visibility
