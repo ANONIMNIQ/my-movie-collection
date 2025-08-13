@@ -81,8 +81,11 @@ const Index = () => {
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
   const [isHeaderDark, setIsHeaderDark] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isAllMoviesSectionVisible, setIsAllMoviesSectionVisible] = useState(false);
-  const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false); // New state for the floating header
+  
+  // New states for precise floating header and search bar control
+  const [isTitleScrolledPastTop, setIsTitleScrolledPastTop] = useState(false);
+  const [isAllMoviesSectionInView, setIsAllMoviesSectionInView] = useState(false);
+  const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -164,9 +167,10 @@ const Index = () => {
 
   useEffect(() => {
     if (isMobile) {
-      setIsAllMoviesSectionVisible(false);
       setIsHeaderDark(false);
-      setIsFloatingAllMoviesHeaderVisible(false); // Ensure hidden on mobile
+      setIsFloatingAllMoviesHeaderVisible(false);
+      setIsTitleScrolledPastTop(false);
+      setIsAllMoviesSectionInView(false);
       return;
     }
 
@@ -187,38 +191,37 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
-    // Observer for the 'All Movies' section to determine if it's in the viewport at all
-    const allMoviesSectionInViewObserver = new IntersectionObserver(
+    // Observer for the 'All Movies' section overall visibility (for search bar and floating header exit)
+    const sectionInViewObserver = new IntersectionObserver(
       ([entry]) => {
-        setIsAllMoviesSectionVisible(entry.isIntersecting);
+        setIsAllMoviesSectionInView(entry.isIntersecting);
       },
-      { threshold: 0 } // Trigger as soon as any part of the section enters/exits
+      { threshold: 0 }
     );
 
-    // Observer for the 'All Movies' title container to control the top-left floating header
-    const floatingHeaderVisibilityObserver = new IntersectionObserver(
+    // Observer for the 'All Movies' title container's top edge (for floating header entry)
+    const titleTopObserver = new IntersectionObserver(
       ([entry]) => {
-        // The floating header should appear when the top of the 'All Movies' title container
-        // scrolls *out of view* at the top (i.e., its top position becomes negative).
-        // It should disappear when the top of the 'All Movies' title container
-        // scrolls *back into view* at the top (i.e., its top position becomes 0 or positive).
-        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top < 0);
+        setIsTitleScrolledPastTop(entry.boundingClientRect.top < 0);
       },
-      {
-        threshold: 0, // Trigger as soon as any part of the target enters/exits
-      }
+      { threshold: 0 }
     );
 
     headerDarkObserver.observe(currentAllMoviesSectionRef);
-    allMoviesSectionInViewObserver.observe(currentAllMoviesSectionRef); // Observe the section for overall visibility
-    floatingHeaderVisibilityObserver.observe(currentAllMoviesTitleContainerRef); // Observe the title for floating header trigger
+    sectionInViewObserver.observe(currentAllMoviesSectionRef);
+    titleTopObserver.observe(currentAllMoviesTitleContainerRef);
 
     return () => {
       headerDarkObserver.unobserve(currentAllMoviesSectionRef);
-      allMoviesSectionInViewObserver.unobserve(currentAllMoviesSectionRef);
-      floatingHeaderVisibilityObserver.unobserve(currentAllMoviesTitleContainerRef);
+      sectionInViewObserver.unobserve(currentAllMoviesSectionRef);
+      titleTopObserver.unobserve(currentAllMoviesTitleContainerRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
+
+  // Combine states for the floating header's actual visibility
+  useEffect(() => {
+    setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView);
+  }, [isTitleScrolledPastTop, isAllMoviesSectionInView]);
 
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;
@@ -369,6 +372,9 @@ const Index = () => {
   // This ensures it's always above the interactive elements at the bottom.
   const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooterVisible;
 
+  // Define search bar visibility based on the new states
+  const shouldShowSearchBar = !isMobile && (isAllMoviesSectionInView || searchQuery) && !isFloatingAllMoviesHeaderVisible;
+
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) showError("Logout failed: " + error.message);
@@ -471,8 +477,8 @@ const Index = () => {
           )}
         </AnimatePresence>
         <AnimatePresence>
-          {/* Floating Search Bar (bottom-center) - Only visible if top-left is NOT visible */}
-          {(!isMobile && !isFloatingAllMoviesHeaderVisible && (isAllMoviesSectionVisible || searchQuery)) && (
+          {/* Floating Search Bar (bottom-center) */}
+          {shouldShowSearchBar && (
             <motion.div
               key="floating-search-bar"
               className={cn(
