@@ -40,6 +40,7 @@ import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion, AnimatePresence } from "framer-motion";
 import HeroSlider from "@/components/HeroSlider";
 import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
+import { Movie } from "@/data/movies";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 50;
@@ -217,26 +218,6 @@ const Index = () => {
     prevSortAndFilterRef.current = sortAndFilter;
   }, [searchQuery, sortAndFilter, shrunkenHeaderHeight]);
 
-  useEffect(() => {
-    const options = { rootMargin: "0px 0px -100px 0px" };
-
-    const loadMoreObserver = new IntersectionObserver(([entry]) => setIsLoadMoreVisible(entry.isIntersecting), options);
-    const footerObserver = new IntersectionObserver(([entry]) => setIsFooterVisible(entry.isIntersecting), options);
-
-    const currentLoadMoreRef = loadMoreRef.current;
-    const currentFooterRef = footerRef.current;
-
-    if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
-    if (currentFooterRef) footerObserver.observe(currentFooterRef);
-
-    return () => {
-      if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
-      if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
-    };
-  }, [moviesToShow.length]);
-
-  const shouldMoveSearchUp = isLoadMoreVisible || isFooterVisible;
-
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
     allMovies?.forEach((movie) => {
@@ -310,6 +291,26 @@ const Index = () => {
   }, [allMovies]);
 
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
+
+  useEffect(() => {
+    const options = { rootMargin: "0px 0px -100px 0px" };
+
+    const loadMoreObserver = new IntersectionObserver(([entry]) => setIsLoadMoreVisible(entry.isIntersecting), options);
+    const footerObserver = new IntersectionObserver(([entry]) => setIsFooterVisible(entry.isIntersecting), options);
+
+    const currentLoadMoreRef = loadMoreRef.current;
+    const currentFooterRef = footerRef.current;
+
+    if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
+    if (currentFooterRef) footerObserver.observe(currentFooterRef);
+
+    return () => {
+      if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
+      if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
+    };
+  }, [moviesToShow.length]);
+
+  const shouldMoveSearchUp = isLoadMoreVisible || isFooterVisible;
 
   const handleLoadMore = () => setVisibleCount((prev) => prev + 18);
 
@@ -407,7 +408,7 @@ const Index = () => {
           {isFilterOpen && (
             <motion.div
               key="backdrop"
-              className="fixed inset-0 z-[49] bg-black/10 backdrop-blur-sm"
+              className="fixed inset-0 z-50 bg-black/10 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -419,7 +420,7 @@ const Index = () => {
             <motion.div
               key="floating-search-bar"
               className={cn(
-                "fixed bottom-6 inset-x-0 z-50 flex justify-center",
+                "fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex justify-center",
                 isFilterOpen && "pointer-events-auto"
               )}
               initial={{ opacity: 0, y: 100 }}
