@@ -310,7 +310,8 @@ const Index = () => {
     };
   }, [moviesToShow.length]);
 
-  const shouldMoveSearchUp = isLoadMoreVisible || isFooterVisible;
+  // Changed to only trigger when footer is visible
+  const shouldMoveSearchUp = isFooterVisible;
 
   const handleLoadMore = () => setVisibleCount((prev) => prev + 18);
 
@@ -420,18 +421,18 @@ const Index = () => {
             <motion.div
               key="floating-search-bar"
               className={cn(
-                "fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex justify-center",
+                "fixed bottom-6 w-full z-50", // Removed left-1/2 -translate-x-1/2, added w-full
                 isFilterOpen && "pointer-events-auto"
               )}
               initial={{ opacity: 0, y: 100 }}
               animate={{
                 opacity: 1,
-                y: shouldMoveSearchUp ? -80 : 0,
+                y: shouldMoveSearchUp ? -150 : 0, // Increased slide up distance
               }}
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10">
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10 mx-auto w-fit"> {/* Added mx-auto w-fit */}
                 <Input
                   type="text"
                   placeholder="Search movies, actors, directors..."
@@ -576,7 +577,7 @@ const Index = () => {
         <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={pageLoaded ? { opacity: 1 } : { opacity: 0 }} transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}>
+              <motion.div initial={{ opacity: 0 }} animate={pageLoaded ? { opacity: 1 } : { opacity: 1 }} transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}>
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
             )}
