@@ -67,7 +67,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE); // Initialize with BATCH_SIZE
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = new Set();
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -169,29 +169,7 @@ const Index = () => {
       return;
     }
 
-    // Single observer for the allMoviesSectionRef to manage both floating headers
-    const sectionObserver = new IntersectionObserver(
-      ([entry]) => {
-        const currentScrollY = window.scrollY;
-        const sectionTopRelativeToViewport = entry.boundingClientRect.top;
-        const sectionTopAbsolute = sectionTopRelativeToViewport + currentScrollY;
-
-        // Determine if the "All Movies" section is generally visible in the viewport
-        setIsAllMoviesSectionVisible(entry.isIntersecting);
-
-        // Determine if the floating top-left header should be visible
-        // It should be visible when the section's top has scrolled *above* the shrunken header's bottom edge
-        // AND the main header is actually shrunk.
-        setIsFloatingAllMoviesHeaderVisible(sectionTopAbsolute <= shrunkenHeaderHeight && headerShrunk);
-      },
-      {
-        // Observe the entire viewport to get updates as the element moves in/out of view
-        threshold: 0,
-        rootMargin: '0px 0px 0px 0px'
-      }
-    );
-
-    // Observer for the main header background change (still separate as it has different rootMargin)
+    // Observer for the main header background change
     const headerDarkObserver = new IntersectionObserver(
       ([entry]) => {
         if (headerShrunk) {
@@ -203,17 +181,33 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
+    // Observer for the floating "All Movies" header
+    const floatingHeaderVisibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        // The floating header should be visible when the top of the "All Movies" section
+        // has scrolled *above* or *into* the area occupied by the shrunken main header.
+        // If entry.boundingClientRect.top is less than or equal to shrunkenHeaderHeight,
+        // it means the section has scrolled up past the main header's bottom edge.
+        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top <= shrunkenHeaderHeight);
+      },
+      {
+        // No rootMargin needed if we're checking boundingClientRect.top against a fixed value.
+        // Threshold 0 means we get a callback as soon as any part of the target enters or exits the root.
+        threshold: 0,
+      }
+    );
+
 
     const currentRef = allMoviesSectionRef.current;
     if (currentRef) {
-      sectionObserver.observe(currentRef);
       headerDarkObserver.observe(currentRef);
+      floatingHeaderVisibilityObserver.observe(currentRef); // Observe for floating header visibility
     }
 
     return () => {
       if (currentRef) {
-        sectionObserver.unobserve(currentRef);
         headerDarkObserver.unobserve(currentRef);
+        floatingHeaderVisibilityObserver.unobserve(currentRef);
       }
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);

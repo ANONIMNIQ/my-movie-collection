@@ -47,8 +47,8 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
         <motion.div
           key="floating-all-movies-header"
           className={cn(
-            "fixed top-0 left-4 z-40", // Changed positioning to top-left with padding
-            "flex items-center justify-between gap-2 bg-black/30 backdrop-blur-xl rounded-b-lg p-2 shadow-lg w-fit", // Changed width to w-fit
+            "fixed top-0 left-4 z-40", // Positioned at top-left with left-4 padding
+            "flex items-center justify-between gap-2 bg-black/30 backdrop-blur-xl rounded-b-lg p-2 shadow-lg w-fit", // w-fit to size to content
             isFilterOpen && "pointer-events-auto"
           )}
           initial={{ y: -headerHeight, opacity: 0 }}
