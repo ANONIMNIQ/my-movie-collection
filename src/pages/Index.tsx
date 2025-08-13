@@ -198,12 +198,19 @@ const Index = () => {
     const filterChanged = sortAndFilter !== prevSortAndFilter;
 
     if ((searchInitiated || filterChanged) && allMoviesSectionRef.current) {
-      allMoviesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const headerOffset = shrunkenHeaderHeight + 24; // 24px padding
+      const elementPosition = allMoviesSectionRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
     }
 
     prevSearchQueryRef.current = searchQuery;
     prevSortAndFilterRef.current = sortAndFilter;
-  }, [searchQuery, sortAndFilter]);
+  }, [searchQuery, sortAndFilter, shrunkenHeaderHeight]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -370,12 +377,15 @@ const Index = () => {
         <AnimatePresence>
           {isFilterOpen && (
             <motion.div
+              key="backdrop"
               className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
           )}
+        </AnimatePresence>
+        <AnimatePresence>
           {(!isMobile && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
               key="floating-search-bar"
