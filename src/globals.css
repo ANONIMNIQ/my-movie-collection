@@ -139,3 +139,11 @@
 .embla.is-scrolling .embla__slide {
   pointer-events: none;
 }
+
+/* Custom rule to aggressively remove focus outline for the search input */
+.custom-no-focus-outline:focus,
+.custom-no-focus-outline:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
