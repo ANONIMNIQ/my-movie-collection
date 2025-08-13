@@ -169,6 +169,9 @@ const Index = () => {
       return;
     }
 
+    const currentRef = allMoviesSectionRef.current;
+    if (!currentRef) return;
+
     // Observer for the main header background change
     const headerDarkObserver = new IntersectionObserver(
       ([entry]) => {
@@ -181,34 +184,32 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
-    // Observer for the floating "All Movies" header
-    const floatingHeaderVisibilityObserver = new IntersectionObserver(
+    // Observer for the 'All Movies' section to control the top-left floating header
+    const allMoviesSectionObserver = new IntersectionObserver(
       ([entry]) => {
-        // The floating header should be visible when the top of the "All Movies" section
-        // has scrolled *above* or *into* the area occupied by the shrunken main header.
-        // If entry.boundingClientRect.top is less than or equal to shrunkenHeaderHeight,
-        // it means the section has scrolled up past the main header's bottom edge.
+        // This determines if the 'All Movies' section is in the viewport at all
+        setIsAllMoviesSectionVisible(entry.isIntersecting);
+
+        // The floating header should appear when the top of the 'All Movies' section
+        // has scrolled *up to or past* the bottom edge of the shrunken main header.
+        // `entry.boundingClientRect.top` is the distance from the viewport top to the element's top.
+        // If it's less than or equal to `shrunkenHeaderHeight`, it means the section's top is now
+        // either behind the shrunken header, or completely out of view above it.
         setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top <= shrunkenHeaderHeight);
       },
       {
-        // No rootMargin needed if we're checking boundingClientRect.top against a fixed value.
+        // No rootMargin needed, as we are directly comparing boundingClientRect.top
         // Threshold 0 means we get a callback as soon as any part of the target enters or exits the root.
         threshold: 0,
       }
     );
 
-
-    const currentRef = allMoviesSectionRef.current;
-    if (currentRef) {
-      headerDarkObserver.observe(currentRef);
-      floatingHeaderVisibilityObserver.observe(currentRef); // Observe for floating header visibility
-    }
+    headerDarkObserver.observe(currentRef);
+    allMoviesSectionObserver.observe(currentRef);
 
     return () => {
-      if (currentRef) {
-        headerDarkObserver.unobserve(currentRef);
-        floatingHeaderVisibilityObserver.unobserve(currentRef);
-      }
+      headerDarkObserver.unobserve(currentRef);
+      allMoviesSectionObserver.unobserve(currentRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
@@ -463,7 +464,8 @@ const Index = () => {
           )}
         </AnimatePresence>
         <AnimatePresence>
-          {(!isMobile && !isFloatingAllMoviesHeaderVisible && (isAllMoviesSectionVisible || searchQuery)) && (
+          {/* Floating Search Bar (bottom-center) - Only visible if top-left is NOT visible */}
+          {(!isMobile && isAllMoviesSectionVisible && !isFloatingAllMoviesHeaderVisible) && (
             <motion.div
               key="floating-search-bar"
               className={cn(
@@ -526,7 +528,7 @@ const Index = () => {
           )}
         </AnimatePresence>
 
-        {/* New Floating All Movies Header */}
+        {/* New Floating All Movies Header (top-left) */}
         {!isMobile && (
           <FloatingAllMoviesHeader
             count={filteredAndSortedMovies.length}
