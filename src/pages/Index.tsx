@@ -427,8 +427,8 @@ const Index = () => {
             <motion.div
               key="floating-search-bar"
               className={cn(
-                "fixed bottom-6 z-50 left-1/2 transform -translate-x-1/2", // Centering the element itself
-                "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg w-fit", // Added w-fit here
+                "fixed bottom-6 z-50 left-0 right-0 mx-auto", // Centering with mx-auto
+                "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg w-fit",
                 isFilterOpen && "pointer-events-auto"
               )}
               initial={{ opacity: 0, y: 100 }}
