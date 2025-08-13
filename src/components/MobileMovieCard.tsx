@@ -176,7 +176,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   const renderCardContent = (isAnimatingClone = false) => (
     <>
       {isAdmin && (
-        <div className={`absolute top-2 left-2 z-40 ${isAnimatingClone ? 'opacity-0' : ''}`}>
+        <div className={`absolute top-2 left-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-25 */}
           <Checkbox
             checked={selectedMovieIds.has(movie.id)}
             onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
@@ -185,7 +185,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
         </div>
       )}
       {isAdmin && (
-        <div className={`absolute top-2 right-2 flex gap-2 z-40 ${isAnimatingClone ? 'opacity-0' : ''}`}>
+        <div className={`absolute top-2 right-2 flex gap-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-25 */}
           <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
             <Edit className="h-4 w-4" />
           </Button>
