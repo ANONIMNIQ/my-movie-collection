@@ -31,7 +31,7 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
         <motion.div
           key="floating-all-movies-header"
           className={cn(
-            "fixed left-12 z-35", // Changed z-index to z-35
+            "fixed left-12 z-[45]", // Increased z-index to ensure it's above cards (z-30) but below search (z-40) and header (z-50)
             "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg w-fit", // Added rounded-full for pill shape
             "px-4 py-2" // Adjusted padding for better pill shape appearance
           )}
