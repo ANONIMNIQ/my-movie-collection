@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Loader2 } from "lucide-react"; // Import Loader2 icon
 import { showSuccess, showError } from "@/utils/toast";
-import { useQueryClient, useQuery } from "@tanstack/react-query"; // Corrected '=>' to 'from'
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +40,7 @@ import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion, AnimatePresence } from "framer-motion";
 import HeroSlider from "@/components/HeroSlider";
 import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
+import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader"; // Import the new component
 import { Movie } from "@/data/movies";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
@@ -80,6 +81,7 @@ const Index = () => {
   const [isHeaderDark, setIsHeaderDark] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAllMoviesSectionVisible, setIsAllMoviesSectionVisible] = useState(false);
+  const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false); // New state for the floating header
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -163,12 +165,17 @@ const Index = () => {
     if (isMobile) {
       setIsAllMoviesSectionVisible(false);
       setIsHeaderDark(false);
+      setIsFloatingAllMoviesHeaderVisible(false); // Ensure hidden on mobile
       return;
     }
 
     const allMoviesVisibleObserver = new IntersectionObserver(
-      ([entry]) => setIsAllMoviesSectionVisible(entry.isIntersecting),
-      { threshold: 0.01 }
+      ([entry]) => {
+        setIsAllMoviesSectionVisible(entry.isIntersecting);
+        // Set floating header visible when the top of the section is at or above the header
+        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top <= shrunkenHeaderHeight);
+      },
+      { threshold: 0, rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px` } // Trigger when top of element hits header height
     );
 
     const headerDarkObserver = new IntersectionObserver(
@@ -510,6 +517,23 @@ const Index = () => {
           )}
         </AnimatePresence>
 
+        {/* New Floating All Movies Header */}
+        {!isMobile && (
+          <FloatingAllMoviesHeader
+            count={filteredAndSortedMovies.length}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            sortAndFilter={sortAndFilter}
+            setSortAndFilter={setSortAndFilter}
+            allGenres={allGenres}
+            allCountries={allCountries}
+            isVisible={isFloatingAllMoviesHeaderVisible}
+            headerHeight={shrunkenHeaderHeight}
+            isFilterOpen={isFilterOpen}
+            setIsFilterOpen={setIsFilterOpen}
+          />
+        )}
+
         <motion.header
           className={cn(
             "w-full text-center z-30 fixed top-0 left-0 right-0",
@@ -593,7 +617,7 @@ const Index = () => {
                         </Link>
                       )}
                       <Link to="/import-ratings">
-                        <Button variant="outline" className={cn(headerShrunk && isHeaderDark ? "border-primary text-primary hover:bg-accent hover:text-accent-foreground" : "bg-transparent border-black text-black hover:bg-gray-200 hover:text-black")}>Import Ratings</Button>
+                        <Button variant="outline" className={cn(headerShrunk && isHeaderDark ? "border-primary text-primary hover:bg-accent hover:text-accent-foreground" : "bg-transparent border-black text-black hover:bg-gray-200 hover:text-black")}>Import My Ratings</Button>
                       </Link>
                       <Button variant="outline" onClick={handleLogout} className={cn(headerShrunk && isHeaderDark ? "border-primary text-primary hover:bg-accent hover:text-accent-foreground" : "bg-transparent border-black text-black hover:bg-gray-200 hover:text-black")}>Logout</Button>
                     </>
@@ -635,7 +659,10 @@ const Index = () => {
                 {!loadingAllMovies && (
                   <>
                     <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
-                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
+                      {/* This header is now controlled by FloatingAllMoviesHeader when visible */}
+                      {!isFloatingAllMoviesHeaderVisible && (
+                        <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
+                      )}
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
