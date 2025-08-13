@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
-import { MadeWithDyad } from "@/components/made-with-dyad"; // Corrected '=>' to 'from'
+import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -298,31 +298,48 @@ const Index = () => {
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
   useEffect(() => {
-    const loadMoreObserver = new IntersectionObserver(
-      ([entry]) => {
-        setIsLoadMoreTriggerVisible(entry.isIntersecting);
-        if (entry.isIntersecting && visibleCount < filteredAndSortedMovies.length) {
-          setVisibleCount(prev => prev + BATCH_SIZE);
-        }
-      },
-      { threshold: 0, rootMargin: '200px' } // Added rootMargin
-    );
+    const currentLoadMoreRef = loadMoreRef.current;
+    const currentFooterRef = footerRef.current;
 
+    // Observer for the footer (applies to both mobile and desktop for search bar positioning)
     const footerObserver = new IntersectionObserver(([entry]) => {
       setIsFooterVisible(entry.isIntersecting);
     }, { threshold: 0 });
 
-    const currentLoadMoreRef = loadMoreRef.current;
-    const currentFooterRef = footerRef.current;
-
-    if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
     if (currentFooterRef) footerObserver.observe(currentFooterRef);
 
-    return () => {
-      if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
-      if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
-    };
-  }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE]); // Added BATCH_SIZE as dependency
+    // Conditional logic for loadMoreObserver based on device
+    if (isMobile) {
+      const loadMoreObserver = new IntersectionObserver(
+        ([entry]) => {
+          setIsLoadMoreTriggerVisible(entry.isIntersecting);
+          if (entry.isIntersecting && visibleCount < filteredAndSortedMovies.length) {
+            setVisibleCount(prev => prev + BATCH_SIZE);
+          }
+        },
+        { threshold: 0, rootMargin: '200px' }
+      );
+      if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
+      return () => {
+        if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
+        if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
+      };
+    } else {
+      // For desktop, we only need to know if the loadMoreRef is visible for the search bar positioning.
+      // The actual loading will be handled by a button click.
+      const loadMoreObserver = new IntersectionObserver(
+        ([entry]) => {
+          setIsLoadMoreTriggerVisible(entry.isIntersecting);
+        },
+        { threshold: 0, rootMargin: '200px' }
+      );
+      if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
+      return () => {
+        if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
+        if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
+      };
+    }
+  }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE, isMobile]); // Added isMobile to dependencies
 
   // The search bar should move up if the "Load More" trigger is visible OR if the footer is visible.
   // This ensures it's always above the interactive elements at the bottom.
@@ -648,15 +665,16 @@ const Index = () => {
                 ) : (
                   <MovieGrid movies={moviesToShow} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} />
                 )}
-                {/* Infinite Scroll Trigger and Messages for Desktop */}
+                {/* Desktop Load More Button */}
                 <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
                   {visibleCount < filteredAndSortedMovies.length ? (
-                    isLoadMoreTriggerVisible && (
-                      <div className="flex justify-center items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-6 w-6 animate-spin" />
-                        <span>Loading more movies...</span>
-                      </div>
-                    )
+                    <Button
+                      onClick={() => setVisibleCount(prev => prev + BATCH_SIZE)}
+                      className="mt-4"
+                      disabled={loadingAllMovies}
+                    >
+                      Load More
+                    </Button>
                   ) : (
                     filteredAndSortedMovies.length > 0 && (
                       <p className="text-muted-foreground text-lg">No more movies.</p>
