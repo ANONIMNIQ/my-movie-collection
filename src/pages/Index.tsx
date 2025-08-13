@@ -169,15 +169,7 @@ const Index = () => {
       return;
     }
 
-    const allMoviesVisibleObserver = new IntersectionObserver(
-      ([entry]) => {
-        setIsAllMoviesSectionVisible(entry.isIntersecting);
-        // Set floating header visible when the top of the section is at or above the header
-        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top <= shrunkenHeaderHeight);
-      },
-      { threshold: 0, rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px` } // Trigger when top of element hits header height
-    );
-
+    // Observer for the main header background change
     const headerDarkObserver = new IntersectionObserver(
       ([entry]) => {
         if (headerShrunk) {
@@ -189,16 +181,39 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
+    // Observer for the floating "All Movies" header
+    const floatingHeaderVisibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        // The floating header should be visible when the top of the "All Movies" section
+        // has scrolled *above* the bottom edge of the shrunken main header.
+        // `entry.boundingClientRect.top` is the distance from the viewport top to the element's top.
+        // If it's less than or equal to `shrunkenHeaderHeight`, it means the section's top is now
+        // either behind the shrunken header, or completely out of view above it.
+        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top <= shrunkenHeaderHeight);
+      },
+      {
+        // The rootMargin defines the area where intersection is checked.
+        // Setting top margin to `-${shrunkenHeaderHeight}px` means the "intersection root"
+        // starts `shrunkenHeaderHeight` pixels down from the top of the viewport.
+        // So, `entry.isIntersecting` will be true when the element is within this modified root.
+        // We are using `boundingClientRect.top` directly, so `rootMargin` is less critical here,
+        // but `threshold: 0` ensures we get updates as soon as the element crosses the boundary.
+        threshold: 0,
+        rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`, // This helps define the "trigger line"
+      }
+    );
+
+
     const currentRef = allMoviesSectionRef.current;
     if (currentRef) {
-      allMoviesVisibleObserver.observe(currentRef);
       headerDarkObserver.observe(currentRef);
+      floatingHeaderVisibilityObserver.observe(currentRef); // Observe for floating header visibility
     }
 
     return () => {
       if (currentRef) {
-        allMoviesVisibleObserver.unobserve(currentRef);
         headerDarkObserver.unobserve(currentRef);
+        floatingHeaderVisibilityObserver.unobserve(currentRef);
       }
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
