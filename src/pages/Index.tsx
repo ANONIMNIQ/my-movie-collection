@@ -80,6 +80,11 @@ const Index = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAllMoviesSectionVisible, setIsAllMoviesSectionVisible] = useState(false);
 
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+  const [isLoadMoreVisible, setIsLoadMoreVisible] = useState(false);
+  const [isFooterVisible, setIsFooterVisible] = useState(false);
+
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
   const { data: allMovies, isLoading: loadingAllMovies, isError: isErrorAllMovies, error: errorAllMovies } = useQuery<Movie[], Error>({
@@ -211,6 +216,26 @@ const Index = () => {
     prevSearchQueryRef.current = searchQuery;
     prevSortAndFilterRef.current = sortAndFilter;
   }, [searchQuery, sortAndFilter, shrunkenHeaderHeight]);
+
+  useEffect(() => {
+    const options = { rootMargin: "0px 0px -100px 0px" };
+
+    const loadMoreObserver = new IntersectionObserver(([entry]) => setIsLoadMoreVisible(entry.isIntersecting), options);
+    const footerObserver = new IntersectionObserver(([entry]) => setIsFooterVisible(entry.isIntersecting), options);
+
+    const currentLoadMoreRef = loadMoreRef.current;
+    const currentFooterRef = footerRef.current;
+
+    if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
+    if (currentFooterRef) footerObserver.observe(currentFooterRef);
+
+    return () => {
+      if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
+      if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
+    };
+  }, [moviesToShow.length]);
+
+  const shouldMoveSearchUp = isLoadMoreVisible || isFooterVisible;
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -369,7 +394,11 @@ const Index = () => {
     <>
       {!isPageReadyForInteraction && <div className="fixed inset-0 z-[100] bg-transparent" />}
       <motion.div
-        className={cn("min-h-screen w-full overflow-x-hidden", !isMobile && "bg-background text-foreground")}
+        className={cn(
+          "min-h-screen w-full overflow-x-hidden",
+          !isMobile && "bg-background text-foreground",
+          isFilterOpen && "pointer-events-none"
+        )}
         initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}}
         animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -389,9 +418,15 @@ const Index = () => {
           {(!isMobile && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
               key="floating-search-bar"
-              className="fixed bottom-6 inset-x-0 z-50 flex justify-center"
+              className={cn(
+                "fixed bottom-6 inset-x-0 z-50 flex justify-center",
+                isFilterOpen && "pointer-events-auto"
+              )}
               initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{
+                opacity: 1,
+                y: shouldMoveSearchUp ? -80 : 0,
+              }}
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -595,7 +630,11 @@ const Index = () => {
                 ) : (
                   <MovieGrid movies={moviesToShow} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} />
                 )}
-                {visibleCount < filteredAndSortedMovies.length && <motion.div variants={contentVariants} className="text-center mt-12 pb-12"><Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">Load More</Button></motion.div>}
+                {visibleCount < filteredAndSortedMovies.length && (
+                  <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
+                    <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">Load More</Button>
+                  </motion.div>
+                )}
               </motion.div>
             </motion.div>
             <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
@@ -632,11 +671,15 @@ const Index = () => {
                   moviesToShow.map(movie => <motion.div key={movie.id} variants={contentVariants}><MobileMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} /></motion.div>)
                 )}
               </div>
-              {visibleCount < filteredAndSortedMovies.length && <motion.div variants={contentVariants} className="text-center mt-12 pb-12"><Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">Load More</Button></motion.div>}
+              {visibleCount < filteredAndSortedMovies.length && (
+                <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
+                  <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">Load More</Button>
+                </motion.div>
+              )}
             </motion.div>
           </main>
         </motion.div>
-        <motion.footer className="py-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={contentVariants}>
+        <motion.footer ref={footerRef} className="py-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={contentVariants}>
           <MadeWithDyad />
         </motion.footer>
       </motion.div>
