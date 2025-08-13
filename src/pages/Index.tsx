@@ -438,10 +438,10 @@ const Index = () => {
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10 mx-auto w-fit"> {/* mx-auto w-fit ensures centering */}
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg"> {/* Added shadow-lg */}
                 <Input
                   type="text"
-                  placeholder="Search movies, actors, directors..."
+                  placeholder="Search movies..." {/* Updated placeholder text */}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-[300px] bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-gray-400 pl-4"
