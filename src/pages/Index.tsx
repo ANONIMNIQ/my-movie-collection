@@ -441,7 +441,7 @@ const Index = () => {
               <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg"> {/* Added shadow-lg */}
                 <Input
                   type="text"
-                  placeholder="Search movies..." {/* Updated placeholder text */}
+                  placeholder="Search movies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-[300px] bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-gray-400 pl-4"
