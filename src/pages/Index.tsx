@@ -683,9 +683,13 @@ const Index = () => {
                   <>
                     <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
                       {/* This header is now always rendered here, its visibility is controlled by the floating header */}
-                      {!isFloatingAllMoviesHeaderVisible && (
+                      <motion.div
+                        initial={{ opacity: 1 }}
+                        animate={{ opacity: isFloatingAllMoviesHeaderVisible ? 0 : 1 }}
+                        transition={{ duration: 0.3 }} // Fade out quickly
+                      >
                         <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
-                      )}
+                      </motion.div>
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">

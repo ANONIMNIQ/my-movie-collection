@@ -195,7 +195,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const renderCardContent = (isAnimatingClone = false, forceOverlayVisible = false) => (
     <>
       {isAdmin && (
-        <div className={`absolute top-2 left-2 z-40 ${isAnimatingClone ? 'opacity-0' : ''}`}>
+        <div className={`absolute top-2 left-2 z-30 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-30 */}
           <Checkbox
             checked={selectedMovieIds.has(movie.id)}
             onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
@@ -283,7 +283,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
 
       {/* Admin Buttons */}
       {isAdmin && (
-        <div className={`absolute top-2 right-2 flex gap-2 z-40 ${isAnimatingClone ? 'opacity-0' : ''}`}>
+        <div className={`absolute top-2 right-2 flex gap-2 z-30 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-30 */}
           <Button 
             variant="secondary" 
             size="icon" 
