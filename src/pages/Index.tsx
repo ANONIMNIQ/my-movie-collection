@@ -32,6 +32,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
+  SelectPortal, // Import SelectPortal
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -156,16 +157,30 @@ const Index = () => {
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => setIsHeaderDark(entry.isIntersecting),
-      { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
+      ([entry]) => {
+        setIsHeaderDark(entry.isIntersecting);
+      },
+      // Changed rootMargin: top is still relative to shrunken header, bottom is 0px (any part visible)
+      { rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`, threshold: 0 }
     );
 
     const currentRef = allMoviesSectionRef.current;
-    if (currentRef) observer.observe(currentRef);
+    if (currentRef) {
+      currentRef.id = "all-movies-section"; // Add ID for debugging
+      observer.observe(currentRef);
+    }
     return () => {
       if (currentRef) observer.unobserve(currentRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
+
+  // New useEffect for scrolling to All Movies section on search
+  useEffect(() => {
+    if (searchQuery && allMoviesSectionRef.current && !isMobile) {
+      // Only scroll if on desktop and search query is active
+      allMoviesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [searchQuery, isMobile]); // Depend on searchQuery and isMobile
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -338,7 +353,7 @@ const Index = () => {
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10">
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-lg p-2 shadow-2xl border border-white/10">
                 <Input
                   type="text"
                   placeholder="Search movies, actors, directors..."
@@ -350,37 +365,41 @@ const Index = () => {
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Sort & Filter" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Sort by</SelectLabel>
-                      <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-                      <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-                      <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
-                      <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
-                    </SelectGroup>
-                    {allGenres.length > 0 && (
-                      <>
-                        <Separator className="my-1" />
-                        <SelectGroup>
-                          <SelectLabel>Filter by Genre</SelectLabel>
-                          {allGenres.map((genre) => (
-                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </>
-                    )}
-                    {allCountries.length > 0 && (
-                      <>
-                        <Separator className="my-1" />
-                        <SelectGroup>
-                          <SelectLabel>Filter by Country</SelectLabel>
-                          {allCountries.map((country) => (
-                            <SelectItem key={country} value={country}>{country}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </>
-                    )}
-                  </SelectContent>
+                  <SelectPortal>
+                    <SelectContent
+                      className="bg-black/30 backdrop-blur-xl rounded-lg shadow-2xl border border-white/10 text-white"
+                    >
+                      <SelectGroup>
+                        <SelectLabel>Sort by</SelectLabel>
+                        <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                        <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                        <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                        <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                      </SelectGroup>
+                      {allGenres.length > 0 && (
+                        <>
+                          <Separator className="my-1" />
+                          <SelectGroup>
+                            <SelectLabel>Filter by Genre</SelectLabel>
+                            {allGenres.map((genre) => (
+                              <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </>
+                      )}
+                      {allCountries.length > 0 && (
+                        <>
+                          <Separator className="my-1" />
+                          <SelectGroup>
+                            <SelectLabel>Filter by Country</SelectLabel>
+                            {allCountries.map((country) => (
+                              <SelectItem key={country} value={country}>{country}</SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </>
+                      )}
+                    </SelectContent>
+                  </SelectPortal>
                 </Select>
               </div>
             </motion.div>
@@ -483,7 +502,7 @@ const Index = () => {
         <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={pageLoaded ? { opacity: 1 } : { opacity: 0 }} transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}>
+              <motion.div initial={{ opacity: 0 }} animate={pageLoaded ? { opacity: 1 } : { opacity: 1 }} transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}>
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
             )}
