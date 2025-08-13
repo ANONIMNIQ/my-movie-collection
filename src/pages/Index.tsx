@@ -37,7 +37,7 @@ import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { MobileMovieCard } from "@/components/MobileMovieCard";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import HeroSlider from "@/components/HeroSlider";
 import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 
@@ -329,6 +329,64 @@ const Index = () => {
         animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        <AnimatePresence>
+          {isHeaderDark && !isMobile && (
+            <motion.div
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10">
+                <Input
+                  type="text"
+                  placeholder="Search movies, actors, directors..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-[300px] bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-gray-400 pl-4"
+                />
+                <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
+                  <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
+                    <SelectValue placeholder="Sort & Filter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Sort by</SelectLabel>
+                      <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                      <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                      <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                      <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                    </SelectGroup>
+                    {allGenres.length > 0 && (
+                      <>
+                        <Separator className="my-1" />
+                        <SelectGroup>
+                          <SelectLabel>Filter by Genre</SelectLabel>
+                          {allGenres.map((genre) => (
+                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </>
+                    )}
+                    {allCountries.length > 0 && (
+                      <>
+                        <Separator className="my-1" />
+                        <SelectGroup>
+                          <SelectLabel>Filter by Country</SelectLabel>
+                          {allCountries.map((country) => (
+                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.header
           className={cn(
             "w-full text-center z-50 fixed top-0 left-0 right-0",
@@ -451,17 +509,6 @@ const Index = () => {
                   <>
                     <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
                       <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
-                      <div className="flex w-full sm:w-auto items-center gap-2">
-                        <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full sm:w-auto bg-white text-black border-gray-300" />
-                        <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                          <SelectTrigger className="w-[220px] bg-white text-black border-gray-300"><SelectValue placeholder="Sort & Filter" /></SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup><SelectLabel>Sort by</SelectLabel><SelectItem value="title-asc">Title (A-Z)</SelectItem><SelectItem value="title-desc">Title (Z-A)</SelectItem><SelectItem value="year-desc">Release Date (Newest)</SelectItem><SelectItem value="year-asc">Release Date (Oldest)</SelectItem></SelectGroup>
-                            {allGenres.length > 0 && <><Separator className="my-1" /><SelectGroup><SelectLabel>Filter by Genre</SelectLabel>{allGenres.map((genre) => <SelectItem key={genre} value={genre}>{genre}</SelectItem>)}</SelectGroup></>}
-                            {allCountries.length > 0 && <><Separator className="my-1" /><SelectGroup><SelectLabel>Filter by Country</SelectLabel>{allCountries.map((country) => <SelectItem key={country} value={country}>{country}</SelectItem>)}</SelectGroup></>}
-                          </SelectContent>
-                        </Select>
-                      </div>
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
