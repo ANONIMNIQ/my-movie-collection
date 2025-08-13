@@ -14,7 +14,6 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -32,7 +31,6 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-  SelectPortal, // Import SelectPortal
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -365,41 +363,39 @@ const Index = () => {
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Sort & Filter" />
                   </SelectTrigger>
-                  <SelectPortal>
-                    <SelectContent
-                      className="bg-black/30 backdrop-blur-xl rounded-lg shadow-2xl border border-white/10 text-white"
-                    >
-                      <SelectGroup>
-                        <SelectLabel>Sort by</SelectLabel>
-                        <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-                        <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-                        <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
-                        <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
-                      </SelectGroup>
-                      {allGenres.length > 0 && (
-                        <>
-                          <Separator className="my-1" />
-                          <SelectGroup>
-                            <SelectLabel>Filter by Genre</SelectLabel>
-                            {allGenres.map((genre) => (
-                              <SelectItem key={genre} value={genre}>{genre}</SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </>
-                      )}
-                      {allCountries.length > 0 && (
-                        <>
-                          <Separator className="my-1" />
-                          <SelectGroup>
-                            <SelectLabel>Filter by Country</SelectLabel>
-                            {allCountries.map((country) => (
-                              <SelectItem key={country} value={country}>{country}</SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </>
-                      )}
-                    </SelectContent>
-                  </SelectPortal>
+                  <SelectContent
+                    className="bg-black/30 backdrop-blur-xl rounded-lg shadow-2xl border border-white/10 text-white"
+                  >
+                    <SelectGroup>
+                      <SelectLabel>Sort by</SelectLabel>
+                      <SelectItem value="title-asc">Title (A-Z)</SelectItem>
+                      <SelectItem value="title-desc">Title (Z-A)</SelectItem>
+                      <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
+                      <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                    </SelectGroup>
+                    {allGenres.length > 0 && (
+                      <>
+                        <Separator className="my-1" />
+                        <SelectGroup>
+                          <SelectLabel>Filter by Genre</SelectLabel>
+                          {allGenres.map((genre) => (
+                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </>
+                    )}
+                    {allCountries.length > 0 && (
+                      <>
+                        <Separator className="my-1" />
+                        <SelectGroup>
+                          <SelectLabel>Filter by Country</SelectLabel>
+                          {allCountries.map((country) => (
+                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </>
+                    )}
+                  </SelectContent>
                 </Select>
               </div>
             </motion.div>
