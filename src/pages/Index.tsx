@@ -76,6 +76,7 @@ const Index = () => {
   const [headerShrunk, setHeaderShrunk] = useState(false);
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
   const [isHeaderDark, setIsHeaderDark] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -342,7 +343,15 @@ const Index = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <AnimatePresence>
-          {isHeaderDark && !isMobile && (
+          {isFilterOpen && (
+            <motion.div
+              className="fixed inset-0 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+          )}
+          {(!isMobile && (isHeaderDark || searchQuery)) && (
             <motion.div
               className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
               initial={{ opacity: 0, y: 100 }}
@@ -358,7 +367,7 @@ const Index = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-[300px] bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-gray-400 pl-4"
                 />
-                <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
+                <Select value={sortAndFilter} onValueChange={setSortAndFilter} onOpenChange={setIsFilterOpen}>
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Sort & Filter" />
                   </SelectTrigger>
