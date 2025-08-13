@@ -70,13 +70,11 @@ const Index = () => {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const allMoviesSectionRef = useRef<HTMLDivElement>(null);
-  const prevSearchQueryRef = useRef(''); // Ref to track previous search query for scrolling
 
   const [pageLoaded, setPageLoaded] = useState(false);
   const [headerShrunk, setHeaderShrunk] = useState(false);
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
   const [isHeaderDark, setIsHeaderDark] = useState(false);
-  const [showFloatingSearchBar, setShowFloatingSearchBar] = useState(false); // New state for floating search bar visibility
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -152,19 +150,14 @@ const Index = () => {
   const shrunkenHeaderHeight = isMobile ? 48 : 72;
 
   useEffect(() => {
-    if (isMobile) {
+    if (isMobile || !headerShrunk) {
       setIsHeaderDark(false);
       return;
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        // isHeaderDark should be true if the 'All Movies' section is visible in the viewport
-        // after accounting for the sticky header.
-        const isSectionVisibleBelowHeader = entry.isIntersecting && entry.boundingClientRect.top <= shrunkenHeaderHeight;
-        setIsHeaderDark(isSectionVisibleBelowHeader);
-      },
-      { rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`, threshold: 0 }
+      ([entry]) => setIsHeaderDark(entry.isIntersecting),
+      { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
     const currentRef = allMoviesSectionRef.current;
@@ -173,24 +166,6 @@ const Index = () => {
       if (currentRef) observer.unobserve(currentRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
-
-  // Effect to control floating search bar visibility
-  useEffect(() => {
-    if (!isMobile) {
-      setShowFloatingSearchBar(isHeaderDark || searchQuery.length > 0);
-    } else {
-      setShowFloatingSearchBar(false);
-    }
-  }, [isMobile, isHeaderDark, searchQuery]);
-
-  // Effect to scroll to 'All Movies' section when search starts
-  useEffect(() => {
-    if (!isMobile && searchQuery.length > 0 && prevSearchQueryRef.current === '' && allMoviesSectionRef.current) {
-      allMoviesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.scrollBy(0, -shrunkenHeaderHeight); // Adjust scroll position for sticky header
-    }
-    prevSearchQueryRef.current = searchQuery;
-  }, [searchQuery, isMobile, shrunkenHeaderHeight]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -355,7 +330,7 @@ const Index = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <AnimatePresence>
-          {showFloatingSearchBar && ( // Use new state for visibility
+          {isHeaderDark && !isMobile && (
             <motion.div
               className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
               initial={{ opacity: 0, y: 100 }}
@@ -363,19 +338,19 @@ const Index = () => {
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-center justify-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10">
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10">
                 <Input
                   type="text"
                   placeholder="Search movies, actors, directors..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-[300px] bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-gray-400 pl-4 !rounded-full"
+                  className="w-[300px] bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-gray-400 pl-4"
                 />
                 <Select value={sortAndFilter} onValueChange={setSortAndFilter}>
-                  <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0 !rounded-full">
+                  <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Sort & Filter" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/30 backdrop-blur-xl rounded-lg border border-white/10 text-white">
+                  <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Sort by</SelectLabel>
                       <SelectItem value="title-asc">Title (A-Z)</SelectItem>
