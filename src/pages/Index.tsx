@@ -444,7 +444,7 @@ const Index = () => {
                   placeholder="Search movies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-[300px] bg-transparent border-none focus-visible:ring-0 text-white placeholder:text-gray-400 pl-4"
+                  className="w-[300px] bg-transparent border-none focus-visible:ring-0 focus-visible:outline-none focus-visible:border-transparent text-white placeholder:text-gray-400 pl-4"
                 />
                 <Select value={sortAndFilter} onValueChange={setSortAndFilter} onOpenChange={setIsFilterOpen}>
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
