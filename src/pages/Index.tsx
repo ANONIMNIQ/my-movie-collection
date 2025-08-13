@@ -153,24 +153,6 @@ const Index = () => {
   const shrunkenHeaderHeight = isMobile ? 48 : 72;
 
   useEffect(() => {
-    if (isMobile || !headerShrunk) {
-      setIsHeaderDark(false);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsHeaderDark(entry.isIntersecting),
-      { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
-    );
-
-    const currentRef = allMoviesSectionRef.current;
-    if (currentRef) observer.observe(currentRef);
-    return () => {
-      if (currentRef) observer.unobserve(currentRef);
-    };
-  }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
-
-  useEffect(() => {
     if (isMobile) {
       setIsAllMoviesSectionVisible(false);
       return;
@@ -362,17 +344,13 @@ const Index = () => {
         animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
+        {isFilterOpen && (
+          <div className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm" />
+        )}
         <AnimatePresence>
-          {isFilterOpen && (
-            <motion.div
-              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-          )}
           {(!isMobile && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
+              key="floating-search-bar"
               className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
               initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
@@ -430,7 +408,7 @@ const Index = () => {
 
         <motion.header
           className={cn(
-            "w-full text-center z-50 fixed top-0 left-0 right-0",
+            "w-full text-center z-30 fixed top-0 left-0 right-0",
             "transition-colors duration-500 ease-out",
             headerShrunk
               ? isMobile
