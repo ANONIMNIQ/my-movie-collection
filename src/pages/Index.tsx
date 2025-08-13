@@ -77,6 +77,7 @@ const Index = () => {
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
   const [isHeaderDark, setIsHeaderDark] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isAllMoviesSectionVisible, setIsAllMoviesSectionVisible] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -169,14 +170,33 @@ const Index = () => {
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
-  // Effect to scroll to the "All Movies" section when a search is initiated
+  useEffect(() => {
+    if (isMobile) {
+      setIsAllMoviesSectionVisible(false);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAllMoviesSectionVisible(entry.isIntersecting);
+      },
+      { threshold: 0.01 }
+    );
+    const currentRef = allMoviesSectionRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [isMobile]);
+
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;
-    // If user starts typing (query goes from empty to non-empty)
     if (!prevSearchQuery && searchQuery && allMoviesSectionRef.current) {
       allMoviesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    // Update the ref for the next render
     prevSearchQueryRef.current = searchQuery;
   }, [searchQuery]);
 
@@ -345,13 +365,13 @@ const Index = () => {
         <AnimatePresence>
           {isFilterOpen && (
             <motion.div
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
           )}
-          {(!isMobile && (isHeaderDark || searchQuery)) && (
+          {(!isMobile && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
               className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
               initial={{ opacity: 0, y: 100 }}
