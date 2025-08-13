@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
-import { MadeWithDyad } => "@/components/made-with-dyad";
+import { MadeWithDyad } from "@/components/made-with-dyad"; // Corrected '=>' to 'from'
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
