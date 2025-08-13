@@ -190,14 +190,12 @@ const Index = () => {
     // Observer for the 'All Movies' title container to control the top-left floating header
     const floatingHeaderVisibilityObserver = new IntersectionObserver(
       ([entry]) => {
-        // The floating header should appear when the observed element (All Movies title container)
-        // is no longer fully visible at the top of the viewport.
-        // `!entry.isIntersecting` means the element has scrolled completely out of the root (viewport).
-        // With rootMargin: '0px 0px -100% 0px', it means the bottom of the target crosses the top of the viewport.
-        setIsFloatingAllMoviesHeaderVisible(!entry.isIntersecting);
+        // The floating header should appear when the top of the 'All Movies' title container
+        // scrolls above the top edge of the viewport (i.e., its top position becomes negative).
+        // It should disappear when the top of the 'All Movies' title container is at or below the top edge.
+        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top < 0);
       },
       {
-        rootMargin: '0px 0px -100% 0px', // Trigger when the bottom of the target leaves the top of the viewport
         threshold: 0, // Trigger as soon as any part of the target enters/exits
       }
     );
