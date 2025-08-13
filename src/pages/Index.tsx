@@ -71,6 +71,7 @@ const Index = () => {
   const isMobile = useIsMobile();
   const allMoviesSectionRef = useRef<HTMLDivElement>(null);
   const prevSearchQueryRef = useRef<string>('');
+  const prevSortAndFilterRef = useRef<string>(sortAndFilter);
 
   const [pageLoaded, setPageLoaded] = useState(false);
   const [headerShrunk, setHeaderShrunk] = useState(false);
@@ -155,32 +156,54 @@ const Index = () => {
   useEffect(() => {
     if (isMobile) {
       setIsAllMoviesSectionVisible(false);
+      setIsHeaderDark(false);
       return;
     }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsAllMoviesSectionVisible(entry.isIntersecting);
-      },
+
+    const allMoviesVisibleObserver = new IntersectionObserver(
+      ([entry]) => setIsAllMoviesSectionVisible(entry.isIntersecting),
       { threshold: 0.01 }
     );
+
+    const headerDarkObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (headerShrunk) {
+          setIsHeaderDark(entry.isIntersecting);
+        } else {
+          setIsHeaderDark(false);
+        }
+      },
+      { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
+    );
+
     const currentRef = allMoviesSectionRef.current;
     if (currentRef) {
-      observer.observe(currentRef);
+      allMoviesVisibleObserver.observe(currentRef);
+      headerDarkObserver.observe(currentRef);
     }
+
     return () => {
       if (currentRef) {
-        observer.unobserve(currentRef);
+        allMoviesVisibleObserver.unobserve(currentRef);
+        headerDarkObserver.unobserve(currentRef);
       }
     };
-  }, [isMobile]);
+  }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;
-    if (!prevSearchQuery && searchQuery && allMoviesSectionRef.current) {
+    const prevSortAndFilter = prevSortAndFilterRef.current;
+
+    const searchInitiated = !prevSearchQuery && searchQuery;
+    const filterChanged = sortAndFilter !== prevSortAndFilter;
+
+    if ((searchInitiated || filterChanged) && allMoviesSectionRef.current) {
       allMoviesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
     prevSearchQueryRef.current = searchQuery;
-  }, [searchQuery]);
+    prevSortAndFilterRef.current = sortAndFilter;
+  }, [searchQuery, sortAndFilter]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -344,10 +367,15 @@ const Index = () => {
         animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        {isFilterOpen && (
-          <div className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm" />
-        )}
         <AnimatePresence>
+          {isFilterOpen && (
+            <motion.div
+              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+          )}
           {(!isMobile && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
               key="floating-search-bar"
