@@ -583,7 +583,11 @@ const Index = () => {
         <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={pageLoaded ? { opacity: 1 } : { opacity: 1 }} transition={{ duration: 0.5, ease: "easeOut", delay: 1.4 }}> {/* Adjusted delay here */}
+              <motion.div
+                initial={{ opacity: 0, y: 50 }} // Start from hidden and slightly below
+                animate={pageLoaded ? { opacity: 1, y: 0 } : {}} // Animate to visible and original position when pageLoaded is true
+                transition={{ duration: 0.5, ease: "easeOut", delay: 1.4 }}
+              >
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
             )}
