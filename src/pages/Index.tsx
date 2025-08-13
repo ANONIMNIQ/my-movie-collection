@@ -298,10 +298,10 @@ const Index = () => {
       setIsLoadMoreVisible(entry.isIntersecting);
     }, { threshold: 0 }); // Trigger when any part of the button is visible
 
-    // Observer for the footer (for the search bar's slide-up)
+    // Observer for the footer (for the search bar's slide-up) - kept for potential future use, but not for `shouldMoveSearchUp`
     const footerObserver = new IntersectionObserver(([entry]) => {
       setIsFooterVisible(entry.isIntersecting);
-    }, { threshold: 0 }); // Trigger when any part of the footer is visible
+    }, { threshold: 0 });
 
     const currentLoadMoreRef = loadMoreRef.current;
     const currentFooterRef = footerRef.current;
@@ -313,11 +313,10 @@ const Index = () => {
       if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
       if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
     };
-  }, [moviesToShow.length]); // Re-run when moviesToShow changes (i.e., load more is added/removed)
+  }, [moviesToShow.length]);
 
-  // The search bar should move up if the "Load More" button is visible OR if the footer is visible.
-  // This ensures it's always above the interactive elements at the bottom.
-  const shouldMoveSearchUp = isLoadMoreVisible || isFooterVisible;
+  // The search bar should move up ONLY if the "Load More" button is visible.
+  const shouldMoveSearchUp = isLoadMoreVisible;
 
   const handleLoadMore = () => setVisibleCount((prev) => prev + 18);
 
@@ -427,18 +426,18 @@ const Index = () => {
             <motion.div
               key="floating-search-bar"
               className={cn(
-                "fixed bottom-6 w-full z-50 flex justify-center", // Added flex justify-center for centering
+                "fixed bottom-6 w-full z-50 flex justify-center",
                 isFilterOpen && "pointer-events-auto"
               )}
               initial={{ opacity: 0, y: 100 }}
               animate={{
                 opacity: 1,
-                y: shouldMoveSearchUp ? -80 : 0, // Adjusted slide up distance
+                y: shouldMoveSearchUp ? -100 : 0, // Adjusted slide up distance to be above Load More
               }}
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10 mx-auto w-fit"> {/* mx-auto w-fit ensures centering */}
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10 mx-auto w-fit">
                 <Input
                   type="text"
                   placeholder="Search movies, actors, directors..."
