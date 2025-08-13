@@ -70,6 +70,7 @@ const Index = () => {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const allMoviesSectionRef = useRef<HTMLDivElement>(null);
+  const prevSearchQueryRef = useRef<string>('');
 
   const [pageLoaded, setPageLoaded] = useState(false);
   const [headerShrunk, setHeaderShrunk] = useState(false);
@@ -166,6 +167,17 @@ const Index = () => {
       if (currentRef) observer.unobserve(currentRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
+
+  // Effect to scroll to the "All Movies" section when a search is initiated
+  useEffect(() => {
+    const prevSearchQuery = prevSearchQueryRef.current;
+    // If user starts typing (query goes from empty to non-empty)
+    if (!prevSearchQuery && searchQuery && allMoviesSectionRef.current) {
+      allMoviesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // Update the ref for the next render
+    prevSearchQueryRef.current = searchQuery;
+  }, [searchQuery]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -350,32 +362,32 @@ const Index = () => {
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Sort & Filter" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-black/30 backdrop-blur-xl border-white/10 text-white">
                     <SelectGroup>
-                      <SelectLabel>Sort by</SelectLabel>
-                      <SelectItem value="title-asc">Title (A-Z)</SelectItem>
-                      <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-                      <SelectItem value="year-desc">Release Date (Newest)</SelectItem>
-                      <SelectItem value="year-asc">Release Date (Oldest)</SelectItem>
+                      <SelectLabel className="text-gray-400">Sort by</SelectLabel>
+                      <SelectItem value="title-asc" className="focus:bg-white/20 focus:text-white">Title (A-Z)</SelectItem>
+                      <SelectItem value="title-desc" className="focus:bg-white/20 focus:text-white">Title (Z-A)</SelectItem>
+                      <SelectItem value="year-desc" className="focus:bg-white/20 focus:text-white">Release Date (Newest)</SelectItem>
+                      <SelectItem value="year-asc" className="focus:bg-white/20 focus:text-white">Release Date (Oldest)</SelectItem>
                     </SelectGroup>
                     {allGenres.length > 0 && (
                       <>
-                        <Separator className="my-1" />
+                        <Separator className="my-1 bg-white/20" />
                         <SelectGroup>
-                          <SelectLabel>Filter by Genre</SelectLabel>
+                          <SelectLabel className="text-gray-400">Filter by Genre</SelectLabel>
                           {allGenres.map((genre) => (
-                            <SelectItem key={genre} value={genre}>{genre}</SelectItem>
+                            <SelectItem key={genre} value={genre} className="focus:bg-white/20 focus:text-white">{genre}</SelectItem>
                           ))}
                         </SelectGroup>
                       </>
                     )}
                     {allCountries.length > 0 && (
                       <>
-                        <Separator className="my-1" />
+                        <Separator className="my-1 bg-white/20" />
                         <SelectGroup>
-                          <SelectLabel>Filter by Country</SelectLabel>
+                          <SelectLabel className="text-gray-400">Filter by Country</SelectLabel>
                           {allCountries.map((country) => (
-                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                            <SelectItem key={country} value={country} className="focus:bg-white/20 focus:text-white">{country}</SelectItem>
                           ))}
                         </SelectGroup>
                       </>
