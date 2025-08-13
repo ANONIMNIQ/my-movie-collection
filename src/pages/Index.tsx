@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { MovieGrid } from "@/components/MovieGrid";
+import { MovieGrid } = "@/components/MovieGrid";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -220,6 +220,8 @@ const Index = () => {
 
   // Combine states for the floating header's actual visibility
   useEffect(() => {
+    // The floating header should be visible if the title has scrolled past the top
+    // AND the entire 'All Movies' section is still in view (i.e., hasn't scrolled off the bottom).
     setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView);
   }, [isTitleScrolledPastTop, isAllMoviesSectionInView]);
 
@@ -373,7 +375,8 @@ const Index = () => {
   const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooterVisible;
 
   // Define search bar visibility based on the new states
-  const shouldShowSearchBar = !isMobile && (isAllMoviesSectionInView || searchQuery) && !isFloatingAllMoviesHeaderVisible;
+  // Reverted to old logic: visible if not mobile AND (all movies section is in view OR there's a search query)
+  const shouldShowSearchBar = !isMobile && (isAllMoviesSectionInView || searchQuery);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
