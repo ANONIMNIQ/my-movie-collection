@@ -14,6 +14,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -155,30 +156,16 @@ const Index = () => {
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsHeaderDark(entry.isIntersecting);
-      },
-      // Changed rootMargin: top is still relative to shrunken header, bottom is 0px (any part visible)
-      { rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`, threshold: 0 }
+      ([entry]) => setIsHeaderDark(entry.isIntersecting),
+      { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
     const currentRef = allMoviesSectionRef.current;
-    if (currentRef) {
-      currentRef.id = "all-movies-section"; // Add ID for debugging
-      observer.observe(currentRef);
-    }
+    if (currentRef) observer.observe(currentRef);
     return () => {
       if (currentRef) observer.unobserve(currentRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
-
-  // New useEffect for scrolling to All Movies section on search
-  useEffect(() => {
-    if (searchQuery && allMoviesSectionRef.current && !isMobile) {
-      // Only scroll if on desktop and search query is active
-      allMoviesSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [searchQuery, isMobile]); // Depend on searchQuery and isMobile
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -351,7 +338,7 @@ const Index = () => {
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-lg p-2 shadow-2xl border border-white/10">
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-2xl border border-white/10">
                 <Input
                   type="text"
                   placeholder="Search movies, actors, directors..."
@@ -363,9 +350,7 @@ const Index = () => {
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Sort & Filter" />
                   </SelectTrigger>
-                  <SelectContent
-                    className="bg-black/30 backdrop-blur-xl rounded-lg shadow-2xl border border-white/10 text-white"
-                  >
+                  <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Sort by</SelectLabel>
                       <SelectItem value="title-asc">Title (A-Z)</SelectItem>
@@ -498,7 +483,7 @@ const Index = () => {
         <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
-              <motion.div initial={{ opacity: 0 }} animate={pageLoaded ? { opacity: 1 } : { opacity: 1 }} transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}>
+              <motion.div initial={{ opacity: 0 }} animate={pageLoaded ? { opacity: 1 } : { opacity: 0 }} transition={{ duration: 0.5, ease: "easeOut", delay: 1.1 }}>
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
             )}
