@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { MovieGrid } from "@/components/MovieGrid";
-import { MadeWithDyad } from "@/components/made-with-dyad";
+import { MadeWithDyad } => "@/components/made-with-dyad";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -305,7 +305,7 @@ const Index = () => {
           setVisibleCount(prev => prev + BATCH_SIZE);
         }
       },
-      { threshold: 0 } // Changed threshold to 0 for more reliable triggering
+      { threshold: 0, rootMargin: '200px' } // Added rootMargin
     );
 
     const footerObserver = new IntersectionObserver(([entry]) => {
