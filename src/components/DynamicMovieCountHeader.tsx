@@ -9,6 +9,12 @@ interface DynamicMovieCountHeaderProps {
   sortAndFilter: string;
   allGenres: string[];
   allCountries: string[];
+  // New optional props for styling overrides
+  titleClassName?: string;
+  numberClassName?: string;
+  flipNumberHeight?: number;
+  flipNumberWidth?: number;
+  flipNumberColor?: string;
 }
 
 const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
@@ -17,32 +23,37 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
   sortAndFilter,
   allGenres,
   allCountries,
+  titleClassName, // Destructure new props
+  numberClassName,
+  flipNumberHeight,
+  flipNumberWidth,
+  flipNumberColor,
 }) => {
   const displayTitle = React.useMemo(() => {
     if (searchQuery) {
-      return "Found Movies"; // Changed from "Searched Movies" to "Found Movies"
+      return "Found Movies";
     }
     if (allGenres.includes(sortAndFilter)) {
-      return sortAndFilter; // Genre name
+      return sortAndFilter;
     }
     if (allCountries.includes(sortAndFilter)) {
-      return sortAndFilter; // Country name
+      return allCountries.find(c => c === sortAndFilter) || "All Movies";
     }
     return "All Movies";
   }, [searchQuery, sortAndFilter, allGenres, allCountries]);
 
-  const numberString = String(count).padStart(4, '0'); // Pad with leading zeros for consistent display
+  const numberString = String(count).padStart(4, '0');
 
   return (
     <div className="flex items-center gap-2">
-      <h2 className="text-2xl font-bold"> {/* Changed from text-3xl to text-2xl */}
+      <h2 className={cn("text-3xl font-bold", titleClassName)}>
         {displayTitle}
       </h2>
-      <div className="font-roboto-mono font-bold tracking-wider text-white text-2xl"> {/* Changed text-headerNumber to text-white, and text-3xl to text-2xl */}
+      <div className={cn("font-roboto-mono font-bold tracking-wider text-headerNumber text-3xl", numberClassName)}>
         <FlipNumbers
-          height={24} // Adjusted height for smaller display
-          width={16}  // Adjusted width for smaller display
-          color="white" // Changed color to white
+          height={flipNumberHeight || 32}
+          width={flipNumberWidth || 20}
+          color={flipNumberColor || "black"}
           background="transparent"
           play
           perspective={1000}

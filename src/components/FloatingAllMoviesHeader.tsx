@@ -47,6 +47,12 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
             sortAndFilter={sortAndFilter}
             allGenres={allGenres}
             allCountries={allCountries}
+            // Pass new styling props here
+            titleClassName="text-lg" // Make title smaller
+            numberClassName="text-lg" // Make number container smaller
+            flipNumberHeight={18} // Smaller height for numbers
+            flipNumberWidth={12}  // Smaller width for numbers
+            flipNumberColor="white" // White color for numbers
           />
         </motion.div>
       )}
