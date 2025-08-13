@@ -88,6 +88,7 @@ const Index = () => {
   const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false);
 
   const heroSliderRef = useRef<HTMLDivElement>(null); // New ref for HeroSlider
+  const [isHeroSliderInView, setIsHeroSliderInView] = useState(false); // New state for HeroSlider visibility
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -173,6 +174,7 @@ const Index = () => {
       setIsFloatingAllMoviesHeaderVisible(false);
       setIsTitleScrolledPastTop(false);
       setIsAllMoviesSectionInView(false);
+      setIsHeroSliderInView(false); // Reset for mobile
       return;
     }
 
@@ -674,7 +676,6 @@ const Index = () => {
         <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
-              // Attach the new ref here
               <motion.div
                 ref={heroSliderRef}
                 initial={{ opacity: 0, y: 50 }}
