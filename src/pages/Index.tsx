@@ -485,7 +485,7 @@ const Index = () => {
             <motion.div
               key="floating-search-bar"
               className={cn(
-                "fixed bottom-6 z-50 left-0 right-0 mx-auto", // Centering with mx-auto
+                "fixed bottom-6 z-30 left-0 right-0 mx-auto", // Centering with mx-auto, z-index changed to z-30
                 "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg w-fit",
                 isFilterOpen && "pointer-events-auto"
               )}
@@ -559,7 +559,7 @@ const Index = () => {
 
         <motion.header
           className={cn(
-            "w-full text-center z-30 fixed top-0 left-0 right-0",
+            "w-full text-center z-50 fixed top-0 left-0 right-0", // z-index changed to z-50
             "transition-colors duration-500 ease-out",
             headerShrunk
               ? isMobile

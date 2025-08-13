@@ -104,7 +104,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-white/30 hover:bg-white/40 text-white backdrop-blur-sm shadow-md"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full bg-white/30 hover:bg-white/40 text-white backdrop-blur-sm shadow-md"
         onClick={() => emblaApi?.scrollPrev()}
       >
         <ChevronLeft className="h-8 w-8" />
@@ -112,14 +112,14 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ movies, adminUserId }) => {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full bg-white/30 hover:bg-white/40 text-white backdrop-blur-sm shadow-md"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full bg-white/30 hover:bg-white/40 text-white backdrop-blur-sm shadow-md"
         onClick={() => emblaApi?.scrollNext()}
       >
         <ChevronRight className="h-8 w-8" />
       </Button>
 
       {/* Dots Pagination */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-50">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
         {scrollSnaps.map((_, index) => (
           <button
             key={index}
