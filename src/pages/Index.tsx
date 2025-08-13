@@ -87,6 +87,9 @@ const Index = () => {
   const [isAllMoviesSectionInView, setIsAllMoviesSectionInView] = useState(false);
   const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false);
 
+  const heroSliderRef = useRef<HTMLDivElement>(null); // New ref for HeroSlider
+  const [isHeroSliderInView, setIsHeroSliderInView] = useState(false); // New state for HeroSlider visibility
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const [isLoadMoreTriggerVisible, setIsLoadMoreTriggerVisible] = useState(false); // Renamed for clarity
@@ -171,11 +174,13 @@ const Index = () => {
       setIsFloatingAllMoviesHeaderVisible(false);
       setIsTitleScrolledPastTop(false);
       setIsAllMoviesSectionInView(false);
+      setIsHeroSliderInView(false); // Reset for mobile
       return;
     }
 
     const currentAllMoviesSectionRef = allMoviesSectionRef.current;
     const currentAllMoviesTitleContainerRef = allMoviesTitleContainerRef.current;
+    const currentHeroSliderRef = heroSliderRef.current; // Get current ref for observer
 
     if (!currentAllMoviesSectionRef || !currentAllMoviesTitleContainerRef) return;
 
@@ -207,6 +212,18 @@ const Index = () => {
       { threshold: 0 }
     );
 
+    // New: Observer for Hero Slider visibility
+    let heroSliderObserver: IntersectionObserver | undefined;
+    if (currentHeroSliderRef) {
+      heroSliderObserver = new IntersectionObserver(
+        ([entry]) => {
+          setIsHeroSliderInView(entry.isIntersecting);
+        },
+        { threshold: 0 }
+      );
+      heroSliderObserver.observe(currentHeroSliderRef);
+    }
+
     headerDarkObserver.observe(currentAllMoviesSectionRef);
     sectionInViewObserver.observe(currentAllMoviesSectionRef);
     titleTopObserver.observe(currentAllMoviesTitleContainerRef);
@@ -215,6 +232,9 @@ const Index = () => {
       headerDarkObserver.unobserve(currentAllMoviesSectionRef);
       sectionInViewObserver.unobserve(currentAllMoviesSectionRef);
       titleTopObserver.unobserve(currentAllMoviesTitleContainerRef);
+      if (heroSliderObserver && currentHeroSliderRef) {
+        heroSliderObserver.unobserve(currentHeroSliderRef);
+      }
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
@@ -222,8 +242,9 @@ const Index = () => {
   useEffect(() => {
     // The floating header should be visible if the title has scrolled past the top
     // AND the entire 'All Movies' section is still in view (i.e., hasn't scrolled off the bottom).
-    setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView);
-  }, [isTitleScrolledPastTop, isAllMoviesSectionInView]);
+    // AND the Hero Slider is NOT in view (to prevent it from appearing over the slider).
+    setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView && !isHeroSliderInView);
+  }, [isTitleScrolledPastTop, isAllMoviesSectionInView, isHeroSliderInView]);
 
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;
@@ -654,6 +675,7 @@ const Index = () => {
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
               <motion.div
+                ref={heroSliderRef} {/* Attach the new ref here */}
                 initial={{ opacity: 0, y: 50 }}
                 animate={pageLoaded ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }}
@@ -682,14 +704,8 @@ const Index = () => {
                 {!loadingAllMovies && (
                   <>
                     <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
-                      {/* This header is now always rendered here, its visibility is controlled by the floating header */}
-                      <motion.div
-                        initial={{ opacity: 1 }}
-                        animate={{ opacity: isFloatingAllMoviesHeaderVisible ? 0 : 1 }}
-                        transition={{ duration: 0.3 }} // Fade out quickly
-                      >
-                        <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
-                      </motion.div>
+                      {/* This header is now always rendered here, no conditional opacity */}
+                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
