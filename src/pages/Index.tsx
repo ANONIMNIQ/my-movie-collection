@@ -66,7 +66,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -433,10 +433,10 @@ const Index = () => {
               initial={{ opacity: 0, y: 100 }}
               animate={{
                 opacity: 1,
-                y: shouldMoveSearchUp ? -80 : 0, // Adjusted slide up distance
+                y: shouldMoveSearchUp ? -100 : 0, // Adjusted slide up distance from -80 to -100
               }}
               exit={{ opacity: 0, y: 100 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }} // Increased duration from 0.5 to 0.7
             >
               <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg"> {/* Added shadow-lg */}
                 <Input
@@ -444,7 +444,7 @@ const Index = () => {
                   placeholder="Search movies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-[300px] bg-transparent border-none focus:ring-0 !focus:outline-none !focus:border-transparent !focus-visible:ring-0 !focus-visible:outline-none !focus-visible:border-transparent text-white placeholder:text-gray-400 pl-4 custom-no-focus-outline"
+                  className="w-[300px] bg-transparent border-none focus:ring-0 !focus:outline-none !focus:border-transparent !focus-visible:ring-0 !focus-visible:outline-none !focus-visible:border-transparent text-white placeholder:text-gray-200 pl-4 custom-no-focus-outline"
                 />
                 <Select value={sortAndFilter} onValueChange={setSortAndFilter} onOpenChange={setIsFilterOpen}>
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
