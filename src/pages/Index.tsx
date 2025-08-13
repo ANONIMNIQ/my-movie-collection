@@ -88,7 +88,6 @@ const Index = () => {
   const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false);
 
   const heroSliderRef = useRef<HTMLDivElement>(null); // New ref for HeroSlider
-  const [isHeroSliderInView, setIsHeroSliderInView] = useState(false); // New state for HeroSlider visibility
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -174,7 +173,6 @@ const Index = () => {
       setIsFloatingAllMoviesHeaderVisible(false);
       setIsTitleScrolledPastTop(false);
       setIsAllMoviesSectionInView(false);
-      setIsHeroSliderInView(false); // Reset for mobile
       return;
     }
 
@@ -217,9 +215,11 @@ const Index = () => {
     if (currentHeroSliderRef) {
       heroSliderObserver = new IntersectionObserver(
         ([entry]) => {
+          // Set isHeroSliderInView to true if any part of the hero slider is visible
+          // This ensures the floating header doesn't appear while the hero slider is still on screen
           setIsHeroSliderInView(entry.isIntersecting);
         },
-        { threshold: 0 }
+        { threshold: 0 } // Any intersection
       );
       heroSliderObserver.observe(currentHeroSliderRef);
     }
@@ -674,8 +674,9 @@ const Index = () => {
         <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
+              // Attach the new ref here
               <motion.div
-                ref={heroSliderRef} {/* Attach the new ref here */}
+                ref={heroSliderRef}
                 initial={{ opacity: 0, y: 50 }}
                 animate={pageLoaded ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }}
