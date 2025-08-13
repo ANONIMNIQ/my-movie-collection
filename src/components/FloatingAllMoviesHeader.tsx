@@ -2,7 +2,6 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import DynamicMovieCountHeader from './DynamicMovieCountHeader';
-// Removed unused imports for Input, Select, Separator as they are no longer part of this component
 
 interface FloatingAllMoviesHeaderProps {
   count: number;
@@ -49,7 +48,6 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
             allGenres={allGenres}
             allCountries={allCountries}
           />
-          {/* Search input and filter select are no longer part of this component */}
         </motion.div>
       )}
     </AnimatePresence>

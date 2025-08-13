@@ -187,12 +187,21 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
+    // Observer for the 'All Movies' section to determine if it's in the viewport at all
+    const allMoviesSectionInViewObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsAllMoviesSectionVisible(entry.isIntersecting);
+      },
+      { threshold: 0 } // Trigger as soon as any part of the section enters/exits
+    );
+
     // Observer for the 'All Movies' title container to control the top-left floating header
     const floatingHeaderVisibilityObserver = new IntersectionObserver(
       ([entry]) => {
         // The floating header should appear when the top of the 'All Movies' title container
-        // scrolls above the top edge of the viewport (i.e., its top position becomes negative).
-        // It should disappear when the top of the 'All Movies' title container is at or below the top edge.
+        // scrolls *out of view* at the top (i.e., its top position becomes negative).
+        // It should disappear when the top of the 'All Movies' title container
+        // scrolls *back into view* at the top (i.e., its top position becomes 0 or positive).
         setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top < 0);
       },
       {
@@ -201,10 +210,12 @@ const Index = () => {
     );
 
     headerDarkObserver.observe(currentAllMoviesSectionRef);
-    floatingHeaderVisibilityObserver.observe(currentAllMoviesTitleContainerRef);
+    allMoviesSectionInViewObserver.observe(currentAllMoviesSectionRef); // Observe the section for overall visibility
+    floatingHeaderVisibilityObserver.observe(currentAllMoviesTitleContainerRef); // Observe the title for floating header trigger
 
     return () => {
       headerDarkObserver.unobserve(currentAllMoviesSectionRef);
+      allMoviesSectionInViewObserver.unobserve(currentAllMoviesSectionRef);
       floatingHeaderVisibilityObserver.unobserve(currentAllMoviesTitleContainerRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
@@ -534,7 +545,6 @@ const Index = () => {
             allCountries={allCountries}
             isVisible={isFloatingAllMoviesHeaderVisible}
             headerHeight={shrunkenHeaderHeight}
-            // isFilterOpen and setIsFilterOpen are not needed here as this component no longer contains the filter controls
           />
         )}
 
@@ -664,7 +674,9 @@ const Index = () => {
                   <>
                     <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
                       {/* This header is now always rendered here, its visibility is controlled by the floating header */}
-                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
+                      {!isFloatingAllMoviesHeaderVisible && (
+                        <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
+                      )}
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
