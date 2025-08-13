@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Loader2 } from "lucide-react"; // Import Loader2 icon
 import { showSuccess, showError } from "@/utils/toast";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useQuery } => "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -83,8 +83,8 @@ const Index = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   // New states for precise floating header and search bar control
-  const [isTitleScrolledPastTop, setIsTitleScrolledPastTop] = useState(false); // Keep for potential future use or debugging
-  const [isAllMoviesSectionInView, setIsAllMoviesSectionInView] = useState(false); // Keep for potential future use or debugging
+  const [isTitleScrolledPastTop, setIsTitleScrolledPastTop] = useState(false);
+  const [isAllMoviesSectionInView, setIsAllMoviesSectionInView] = useState(false);
   const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false);
 
   const heroSliderRef = useRef<HTMLDivElement>(null); // New ref for HeroSlider
@@ -207,9 +207,10 @@ const Index = () => {
     // Observer for the 'All Movies' title container's top edge (for floating header entry)
     const titleTopObserver = new IntersectionObserver(
       ([entry]) => {
-        setIsTitleScrolledPastTop(entry.boundingClientRect.top < 0);
+        // This will be true when the top of the title container is above the shrunken header's height
+        setIsTitleScrolledPastTop(entry.boundingClientRect.top < shrunkenHeaderHeight);
       },
-      { threshold: 0 }
+      { threshold: 0 } // Observe any intersection
     );
 
     // Observer for Hero Slider visibility
@@ -224,25 +225,9 @@ const Index = () => {
       heroSliderObserver.observe(currentHeroSliderRef);
     }
 
-    // New observer for the floating "All Movies" header visibility
-    const floatingHeaderVisibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        // The floating header should be visible if the 'All Movies' section is intersecting
-        // AND its top edge is above the shrunken header's height (meaning it's scrolled 'under' the main header)
-        // AND the Hero Slider is NOT in view (to prevent it from appearing over the slider).
-        setIsFloatingAllMoviesHeaderVisible(
-          entry.isIntersecting &&
-          entry.boundingClientRect.top < shrunkenHeaderHeight &&
-          !isHeroSliderInView // Ensure Hero Slider is out of view
-        );
-      },
-      { rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`, threshold: 0 }
-    );
-
     headerDarkObserver.observe(currentAllMoviesSectionRef);
     sectionInViewObserver.observe(currentAllMoviesSectionRef);
     titleTopObserver.observe(currentAllMoviesTitleContainerRef);
-    floatingHeaderVisibilityObserver.observe(currentAllMoviesSectionRef); // Observe the main section for floating header
 
     return () => {
       headerDarkObserver.unobserve(currentAllMoviesSectionRef);
@@ -251,14 +236,16 @@ const Index = () => {
       if (heroSliderObserver && currentHeroSliderRef) {
         heroSliderObserver.unobserve(currentHeroSliderRef);
       }
-      floatingHeaderVisibilityObserver.unobserve(currentAllMoviesSectionRef);
     };
-  }, [isMobile, headerShrunk, shrunkenHeaderHeight, isHeroSliderInView]); // Added isHeroSliderInView to dependencies
+  }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
-  // Removed the old combined logic for setIsFloatingAllMoviesHeaderVisible
-  // useEffect(() => {
-  //   setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView && !isHeroSliderInView);
-  // }, [isTitleScrolledPastTop, isAllMoviesSectionInView, isHeroSliderInView]);
+  // Combine states for the floating header's actual visibility
+  useEffect(() => {
+    // The floating header should be visible if the title has scrolled past the top
+    // AND the entire 'All Movies' section is still in view (i.e., hasn't scrolled off the bottom).
+    // AND the Hero Slider is NOT in view (to prevent it from appearing over the slider).
+    setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView && !isHeroSliderInView);
+  }, [isTitleScrolledPastTop, isAllMoviesSectionInView, isHeroSliderInView]);
 
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;

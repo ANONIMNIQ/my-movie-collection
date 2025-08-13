@@ -76,7 +76,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   if (movies.length === 0) return null;
 
   return (
-    <section className="mb-12 relative">
+    <section className="mb-12 relative z-30"> {/* Added z-30 here */}
       <div className="px-10">
         <motion.h2
           className="text-3xl font-bold" // Removed conditional text color class
