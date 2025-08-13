@@ -38,7 +38,7 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
           initial={{ y: headerHeight, opacity: 0 }} // Start just below the header, invisible
           animate={{ y: targetY, opacity: 1 }} // Animate down to targetY and fade in
           exit={{ y: headerHeight, opacity: 0 }} // Exit back up to the bottom of the header
-          transition={{ duration: 0.2, ease: "easeOut" }} {/* Reduced duration to 0.2s */}
+          transition={{ duration: 0.2, ease: "easeOut" }}
           style={{ top: 0 }} // Initial top is 0, animation handles the slide down
         >
           <DynamicMovieCountHeader
