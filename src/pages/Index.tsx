@@ -444,7 +444,7 @@ const Index = () => {
                   placeholder="Search movies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-[300px] bg-transparent border-none focus:ring-0 focus:outline-none focus:border-transparent focus-visible:ring-0 focus-visible:outline-none focus-visible:border-transparent text-white placeholder:text-gray-400 pl-4"
+                  className="w-[300px] bg-transparent border-none focus:ring-0 !focus:outline-none !focus:border-transparent !focus-visible:ring-0 !focus-visible:outline-none !focus-visible:border-transparent text-white placeholder:text-gray-400 pl-4 custom-no-focus-outline"
                 />
                 <Select value={sortAndFilter} onValueChange={setSortAndFilter} onOpenChange={setIsFilterOpen}>
                   <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
@@ -586,7 +586,7 @@ const Index = () => {
               <motion.div
                 initial={{ opacity: 0, y: 50 }} // Start from hidden and slightly below
                 animate={pageLoaded ? { opacity: 1, y: 0 } : {}} // Animate to visible and original position when pageLoaded is true
-                transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }} // Changed delay from 1.4 to 0.8
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }}
               >
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
