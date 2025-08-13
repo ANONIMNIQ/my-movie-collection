@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2 } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react"; // Import Loader2 icon
 import { showSuccess, showError } from "@/utils/toast";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import {
@@ -43,7 +43,7 @@ import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import { Movie } from "@/data/movies";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
-const BATCH_SIZE = 50;
+const BATCH_SIZE = 18; // Changed to 18 to match initial visible count and typical grid rows
 
 const headerTextRevealVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -63,7 +63,7 @@ const headerContentContainerVariants = {
 
 const Index = () => {
   const { session, loading: sessionLoading } = useSession();
-  const [visibleCount, setVisibleCount] = useState(18);
+  const [visibleCount, setVisibleCount] = useState(BATCH_SIZE); // Initialize with BATCH_SIZE
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
   const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
@@ -83,7 +83,7 @@ const Index = () => {
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
-  const [isLoadMoreVisible, setIsLoadMoreVisible] = useState(false);
+  const [isLoadMoreTriggerVisible, setIsLoadMoreTriggerVisible] = useState(false); // Renamed for clarity
   const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
@@ -204,7 +204,7 @@ const Index = () => {
     const filterChanged = sortAndFilter !== prevSortAndFilter;
 
     if ((searchInitiated || filterChanged) && allMoviesSectionRef.current) {
-      const headerOffset = shrunkenHeaderHeight + 8; // Adjusted from 24 to 8
+      const headerOffset = shrunkenHeaderHeight + 8;
       const elementPosition = allMoviesSectionRef.current.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
@@ -293,15 +293,16 @@ const Index = () => {
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
   useEffect(() => {
-    // Observer for the "Load More" button
     const loadMoreObserver = new IntersectionObserver(([entry]) => {
-      setIsLoadMoreVisible(entry.isIntersecting);
-    }, { threshold: 0 }); // Trigger when any part of the button is visible
+      setIsLoadMoreTriggerVisible(entry.isIntersecting);
+      if (entry.isIntersecting && visibleCount < filteredAndSortedMovies.length) {
+        setVisibleCount(prev => prev + BATCH_SIZE);
+      }
+    }, { threshold: 0 });
 
-    // Observer for the footer (for the search bar's slide-up)
     const footerObserver = new IntersectionObserver(([entry]) => {
       setIsFooterVisible(entry.isIntersecting);
-    }, { threshold: 0 }); // Trigger when any part of the footer is visible
+    }, { threshold: 0 });
 
     const currentLoadMoreRef = loadMoreRef.current;
     const currentFooterRef = footerRef.current;
@@ -313,13 +314,11 @@ const Index = () => {
       if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
       if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
     };
-  }, [moviesToShow.length]); // Re-run when moviesToShow changes (i.e., load more is added/removed)
+  }, [visibleCount, filteredAndSortedMovies.length]); // Dependencies for infinite scroll
 
-  // The search bar should move up if the "Load More" button is visible OR if the footer is visible.
+  // The search bar should move up if the "Load More" trigger is visible OR if the footer is visible.
   // This ensures it's always above the interactive elements at the bottom.
-  const shouldMoveSearchUp = isLoadMoreVisible || isFooterVisible;
-
-  const handleLoadMore = () => setVisibleCount((prev) => prev + 18);
+  const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooterVisible;
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -583,8 +582,8 @@ const Index = () => {
           <main>
             {!isMobile && heroSliderMovies.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, y: 50 }} // Start from hidden and slightly below
-                animate={pageLoaded ? { opacity: 1, y: 0 } : {}} // Animate to visible and original position when pageLoaded is true
+                initial={{ opacity: 0, y: 50 }}
+                animate={pageLoaded ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }}
               >
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
@@ -633,7 +632,7 @@ const Index = () => {
                   </>
                 )}
                 {loadingAllMovies ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">{Array.from({ length: 18 }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />)}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">{Array.from({ length: BATCH_SIZE }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />)}</div>
                 ) : isErrorAllMovies ? (
                   <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
                 ) : filteredAndSortedMovies.length === 0 ? (
@@ -643,7 +642,12 @@ const Index = () => {
                 )}
                 {visibleCount < filteredAndSortedMovies.length && (
                   <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
-                    <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">Load More</Button>
+                    {isLoadMoreTriggerVisible && (
+                      <div className="flex justify-center items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>Loading more movies...</span>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </motion.div>
@@ -684,7 +688,12 @@ const Index = () => {
               </div>
               {visibleCount < filteredAndSortedMovies.length && (
                 <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
-                  <Button onClick={handleLoadMore} size="lg" className="bg-black text-white hover:bg-gray-800">Load More</Button>
+                  {isLoadMoreTriggerVisible && (
+                    <div className="flex justify-center items-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                      <span>Loading more movies...</span>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </motion.div>
