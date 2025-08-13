@@ -31,13 +31,13 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
         <motion.div
           key="floating-all-movies-header"
           className={cn(
-            "fixed left-4 z-40", // Positioned at top-left with left-4 padding
+            "fixed left-6 z-40", // Positioned at top-left with left-6 padding (increased)
             "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg w-fit", // Added rounded-full for pill shape
             "px-4 py-2" // Adjusted padding for better pill shape appearance
           )}
-          initial={{ y: -headerHeight, opacity: 0 }} // Start above the header
-          animate={{ y: targetY, opacity: 1 }} // Animate down to targetY
-          exit={{ y: -headerHeight, opacity: 0 }} // Exit back up
+          initial={{ y: headerHeight, opacity: 0 }} // Start just below the header, invisible
+          animate={{ y: targetY, opacity: 1 }} // Animate down to targetY and fade in
+          exit={{ y: headerHeight, opacity: 0 }} // Exit back up to the bottom of the header
           transition={{ duration: 0.4, ease: "easeOut" }}
           style={{ top: 0 }} // Initial top is 0, animation handles the slide down
         >
@@ -47,11 +47,11 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
             sortAndFilter={sortAndFilter}
             allGenres={allGenres}
             allCountries={allCountries}
-            // Pass new styling props here
-            titleClassName="text-lg" // Make title smaller
-            numberClassName="text-lg" // Make number container smaller
-            flipNumberHeight={18} // Smaller height for numbers
-            flipNumberWidth={12}  // Smaller width for numbers
+            // Pass new styling props here for even smaller size
+            titleClassName="text-base" // Make title even smaller
+            numberClassName="text-base" // Make number container even smaller
+            flipNumberHeight={16} // Smaller height for numbers
+            flipNumberWidth={10}  // Smaller width for numbers
             flipNumberColor="white" // White color for numbers
           />
         </motion.div>
