@@ -66,7 +66,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(18);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
@@ -433,7 +433,7 @@ const Index = () => {
               initial={{ opacity: 0, y: 100 }}
               animate={{
                 opacity: 1,
-                y: shouldMoveSearchUp ? -50 : 0, // Adjusted slide up distance from -60 to -50
+                y: shouldMoveSearchUp ? -80 : 0, // Adjusted slide up distance from -50 to -80
               }}
               exit={{ opacity: 0, y: 100 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} // Adjusted duration from 0.5 to 0.8
