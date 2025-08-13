@@ -2,17 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import DynamicMovieCountHeader from './DynamicMovieCountHeader';
-import { Input } from '@/components/ui/input'; // Keep import for now, might be removed if not used elsewhere
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'; // Keep import for now, might be removed if not used elsewhere
-import { Separator } from '@/components/ui/separator'; // Keep import for now, might be removed if not used elsewhere
+// Removed unused imports for Input, Select, Separator as they are no longer part of this component
 
 interface FloatingAllMoviesHeaderProps {
   count: number;
@@ -21,9 +11,7 @@ interface FloatingAllMoviesHeaderProps {
   allGenres: string[];
   allCountries: string[];
   isVisible: boolean;
-  headerHeight: number;
-  isFilterOpen: boolean;
-  setIsFilterOpen: (open: boolean) => void;
+  headerHeight: number; // This is the shrunken height of the main header
 }
 
 const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
@@ -34,24 +22,25 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
   allCountries,
   isVisible,
   headerHeight,
-  isFilterOpen,
-  setIsFilterOpen,
 }) => {
+  // Calculate the target Y position for the floating header, adding a small gap (e.g., 16px or 1rem)
+  const targetY = headerHeight + 16; // 16px gap
+
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
           key="floating-all-movies-header"
           className={cn(
-            "fixed top-0 left-4 z-40",
-            "flex items-center justify-between gap-2 bg-black/30 backdrop-blur-xl rounded-b-lg p-2 shadow-lg w-fit",
-            isFilterOpen && "pointer-events-auto"
+            "fixed left-4 z-40", // Positioned at top-left with left-4 padding
+            "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg w-fit", // Added rounded-full for pill shape
+            "px-4 py-2" // Adjusted padding for better pill shape appearance
           )}
-          initial={{ y: -headerHeight, opacity: 0 }}
-          animate={{ y: headerHeight, opacity: 1 }}
-          exit={{ y: -headerHeight, opacity: 0 }}
+          initial={{ y: -headerHeight, opacity: 0 }} // Start above the header
+          animate={{ y: targetY, opacity: 1 }} // Animate down to targetY
+          exit={{ y: -headerHeight, opacity: 0 }} // Exit back up
           transition={{ duration: 0.4, ease: "easeOut" }}
-          style={{ top: 0 }}
+          style={{ top: 0 }} // Initial top is 0, animation handles the slide down
         >
           <DynamicMovieCountHeader
             count={count}
@@ -60,7 +49,7 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
             allGenres={allGenres}
             allCountries={allCountries}
           />
-          {/* Removed Input and Select from here */}
+          {/* Search input and filter select are no longer part of this component */}
         </motion.div>
       )}
     </AnimatePresence>

@@ -72,6 +72,7 @@ const Index = () => {
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const allMoviesSectionRef = useRef<HTMLDivElement>(null);
+  const allMoviesTitleContainerRef = useRef<HTMLDivElement>(null); // New ref for the title container
   const prevSearchQueryRef = useRef<string>('');
   const prevSortAndFilterRef = useRef<string>(sortAndFilter);
 
@@ -169,8 +170,10 @@ const Index = () => {
       return;
     }
 
-    const currentRef = allMoviesSectionRef.current;
-    if (!currentRef) return;
+    const currentAllMoviesSectionRef = allMoviesSectionRef.current;
+    const currentAllMoviesTitleContainerRef = allMoviesTitleContainerRef.current;
+
+    if (!currentAllMoviesSectionRef || !currentAllMoviesTitleContainerRef) return;
 
     // Observer for the main header background change
     const headerDarkObserver = new IntersectionObserver(
@@ -184,32 +187,27 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
-    // Observer for the 'All Movies' section to control the top-left floating header
-    const allMoviesSectionObserver = new IntersectionObserver(
+    // Observer for the 'All Movies' title container to control the top-left floating header
+    const floatingHeaderVisibilityObserver = new IntersectionObserver(
       ([entry]) => {
-        // This determines if the 'All Movies' section is in the viewport at all
-        setIsAllMoviesSectionVisible(entry.isIntersecting);
-
-        // The floating header should appear when the top of the 'All Movies' section
-        // has scrolled *up to or past* the bottom edge of the shrunken main header.
-        // `entry.boundingClientRect.top` is the distance from the viewport top to the element's top.
-        // If it's less than or equal to `shrunkenHeaderHeight`, it means the section's top is now
-        // either behind the shrunken header, or completely out of view above it.
-        setIsFloatingAllMoviesHeaderVisible(entry.boundingClientRect.top <= shrunkenHeaderHeight);
+        // The floating header should appear when the observed element (All Movies title container)
+        // is no longer fully visible at the top of the viewport.
+        // `!entry.isIntersecting` means the element has scrolled completely out of the root (viewport).
+        // With rootMargin: '0px 0px -100% 0px', it means the bottom of the target crosses the top of the viewport.
+        setIsFloatingAllMoviesHeaderVisible(!entry.isIntersecting);
       },
       {
-        // No rootMargin needed, as we are directly comparing boundingClientRect.top
-        // Threshold 0 means we get a callback as soon as any part of the target enters or exits the root.
-        threshold: 0,
+        rootMargin: '0px 0px -100% 0px', // Trigger when the bottom of the target leaves the top of the viewport
+        threshold: 0, // Trigger as soon as any part of the target enters/exits
       }
     );
 
-    headerDarkObserver.observe(currentRef);
-    allMoviesSectionObserver.observe(currentRef);
+    headerDarkObserver.observe(currentAllMoviesSectionRef);
+    floatingHeaderVisibilityObserver.observe(currentAllMoviesTitleContainerRef);
 
     return () => {
-      headerDarkObserver.unobserve(currentRef);
-      allMoviesSectionObserver.unobserve(currentRef);
+      headerDarkObserver.unobserve(currentAllMoviesSectionRef);
+      floatingHeaderVisibilityObserver.unobserve(currentAllMoviesTitleContainerRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
@@ -465,7 +463,7 @@ const Index = () => {
         </AnimatePresence>
         <AnimatePresence>
           {/* Floating Search Bar (bottom-center) - Only visible if top-left is NOT visible */}
-          {(!isMobile && isAllMoviesSectionVisible && !isFloatingAllMoviesHeaderVisible) && (
+          {(!isMobile && !isFloatingAllMoviesHeaderVisible && (isAllMoviesSectionVisible || searchQuery)) && (
             <motion.div
               key="floating-search-bar"
               className={cn(
@@ -533,15 +531,12 @@ const Index = () => {
           <FloatingAllMoviesHeader
             count={filteredAndSortedMovies.length}
             searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
             sortAndFilter={sortAndFilter}
-            setSortAndFilter={setSortAndFilter}
             allGenres={allGenres}
             allCountries={allCountries}
             isVisible={isFloatingAllMoviesHeaderVisible}
             headerHeight={shrunkenHeaderHeight}
-            isFilterOpen={isFilterOpen}
-            setIsFilterOpen={setIsFilterOpen}
+            // isFilterOpen and setIsFilterOpen are not needed here as this component no longer contains the filter controls
           />
         )}
 
@@ -669,11 +664,9 @@ const Index = () => {
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
                 {!loadingAllMovies && (
                   <>
-                    <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
-                      {/* This header is now controlled by FloatingAllMoviesHeader when visible */}
-                      {!isFloatingAllMoviesHeaderVisible && (
-                        <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
-                      )}
+                    <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
+                      {/* This header is now always rendered here, its visibility is controlled by the floating header */}
+                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
