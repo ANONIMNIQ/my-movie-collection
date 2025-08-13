@@ -218,6 +218,11 @@ const Index = () => {
     prevSortAndFilterRef.current = sortAndFilter;
   }, [searchQuery, sortAndFilter, shrunkenHeaderHeight]);
 
+  // Reset visibleCount when search query or sort/filter changes
+  useEffect(() => {
+    setVisibleCount(BATCH_SIZE);
+  }, [searchQuery, sortAndFilter]);
+
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
     allMovies?.forEach((movie) => {
@@ -293,12 +298,15 @@ const Index = () => {
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
   useEffect(() => {
-    const loadMoreObserver = new IntersectionObserver(([entry]) => {
-      setIsLoadMoreTriggerVisible(entry.isIntersecting);
-      if (entry.isIntersecting && visibleCount < filteredAndSortedMovies.length) {
-        setVisibleCount(prev => prev + BATCH_SIZE);
-      }
-    }, { threshold: 0.1 }); // Changed threshold to 0.1
+    const loadMoreObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsLoadMoreTriggerVisible(entry.isIntersecting);
+        if (entry.isIntersecting && visibleCount < filteredAndSortedMovies.length) {
+          setVisibleCount(prev => prev + BATCH_SIZE);
+        }
+      },
+      { threshold: 0 } // Changed threshold to 0 for more reliable triggering
+    );
 
     const footerObserver = new IntersectionObserver(([entry]) => {
       setIsFooterVisible(entry.isIntersecting);
@@ -314,7 +322,7 @@ const Index = () => {
       if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
       if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
     };
-  }, [visibleCount, filteredAndSortedMovies.length]); // Dependencies for infinite scroll
+  }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE]); // Added BATCH_SIZE as dependency
 
   // The search bar should move up if the "Load More" trigger is visible OR if the footer is visible.
   // This ensures it's always above the interactive elements at the bottom.
