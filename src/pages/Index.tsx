@@ -298,7 +298,7 @@ const Index = () => {
       if (entry.isIntersecting && visibleCount < filteredAndSortedMovies.length) {
         setVisibleCount(prev => prev + BATCH_SIZE);
       }
-    }, { threshold: 0 });
+    }, { threshold: 0.1 }); // Changed threshold to 0.1
 
     const footerObserver = new IntersectionObserver(([entry]) => {
       setIsFooterVisible(entry.isIntersecting);
@@ -640,16 +640,21 @@ const Index = () => {
                 ) : (
                   <MovieGrid movies={moviesToShow} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} />
                 )}
-                {visibleCount < filteredAndSortedMovies.length && (
-                  <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
-                    {isLoadMoreTriggerVisible && (
+                {/* Infinite Scroll Trigger and Messages for Desktop */}
+                <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
+                  {visibleCount < filteredAndSortedMovies.length ? (
+                    isLoadMoreTriggerVisible && (
                       <div className="flex justify-center items-center gap-2 text-muted-foreground">
                         <Loader2 className="h-6 w-6 animate-spin" />
                         <span>Loading more movies...</span>
                       </div>
-                    )}
-                  </motion.div>
-                )}
+                    )
+                  ) : (
+                    filteredAndSortedMovies.length > 0 && (
+                      <p className="text-muted-foreground text-lg">No more movies.</p>
+                    )
+                  )}
+                </motion.div>
               </motion.div>
             </motion.div>
             <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
@@ -686,16 +691,21 @@ const Index = () => {
                   moviesToShow.map(movie => <motion.div key={movie.id} variants={contentVariants}><MobileMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} /></motion.div>)
                 )}
               </div>
-              {visibleCount < filteredAndSortedMovies.length && (
-                <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
-                  {isLoadMoreTriggerVisible && (
+              {/* Infinite Scroll Trigger and Messages for Mobile */}
+              <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
+                {visibleCount < filteredAndSortedMovies.length ? (
+                  isLoadMoreTriggerVisible && (
                     <div className="flex justify-center items-center gap-2 text-muted-foreground">
                       <Loader2 className="h-6 w-6 animate-spin" />
                       <span>Loading more movies...</span>
                     </div>
-                  )}
-                </motion.div>
-              )}
+                  )
+                ) : (
+                  filteredAndSortedMovies.length > 0 && (
+                    <p className="text-muted-foreground text-lg">No more movies.</p>
+                  )
+                )}
+              </motion.div>
             </motion.div>
           </main>
         </motion.div>
