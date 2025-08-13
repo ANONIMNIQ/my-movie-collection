@@ -427,62 +427,61 @@ const Index = () => {
             <motion.div
               key="floating-search-bar"
               className={cn(
-                "fixed bottom-6 w-full z-50 flex justify-center", // Added flex justify-center for centering
+                "fixed bottom-6 w-full z-50 flex justify-center",
+                "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg", // Moved these classes here
                 isFilterOpen && "pointer-events-auto"
               )}
               initial={{ opacity: 0, y: 100 }}
               animate={{
                 opacity: 1,
-                y: shouldMoveSearchUp ? -70 : 0, // Adjusted slide up distance from -100 to -70
+                y: shouldMoveSearchUp ? -60 : 0, // Adjusted slide up distance from -70 to -60
               }}
               exit={{ opacity: 0, y: 100 }}
-              transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }} // Increased duration from 0.7 to 1.0
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} // Adjusted duration from 1.0 to 0.5
             >
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg"> {/* Added shadow-lg */}
-                <Input
-                  type="text"
-                  placeholder="Search movies..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-[300px] bg-transparent border-none focus:ring-0 !focus:outline-none !focus:border-transparent !focus-visible:ring-0 !focus-visible:outline-none !focus-visible:border-transparent text-white placeholder:text-gray-300 pl-4 custom-no-focus-outline"
-                />
-                <Select value={sortAndFilter} onValueChange={setSortAndFilter} onOpenChange={setIsFilterOpen}>
-                  <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
-                    <SelectValue placeholder="Sort & Filter" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-black/30 backdrop-blur-xl border-white/10 text-white">
-                    <SelectGroup>
-                      <SelectLabel className="text-gray-400">Sort by</SelectLabel>
-                      <SelectItem value="title-asc" className="focus:bg-white/20 focus:text-white">Title (A-Z)</SelectItem>
-                      <SelectItem value="title-desc" className="focus:bg-white/20 focus:text-white">Title (Z-A)</SelectItem>
-                      <SelectItem value="year-desc" className="focus:bg-white/20 focus:text-white">Release Date (Newest)</SelectItem>
-                      <SelectItem value="year-asc" className="focus:bg-white/20 focus:text-white">Release Date (Oldest)</SelectItem>
-                    </SelectGroup>
-                    {allGenres.length > 0 && (
-                      <>
-                        <Separator className="my-1 bg-white/20" />
-                        <SelectGroup>
-                          <SelectLabel className="text-gray-400">Filter by Genre</SelectLabel>
-                          {allGenres.map((genre) => (
-                            <SelectItem key={genre} value={genre} className="focus:bg-white/20 focus:text-white">{genre}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </>
-                    )}
-                    {allCountries.length > 0 && (
-                      <>
-                        <Separator className="my-1 bg-white/20" />
-                        <SelectGroup>
-                          <SelectLabel className="text-gray-400">Filter by Country</SelectLabel>
-                          {allCountries.map((country) => (
-                            <SelectItem key={country} value={country} className="focus:bg-white/20 focus:text-white">{country}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Input
+                type="text"
+                placeholder="Search movies..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-[300px] bg-transparent border-none focus:ring-0 !focus:outline-none !focus:border-transparent !focus-visible:ring-0 !focus-visible:outline-none !focus-visible:border-transparent text-white placeholder:text-gray-300 pl-4 custom-no-focus-outline"
+              />
+              <Select value={sortAndFilter} onValueChange={setSortAndFilter} onOpenChange={setIsFilterOpen}>
+                <SelectTrigger className="w-[220px] bg-transparent border-none text-white focus:ring-0 focus:ring-offset-0">
+                  <SelectValue placeholder="Sort & Filter" />
+                </SelectTrigger>
+                <SelectContent className="bg-black/30 backdrop-blur-xl border-white/10 text-white">
+                  <SelectGroup>
+                    <SelectLabel className="text-gray-400">Sort by</SelectLabel>
+                    <SelectItem value="title-asc" className="focus:bg-white/20 focus:text-white">Title (A-Z)</SelectItem>
+                    <SelectItem value="title-desc" className="focus:bg-white/20 focus:text-white">Title (Z-A)</SelectItem>
+                    <SelectItem value="year-desc" className="focus:bg-white/20 focus:text-white">Release Date (Newest)</SelectItem>
+                    <SelectItem value="year-asc" className="focus:bg-white/20 focus:text-white">Release Date (Oldest)</SelectItem>
+                  </SelectGroup>
+                  {allGenres.length > 0 && (
+                    <>
+                      <Separator className="my-1 bg-white/20" />
+                      <SelectGroup>
+                        <SelectLabel className="text-gray-400">Filter by Genre</SelectLabel>
+                        {allGenres.map((genre) => (
+                          <SelectItem key={genre} value={genre} className="focus:bg-white/20 focus:text-white">{genre}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </>
+                  )}
+                  {allCountries.length > 0 && (
+                    <>
+                      <Separator className="my-1 bg-white/20" />
+                      <SelectGroup>
+                        <SelectLabel className="text-gray-400">Filter by Country</SelectLabel>
+                        {allCountries.map((country) => (
+                          <SelectItem key={country} value={country} className="focus:bg-white/20 focus:text-white">{country}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
             </motion.div>
           )}
         </AnimatePresence>
