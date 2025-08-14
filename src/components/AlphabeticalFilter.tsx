@@ -53,22 +53,23 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
   }
 
   return (
-    <div className="flex items-center justify-center w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl group">
+    <div className="flex items-center justify-center w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
       <Button
         variant="ghost"
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollPrev ? "opacity-0 group-hover:opacity-100" : "opacity-0 invisible"
+          canScrollPrev ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={scrollPrev}
+        disabled={!canScrollPrev}
       >
         <ChevronLeft className="h-5 w-5" />
       </Button>
 
       <div className="relative flex-grow overflow-hidden">
         <div className="embla" ref={emblaRef}>
-          <div className="embla__container flex items-center justify-end gap-4 px-2">
+          <div className="embla__container flex items-center justify-start md:justify-end gap-4 px-2">
             <button
               onClick={() => onSelectLetter(null)}
               className={cn(
@@ -105,9 +106,10 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollNext ? "opacity-0 group-hover:opacity-100" : "opacity-0 invisible"
+          canScrollNext ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={scrollNext}
+        disabled={!canScrollNext}
       >
         <ChevronRight className="h-5 w-5" />
       </Button>
