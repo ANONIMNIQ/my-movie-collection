@@ -16,7 +16,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
   const isMobileHook = useIsMobile(); // Use the hook here
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start', // Always align to start for consistent behavior
+    align: isMobileHook ? 'start' : 'end', // Align to start on mobile, end on desktop
     dragFree: true
   });
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -75,8 +75,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
 
       <div className="relative flex-grow overflow-hidden">
         <div className="embla" ref={emblaRef}>
-          {/* Conditional justify-content for alignment */}
-          <div className={cn("embla__container flex items-center gap-4 px-2", isMobileHook ? "justify-start" : "justify-end")}>
+          {/* Removed conditional justify-content here as Embla's 'align' option handles it */}
+          <div className="embla__container flex items-center gap-4 px-2">
             <button
               onClick={() => onSelectLetter(null)}
               className={cn(
