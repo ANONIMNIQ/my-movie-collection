@@ -20,9 +20,9 @@ interface CustomCarouselProps {
 // Map titles to Boxicon class names
 const titleIcons: { [key: string]: string } = {
   "New Movies": "bx-calendar-alt",
-  "Drama": "bx-mask", // Theatre mask for drama
-  "Thriller": "bx-binoculars",
-  "Sci-Fi": "bx-planet", // Closest for Sci-Fi
+  "Drama": "bx-heart-break", // Corrected to heart-break
+  "Thriller": "bx-binocular", // Corrected to binocular
+  "Sci-Fi": "bx-planet",
   "Horror": "bx-ghost",
 };
 

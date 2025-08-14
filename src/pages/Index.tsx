@@ -83,7 +83,7 @@ const Index = () => {
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
   const [isHeaderDark, setIsHeaderDark] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isTitleHovered, setIsTitleHovered] = useState(false); // New state for title hover
+  // Removed isTitleHovered state as the icon will always be visible
   
   const [isTitleScrolledPastTop, setIsTitleScrolledPastTop] = useState(false);
   const [isAllMoviesSectionInView, setIsAllMoviesSectionInView] = useState(false);
@@ -600,12 +600,10 @@ const Index = () => {
             <div className="container mx-auto px-4 h-full">
               <div className="relative flex items-center justify-center h-full">
                 <motion.div
-                  className="text-center group" // Added group class for hover effect
+                  className="text-center" // Removed group class and hover handlers
                   initial="hidden"
                   animate={pageLoaded ? "visible" : "hidden"}
                   variants={headerContentContainerVariants}
-                  onMouseEnter={() => !isMobile && setIsTitleHovered(true)} // Only for desktop
-                  onMouseLeave={() => !isMobile && setIsTitleHovered(false)} // Only for desktop
                 >
                   <motion.h1
                     className={cn(
@@ -618,18 +616,7 @@ const Index = () => {
                     variants={titleShrinkVariants}
                   >
                     {!isMobile && ( // Only render icon on desktop
-                      <AnimatePresence>
-                        {isTitleHovered && (
-                          <motion.i
-                            key="film-icon"
-                            className="bx bx-film text-4xl mr-4" // Boxicon class
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.2 }}
-                          />
-                        )}
-                      </AnimatePresence>
+                      <i className="bx bx-film-roll-alt text-4xl mr-4"></i> // Always visible film-roll-alt icon
                     )}
                     Georgi's Movie Collection
                   </motion.h1>
