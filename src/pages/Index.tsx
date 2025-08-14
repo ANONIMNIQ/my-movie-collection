@@ -356,7 +356,7 @@ const Index = () => {
     const currentFooterRef = footerRef.current;
 
     const footerObserver = new IntersectionObserver(([entry]) => {
-      setIsFooter(entry.isIntersecting);
+      setIsFooterVisible(entry.isIntersecting);
     }, { threshold: 0 });
 
     if (currentFooterRef) footerObserver.observe(currentFooterRef);
@@ -391,7 +391,7 @@ const Index = () => {
     }
   }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE, isMobile]);
 
-  const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooter;
+  const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooterVisible;
 
   const shouldShowSearchBar = !isMobile && (isAllMoviesSectionInView || searchQuery);
 
