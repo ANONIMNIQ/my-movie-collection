@@ -41,7 +41,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import HeroSlider from "@/components/HeroSlider";
 import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
-import AlphabetFilter from "@/components/AlphabetFilter"; // Import AlphabetFilter
+import AlphabetFilterPopover from "@/components/AlphabetFilterPopover"; // Import AlphabetFilterPopover
 import { Movie } from "@/data/movies";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
@@ -96,7 +96,6 @@ const Index = () => {
   const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   // New state for alphabet filter
-  const [showAlphabetFilter, setShowAlphabetFilter] = useState(false);
   const [selectedLetterFilter, setSelectedLetterFilter] = useState<string | null>(null);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
@@ -562,29 +561,17 @@ const Index = () => {
           )}
         </AnimatePresence>
 
-        {/* Floating All Movies Header (top-left) */}
+        {/* Floating All Movies Header (top-left) - No longer triggers alphabet filter */}
         {!isMobile && (
-          <div
-            onMouseEnter={() => setShowAlphabetFilter(true)}
-            onMouseLeave={() => setShowAlphabetFilter(false)}
-          >
-            <FloatingAllMoviesHeader
-              count={filteredAndSortedMovies.length}
-              searchQuery={searchQuery}
-              sortAndFilter={sortAndFilter}
-              allGenres={allGenres}
-              allCountries={allCountries}
-              isVisible={isFloatingAllMoviesHeaderVisible}
-              headerHeight={shrunkenHeaderHeight}
-            />
-            <AlphabetFilter
-              movies={filteredAndSortedMovies} // Pass the currently filtered movies
-              onSelectLetter={setSelectedLetterFilter}
-              currentSelectedLetter={selectedLetterFilter}
-              headerHeight={shrunkenHeaderHeight}
-              isVisible={showAlphabetFilter}
-            />
-          </div>
+          <FloatingAllMoviesHeader
+            count={filteredAndSortedMovies.length}
+            searchQuery={searchQuery}
+            sortAndFilter={sortAndFilter}
+            allGenres={allGenres}
+            allCountries={allCountries}
+            isVisible={isFloatingAllMoviesHeaderVisible}
+            headerHeight={shrunkenHeaderHeight}
+          />
         )}
 
         <motion.header
@@ -712,8 +699,16 @@ const Index = () => {
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
                 {!loadingAllMovies && (
                   <>
-                    <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
+                    <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8 relative"> {/* Added relative positioning */}
                       <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
+                      {/* Alphabet Filter Popover */}
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-40"> {/* Positioned absolutely within the title container */}
+                        <AlphabetFilterPopover
+                          movies={filteredAndSortedMovies}
+                          onSelectLetter={setSelectedLetterFilter}
+                          currentSelectedLetter={selectedLetterFilter}
+                        />
+                      </div>
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
