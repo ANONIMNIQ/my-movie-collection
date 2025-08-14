@@ -67,8 +67,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         variant="ghost"
         size="icon"
         className={cn(
-          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20", // Faster transition
-          !canScrollPrev && "opacity-0 pointer-events-none" // Add pointer-events-none
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20",
+          !canScrollPrev && "opacity-0 pointer-events-none"
         )}
         onClick={scrollPrev}
         disabled={!canScrollPrev}
@@ -80,7 +80,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         {/* New wrapper div for conditional justification on desktop */}
         <div className={cn("flex", !isMobileHook && "justify-end")}>
           <div className="embla" ref={emblaRef}>
-            <div className="embla__container flex items-center gap-4 px-2">
+            <div className="embla__container flex items-center gap-4"> {/* Removed px-2 here */}
               <button
                 onClick={() => onSelectLetter(null)}
                 className={cn(
@@ -118,8 +118,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         variant="ghost"
         size="icon"
         className={cn(
-          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20", // Faster transition
-          !canScrollNext && "opacity-0 pointer-events-none" // Add pointer-events-none
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20",
+          !canScrollNext && "opacity-0 pointer-events-none"
         )}
         onClick={scrollNext}
         disabled={!canScrollNext}
