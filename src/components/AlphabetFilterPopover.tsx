@@ -81,6 +81,11 @@ const AlphabetFilterPopover: React.FC<AlphabetFilterPopoverProps> = ({
     });
   }, []);
 
+  // Prevent default scroll wheel behavior
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  }, []);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -109,6 +114,7 @@ const AlphabetFilterPopover: React.FC<AlphabetFilterPopoverProps> = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove} // Add mouse move handler
+        onWheel={handleWheel} // Prevent scroll wheel
         style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }} // Changed to auto
       >
         {alphabet.map(letter => {
