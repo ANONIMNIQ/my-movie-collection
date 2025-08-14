@@ -42,6 +42,7 @@ import HeroSlider from "@/components/HeroSlider";
 import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader"; // Import the new component
 import { Movie } from "@/data/movies";
+import AlphabeticalFilter from "@/components/AlphabeticalFilter"; // Import the new component
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 18; // Changed to 18 to match initial visible count and typical grid rows
@@ -67,6 +68,7 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE); // Initialize with BATCH_SIZE
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
+  const [selectedLetter, setSelectedLetter] = useState<string | null>(null); // New state for letter filter
   const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
@@ -275,9 +277,10 @@ const Index = () => {
     prevSortAndFilterRef.current = sortAndFilter;
   }, [searchQuery, sortAndFilter, shrunkenHeaderHeight]);
 
-  // Reset visibleCount when search query or sort/filter changes
+  // Reset visibleCount and letter filter when search query or sort/filter changes
   useEffect(() => {
     setVisibleCount(BATCH_SIZE);
+    setSelectedLetter(null);
   }, [searchQuery, sortAndFilter]);
 
   const allGenres = useMemo(() => {
@@ -304,7 +307,7 @@ const Index = () => {
     return Array.from(countries).sort();
   }, [allMovies]);
 
-  const filteredAndSortedMovies = useMemo(() => {
+  const baseFilteredMovies = useMemo(() => {
     let result = [...(allMovies || [])];
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
@@ -334,6 +337,13 @@ const Index = () => {
     }
     return result;
   }, [allMovies, searchQuery, sortAndFilter, allGenres, allCountries]);
+
+  const filteredAndSortedMovies = useMemo(() => {
+    if (!selectedLetter) {
+      return baseFilteredMovies;
+    }
+    return baseFilteredMovies.filter(movie => movie.title.toUpperCase().startsWith(selectedLetter));
+  }, [baseFilteredMovies, selectedLetter]);
 
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
@@ -711,8 +721,8 @@ const Index = () => {
                 {!loadingAllMovies && (
                   <>
                     <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
-                      {/* This header is now always rendered here, no conditional opacity */}
                       <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
+                      <AlphabeticalFilter movies={baseFilteredMovies} selectedLetter={selectedLetter} onSelectLetter={setSelectedLetter} />
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
