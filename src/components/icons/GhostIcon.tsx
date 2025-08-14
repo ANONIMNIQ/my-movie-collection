@@ -3,7 +3,8 @@ import React from 'react';
 interface IconProps extends React.SVGProps<SVGSVGElement> {}
 
 export const GhostIcon: React.FC<IconProps> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    <path d="M12 2C6.486 2 2 6.486 2 12v5a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-5C22 6.486 17.514 2 12 2zm-3 12c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2zm6 0c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z"></path>
+  <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path d="M12 2c-4.96 0-9 4.04-9 9v8h.05c.25 1.69 1.69 3 3.45 3 1.17 0 2.07-.42 2.67-1.17.72.72 1.72 1.17 2.83 1.17s2.11-.46 2.84-1.19c.6.76 1.5 1.19 2.66 1.19 1.93 0 3.5-1.57 3.5-3.5V11c0-4.96-4.04-9-9-9m7 16.5c0 .83-.67 1.5-1.5 1.5-.45 0-1.5 0-1.5-2v-1h-2v1c0 1.1-.9 2-2 2s-2-.9-2-2v-1H8v1c0 1.85-.77 2-1.5 2-.83 0-1.5-.67-1.5-1.5V11c0-3.86 3.14-7 7-7s7 3.14 7 7z"></path>
+    <path d="M15.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3M8.5 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3"></path>
   </svg>
 );

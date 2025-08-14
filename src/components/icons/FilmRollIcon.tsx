@@ -3,7 +3,11 @@ import React from 'react';
 interface IconProps extends React.SVGProps<SVGSVGElement> {}
 
 export const FilmRollIcon: React.FC<IconProps> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    <path d="M19.82 3H4.18C3.04 3 2.18 3.93 2.18 5.06v13.88C2.18 20.07 3.04 21 4.18 21h15.64c1.14 0 2-0.93 2-2.06V5.06C21.82 3.93 20.96 3 19.82 3zM6 5h2v2H6V5zm0 4h2v2H6V9zm0 4h2v2H6v-2zm0 4h2v2H6v-2zm12 2h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V5h2v2z"></path>
+  <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" {...props}>
+    <path d="m22,12c0-5.51-4.49-10-10-10S2,6.49,2,12s4.49,10,10,10h10v-2h-4.03c2.44-1.83,4.03-4.73,4.03-8Zm-18,0c0-4.41,3.59-8,8-8s8,3.59,8,8-3.59,8-8,8-8-3.59-8-8Z"></path>
+    <path d="M12 6A2 2 0 1 0 12 10 2 2 0 1 0 12 6z"></path>
+    <path d="M12 14A2 2 0 1 0 12 18 2 2 0 1 0 12 14z"></path>
+    <path d="M16 10A2 2 0 1 0 16 14 2 2 0 1 0 16 10z"></path>
+    <path d="M8 10A2 2 0 1 0 8 14 2 2 0 1 0 8 10z"></path>
   </svg>
 );
