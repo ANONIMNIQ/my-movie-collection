@@ -45,26 +45,26 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
   }
 
   return (
-    <div className="flex items-center w-full">
-      {/* Left arrow button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          "flex-shrink-0 h-6 w-6 text-gray-500 hover:text-gray-700 transition-opacity",
-          !canScrollPrev && "opacity-0 pointer-events-none"
-        )}
-        onClick={scrollPrev}
-        disabled={!canScrollPrev}
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </Button>
-
-      {/* Left gradient overlay */}
-      <div className={cn(
-        "flex-shrink-0 h-full w-8 bg-gradient-to-r from-gray-200 to-transparent pointer-events-none transition-opacity duration-300",
-        !canScrollPrev && "opacity-0"
-      )} />
+    <div className="flex items-center flex-grow"> {/* Removed max-w-[calc(100%-200px)] */}
+      {/* Left arrow button and gradient */}
+      <div className="relative flex-shrink-0 w-8 h-full">
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-r from-gray-200 to-transparent pointer-events-none transition-opacity duration-300",
+          !canScrollPrev && "opacity-0"
+        )} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "absolute left-0 top-1/2 -translate-y-1/2 h-6 w-6 transition-colors duration-300",
+            canScrollPrev ? "text-gray-500 hover:text-gray-700" : "text-gray-400 cursor-not-allowed"
+          )}
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+      </div>
 
       <div className="embla flex-grow overflow-hidden" ref={emblaRef}>
         <div className="embla__container flex gap-0.5 py-2">
@@ -74,7 +74,7 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
                 variant="ghost"
                 className={cn(
                   "px-2 py-1 text-sm transition-colors duration-200",
-                  "bg-transparent border-none text-gray-600 hover:text-black",
+                  "bg-transparent border-none text-gray-600 hover:text-gray-800", // Subtle hover
                   activeLetter === letter && "font-bold text-black"
                 )}
                 onClick={() => onSelect(letter)}
@@ -86,24 +86,25 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
         </div>
       </div>
 
-      {/* Right gradient overlay */}
-      <div className={cn(
-        "flex-shrink-0 h-full w-8 bg-gradient-to-l from-gray-200 to-transparent pointer-events-none transition-opacity duration-300",
-        !canScrollNext && "opacity-0"
-      )} />
-      {/* Right arrow button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          "flex-shrink-0 h-6 w-6 text-gray-500 hover:text-gray-700 transition-opacity",
-          !canScrollNext && "opacity-0 pointer-events-none"
-        )}
-        onClick={scrollNext}
-        disabled={!canScrollNext}
-      >
-        <ChevronRight className="h-5 w-5" />
-      </Button>
+      {/* Right arrow button and gradient */}
+      <div className="relative flex-shrink-0 w-8 h-full">
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-l from-gray-200 to-transparent pointer-events-none transition-opacity duration-300",
+          !canScrollNext && "opacity-0"
+        )} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "absolute right-0 top-1/2 -translate-y-1/2 h-6 w-6 transition-colors duration-300",
+            canScrollNext ? "text-gray-500 hover:text-gray-700" : "text-gray-400 cursor-not-allowed"
+          )}
+          onClick={scrollNext}
+          disabled={!canScrollNext}
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 };

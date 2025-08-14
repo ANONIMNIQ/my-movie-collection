@@ -714,14 +714,11 @@ const Index = () => {
                   <>
                     <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 gap-4 px-6 pt-8">
                       <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} />
-                      {/* New LetterFilterCarousel */}
-                      {!isMobile && (
-                        <LetterFilterCarousel
-                          letters={availableLetters}
-                          onSelect={setSelectedLetterFilter}
-                          activeLetter={selectedLetterFilter}
-                        />
-                      )}
+                      <LetterFilterCarousel
+                        letters={availableLetters}
+                        onSelect={setSelectedLetterFilter}
+                        activeLetter={selectedLetterFilter}
+                      />
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
@@ -770,11 +767,17 @@ const Index = () => {
               </motion.div>
             </motion.div>
             <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
-              <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-                <motion.h2 className="text-3xl font-bold" initial={{ color: "rgb(255,255,255)" }} animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }} transition={{ duration: 0.6, ease: "easeOut" }}>{searchQuery ? "Found Movies" : "All Movies"}</motion.h2>
-                <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full sm:w-auto" />
+              <div className="flex items-center justify-between flex-nowrap mb-4 gap-4"> {/* Changed to flex-row for mobile */}
+                <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} />
+                <LetterFilterCarousel
+                  letters={availableLetters}
+                  onSelect={setSelectedLetterFilter}
+                  activeLetter={selectedLetterFilter}
+                />
+              </div>
+              <motion.div variants={contentVariants} className="mb-4">
+                <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full" />
               </motion.div>
-              {searchQuery && <motion.div variants={contentVariants} className="mb-4"><MovieCounter count={filteredAndSortedMovies.length} numberColor={"#0F0F0F"} labelColor={"hidden"} animateOnLoad={pageLoaded} /></motion.div>}
               {isAdmin && !loadingAllMovies && (
                 <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">

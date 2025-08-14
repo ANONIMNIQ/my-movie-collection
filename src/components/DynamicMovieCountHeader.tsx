@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import FlipNumbers from 'react-flip-numbers';
+import { useIsMobile } from '@/hooks/use-mobile'; // Import useIsMobile
 
 interface DynamicMovieCountHeaderProps {
   count: number;
@@ -9,8 +10,7 @@ interface DynamicMovieCountHeaderProps {
   sortAndFilter: string;
   allGenres: string[];
   allCountries: string[];
-  selectedLetterFilter: string; // New prop
-  // New optional props for styling overrides
+  selectedLetterFilter: string;
   titleClassName?: string;
   numberClassName?: string;
   flipNumberHeight?: number;
@@ -24,19 +24,21 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
   sortAndFilter,
   allGenres,
   allCountries,
-  selectedLetterFilter, // Destructure new prop
-  titleClassName, // Destructure new props
+  selectedLetterFilter,
+  titleClassName,
   numberClassName,
   flipNumberHeight,
   flipNumberWidth,
   flipNumberColor,
 }) => {
+  const isMobile = useIsMobile(); // Use the hook here
+
   const displayTitle = React.useMemo(() => {
     if (searchQuery) {
       return "Found Movies";
     }
     if (selectedLetterFilter !== "All") {
-      return selectedLetterFilter; // Show the selected letter
+      return selectedLetterFilter;
     }
     if (allGenres.includes(sortAndFilter)) {
       return sortAndFilter;
@@ -51,13 +53,17 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
 
   return (
     <div className="flex items-center gap-2">
-      <h2 className={cn("text-3xl font-bold", titleClassName)}>
+      <h2 className={cn("text-xl md:text-3xl font-bold flex-shrink-0", titleClassName)}>
         {displayTitle}
       </h2>
-      <div className={cn("font-roboto-mono font-bold tracking-wider text-headerNumber text-3xl", numberClassName)}>
+      <div className={cn(
+        "font-roboto-mono font-bold tracking-wider text-headerNumber flex-shrink-0",
+        "text-xl md:text-3xl", // Default responsive font size
+        numberClassName
+      )}>
         <FlipNumbers
-          height={flipNumberHeight || 32}
-          width={flipNumberWidth || 20}
+          height={flipNumberHeight || (isMobile ? 20 : 32)}
+          width={flipNumberWidth || (isMobile ? 12 : 20)}
           color={flipNumberColor || "black"}
           background="transparent"
           play
