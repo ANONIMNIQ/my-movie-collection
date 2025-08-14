@@ -68,7 +68,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20",
-          !canScrollPrev && "opacity-0 pointer-events-none"
+          !canScrollPrev && "invisible pointer-events-none" // Changed opacity-0 to invisible
         )}
         onClick={scrollPrev}
         disabled={!canScrollPrev}
@@ -80,7 +80,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         {/* New wrapper div for conditional justification on desktop */}
         <div className={cn("flex", !isMobileHook && "justify-end")}>
           <div className="embla" ref={emblaRef}>
-            <div className="embla__container flex items-center gap-4"> {/* px-2 has been removed here */}
+            <div className="embla__container flex items-center gap-4">
               <button
                 onClick={() => onSelectLetter(null)}
                 className={cn(
@@ -119,7 +119,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20",
-          !canScrollNext && "opacity-0 pointer-events-none"
+          !canScrollNext && "invisible pointer-events-none" // Changed opacity-0 to invisible
         )}
         onClick={scrollNext}
         disabled={!canScrollNext}
