@@ -720,6 +720,7 @@ const Index = () => {
                         onSelect={setSelectedLetterFilter}
                         activeLetter={selectedLetterFilter}
                         className="ml-auto"
+                        gradientFromColor="from-gray-200" // Pass desktop background color for gradient
                       />
                     </div>
                     {isAdmin && (
@@ -769,9 +770,17 @@ const Index = () => {
               </motion.div>
             </motion.div>
             <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
-              <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 gap-2"> {/* Adjusted gap for mobile */}
-                <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} />
-                {/* LetterFilterCarousel removed from here */}
+              <div ref={allMoviesTitleContainerRef} className="flex flex-col items-center justify-center mb-4 gap-2"> {/* Adjusted for centering and flex-col */}
+                <DynamicMovieCountHeader
+                  count={filteredAndSortedMovies.length}
+                  searchQuery={searchQuery}
+                  sortAndFilter={sortAndFilter}
+                  allGenres={allGenres}
+                  allCountries={allCountries}
+                  selectedLetterFilter={selectedLetterFilter}
+                  hideCount={true} // Hide count on mobile
+                  titleClassName="text-black text-center" // Make title black and centered
+                />
               </div>
               <motion.div variants={contentVariants} className="mb-4">
                 <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full" />

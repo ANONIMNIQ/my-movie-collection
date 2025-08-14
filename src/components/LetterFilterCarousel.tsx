@@ -3,17 +3,16 @@ import useEmblaCarousel from 'embla-carousel-react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile'; // Import useIsMobile
 
 interface LetterFilterCarouselProps {
   letters: string[];
   onSelect: (letter: string) => void;
   activeLetter: string;
   className?: string;
+  gradientFromColor: string; // New prop for dynamic gradient start color (e.g., "from-gray-200")
 }
 
-const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, onSelect, activeLetter, className }) => {
-  const isMobile = useIsMobile(); // Use the hook to determine screen size
+const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, onSelect, activeLetter, className, gradientFromColor }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     loop: false,
@@ -53,12 +52,12 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
     <div className={cn("flex items-center relative", className)}>
       {/* Left arrow and gradient container */}
       <div className={cn(
-        "absolute left-0 top-0 bottom-0 w-12 z-10 flex items-center justify-center transition-opacity duration-300", // Increased width
+        "absolute left-0 top-0 bottom-0 w-12 z-10 flex items-center justify-center transition-opacity duration-300",
         !canScrollPrev && "opacity-0 pointer-events-none"
       )}>
         <div className={cn(
           "absolute inset-0",
-          isMobile ? "bg-gradient-to-r from-background/90 to-transparent" : "bg-gradient-to-r from-gray-200/90 to-transparent" // Dynamic gradient color
+          `${gradientFromColor}/90 to-transparent` // Use the prop directly for gradient start color
         )} />
         <Button
           variant="ghost"
@@ -96,12 +95,12 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
 
       {/* Right arrow and gradient container */}
       <div className={cn(
-        "absolute right-0 top-0 bottom-0 w-12 z-10 flex items-center justify-center transition-opacity duration-300", // Increased width
+        "absolute right-0 top-0 bottom-0 w-12 z-10 flex items-center justify-center transition-opacity duration-300",
         !canScrollNext && "opacity-0 pointer-events-none"
       )}>
         <div className={cn(
           "absolute inset-0",
-          isMobile ? "bg-gradient-to-l from-background/90 to-transparent" : "bg-gradient-to-l from-gray-200/90 to-transparent" // Dynamic gradient color
+          `${gradientFromColor}/90 to-transparent` // Use the prop directly for gradient start color
         )} />
         <Button
           variant="ghost"

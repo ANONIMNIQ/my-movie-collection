@@ -16,6 +16,8 @@ interface DynamicMovieCountHeaderProps {
   flipNumberHeight?: number;
   flipNumberWidth?: number;
   flipNumberColor?: string;
+  hideTitle?: boolean; // New prop to hide the title
+  hideCount?: boolean;  // New prop to hide the count
 }
 
 const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
@@ -30,6 +32,8 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
   flipNumberHeight,
   flipNumberWidth,
   flipNumberColor,
+  hideTitle = false, // Default to false
+  hideCount = false,  // Default to false
 }) => {
   const isMobile = useIsMobile(); // Use the hook here
 
@@ -53,24 +57,28 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
-      <h2 className={cn("text-xl md:text-3xl font-bold", titleClassName)}>
-        {displayTitle}
-      </h2>
-      <div className={cn(
-        "font-roboto-mono font-bold tracking-wider text-headerNumber",
-        "text-xl md:text-3xl", // Default responsive font size
-        numberClassName
-      )}>
-        <FlipNumbers
-          height={flipNumberHeight || (isMobile ? 20 : 32)}
-          width={flipNumberWidth || (isMobile ? 12 : 20)}
-          color={flipNumberColor || "black"}
-          background="transparent"
-          play
-          perspective={1000}
-          numbers={numberString}
-        />
-      </div>
+      {!hideTitle && (
+        <h2 className={cn("text-xl md:text-3xl font-bold", titleClassName)}>
+          {displayTitle}
+        </h2>
+      )}
+      {!hideCount && (
+        <div className={cn(
+          "font-roboto-mono font-bold tracking-wider text-headerNumber",
+          "text-xl md:text-3xl", // Default responsive font size
+          numberClassName
+        )}>
+          <FlipNumbers
+            height={flipNumberHeight || (isMobile ? 20 : 32)}
+            width={flipNumberWidth || (isMobile ? 12 : 20)}
+            color={flipNumberColor || "black"}
+            background="transparent"
+            play
+            perspective={1000}
+            numbers={numberString}
+          />
+        </div>
+      )}
     </div>
   );
 };
