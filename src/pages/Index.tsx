@@ -356,7 +356,7 @@ const Index = () => {
     const currentFooterRef = footerRef.current;
 
     const footerObserver = new IntersectionObserver(([entry]) => {
-      setIsFooterVisible(entry.isIntersecting);
+      setIsFooter(entry.isIntersecting);
     }, { threshold: 0 });
 
     if (currentFooterRef) footerObserver.observe(currentFooterRef);
