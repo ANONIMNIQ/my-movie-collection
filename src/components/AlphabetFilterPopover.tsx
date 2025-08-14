@@ -102,14 +102,14 @@ const AlphabetFilterPopover: React.FC<AlphabetFilterPopoverProps> = ({
       </PopoverTrigger>
       <PopoverContent
         ref={contentRef} // Assign ref here
-        className="w-auto p-2 bg-black/30 backdrop-blur-xl border-none text-white flex flex-col items-center gap-2 shadow-lg" // Frosted glass for content
+        className="w-auto p-2 bg-transparent border-none text-white flex flex-col items-center gap-2 shadow-none hide-scrollbar" // Removed background, border, shadow, added hide-scrollbar
         side="bottom" // Position below the trigger
         align="center" // Center horizontally below the trigger
         sideOffset={8}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove} // Add mouse move handler
-        style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'hidden' }} // Hide scrollbar
+        style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }} // Changed to auto
       >
         {alphabet.map(letter => {
           const isActive = currentSelectedLetter === letter;
@@ -122,6 +122,7 @@ const AlphabetFilterPopover: React.FC<AlphabetFilterPopoverProps> = ({
                 size="icon"
                 className={cn(
                   "h-8 w-8 rounded-full text-white text-sm font-bold",
+                  "bg-black/30 backdrop-blur-xl shadow-lg", // Frosted glass for individual buttons
                   "hover:bg-white/20 transition-colors",
                   isActive && "bg-primary text-primary-foreground hover:bg-primary/90",
                   isDisabled && "opacity-30 cursor-not-allowed"
