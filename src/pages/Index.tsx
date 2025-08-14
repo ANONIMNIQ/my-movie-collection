@@ -30,6 +30,7 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
+  SelectItemText, // Import SelectItemText
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -767,7 +768,7 @@ const Index = () => {
               </motion.div>
             </motion.div>
             <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
-              <div className="flex items-center justify-between flex-nowrap mb-4 gap-4"> {/* Changed to flex-row for mobile */}
+              <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 gap-2"> {/* Adjusted gap for mobile */}
                 <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} />
                 <LetterFilterCarousel
                   letters={availableLetters}

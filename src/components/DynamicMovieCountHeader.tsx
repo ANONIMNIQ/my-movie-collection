@@ -52,12 +52,12 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
   const numberString = String(count).padStart(4, '0');
 
   return (
-    <div className="flex items-center gap-2">
-      <h2 className={cn("text-xl md:text-3xl font-bold flex-shrink-0", titleClassName)}>
+    <div className="flex items-center gap-2 flex-shrink-0">
+      <h2 className={cn("text-xl md:text-3xl font-bold", titleClassName)}>
         {displayTitle}
       </h2>
       <div className={cn(
-        "font-roboto-mono font-bold tracking-wider text-headerNumber flex-shrink-0",
+        "font-roboto-mono font-bold tracking-wider text-headerNumber",
         "text-xl md:text-3xl", // Default responsive font size
         numberClassName
       )}>
