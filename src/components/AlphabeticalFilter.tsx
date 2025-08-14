@@ -16,7 +16,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
   const isMobileHook = useIsMobile(); // Use the hook here
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start', // Always align to start
+    align: 'start', // Always align to start for consistent scrolling behavior
     dragFree: true,
     containScroll: 'trimSnaps' // Ensures no empty space at the end
   });
@@ -44,8 +44,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
-    // Also update on resize, as the number of visible slides might change
-    emblaApi.on('resize', onSelect);
+    emblaApi.on('resize', onSelect); // Re-evaluate scroll capabilities on resize
     return () => {
       if (emblaApi) {
         emblaApi.off('select', onSelect);
@@ -68,7 +67,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         variant="ghost"
         size="icon"
         className={cn(
-          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity z-20", // Added z-20
           canScrollPrev ? "opacity-100" : "opacity-0"
         )}
         onClick={scrollPrev}
@@ -78,36 +77,39 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
       </Button>
 
       <div className="relative flex-grow overflow-hidden">
-        {/* Apply flex and justify-end to the embla container itself on non-mobile */}
-        <div className={cn("embla", !isMobileHook && "flex justify-end")} ref={emblaRef}>
-          <div className="embla__container flex items-center gap-4 px-2">
-            <button
-              onClick={() => onSelectLetter(null)}
-              className={cn(
-                "embla__slide flex-shrink-0 text-base font-medium transition-colors",
-                selectedLetter === null
-                  ? "text-black"
-                  : "text-gray-500 hover:text-gray-800"
-              )}
-            >
-              All
-            </button>
-            {letters.map(letter => (
+        {/* New wrapper div for conditional justification on desktop */}
+        <div className={cn("flex", !isMobileHook && "justify-end")}>
+          <div className="embla" ref={emblaRef}>
+            <div className="embla__container flex items-center gap-4 px-2">
               <button
-                key={letter}
-                onClick={() => onSelectLetter(letter)}
+                onClick={() => onSelectLetter(null)}
                 className={cn(
                   "embla__slide flex-shrink-0 text-base font-medium transition-colors",
-                  selectedLetter === letter
+                  selectedLetter === null
                     ? "text-black"
                     : "text-gray-500 hover:text-gray-800"
                 )}
               >
-                {letter}
+                All
               </button>
-            ))}
+              {letters.map(letter => (
+                <button
+                  key={letter}
+                  onClick={() => onSelectLetter(letter)}
+                  className={cn(
+                    "embla__slide flex-shrink-0 text-base font-medium transition-colors",
+                    selectedLetter === letter
+                      ? "text-black"
+                      : "text-gray-500 hover:text-gray-800"
+                  )}
+                >
+                  {letter}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+        {/* Gradients still have pointer-events-none, which is correct */}
         <div className={cn("absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
         <div className={cn("absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
       </div>
@@ -116,7 +118,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         variant="ghost"
         size="icon"
         className={cn(
-          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity z-20", // Added z-20
           canScrollNext ? "opacity-100" : "opacity-0"
         )}
         onClick={scrollNext}
