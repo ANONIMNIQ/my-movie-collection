@@ -53,62 +53,64 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
   }
 
   return (
-    <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl group">
-      <div className="embla overflow-hidden" ref={emblaRef}>
-        <div className="embla__container flex items-center gap-4 px-4">
-          <button
-            onClick={() => onSelectLetter(null)}
-            className={cn(
-              "embla__slide flex-shrink-0 text-base font-medium transition-colors",
-              selectedLetter === null
-                ? "text-black"
-                : "text-gray-500 hover:text-gray-800"
-            )}
-          >
-            All
-          </button>
-          {letters.map(letter => (
+    <div className="flex items-center justify-center w-full max-w-md lg:max-w-lg xl:max-w-xl group">
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn(
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
+          canScrollPrev ? "opacity-0 group-hover:opacity-100" : "opacity-0 invisible"
+        )}
+        onClick={scrollPrev}
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </Button>
+
+      <div className="relative flex-grow overflow-hidden">
+        <div className="embla" ref={emblaRef}>
+          <div className="embla__container flex items-center gap-4 px-2">
             <button
-              key={letter}
-              onClick={() => onSelectLetter(letter)}
+              onClick={() => onSelectLetter(null)}
               className={cn(
                 "embla__slide flex-shrink-0 text-base font-medium transition-colors",
-                selectedLetter === letter
+                selectedLetter === null
                   ? "text-black"
                   : "text-gray-500 hover:text-gray-800"
               )}
             >
-              {letter}
+              All
             </button>
-          ))}
+            {letters.map(letter => (
+              <button
+                key={letter}
+                onClick={() => onSelectLetter(letter)}
+                className={cn(
+                  "embla__slide flex-shrink-0 text-base font-medium transition-colors",
+                  selectedLetter === letter
+                    ? "text-black"
+                    : "text-gray-500 hover:text-gray-800"
+                )}
+              >
+                {letter}
+              </button>
+            ))}
+          </div>
         </div>
+        <div className={cn("absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
+        <div className={cn("absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
       </div>
 
-      {/* Gradients */}
-      <div className={cn("absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
-      <div className={cn("absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
-
-      {/* Chevrons */}
-      {canScrollPrev && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
-          onClick={scrollPrev}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-      )}
-      {canScrollNext && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
-          onClick={scrollNext}
-        >
-          <ChevronRight className="h-5 w-5" />
-        </Button>
-      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn(
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
+          canScrollNext ? "opacity-0 group-hover:opacity-100" : "opacity-0 invisible"
+        )}
+        onClick={scrollNext}
+      >
+        <ChevronRight className="h-5 w-5" />
+      </Button>
     </div>
   );
 };
