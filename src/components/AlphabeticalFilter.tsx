@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Movie } from '@/data/movies';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile'; // Import the hook
 
 interface AlphabeticalFilterProps {
   movies: Movie[];
@@ -12,7 +13,12 @@ interface AlphabeticalFilterProps {
 }
 
 const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selectedLetter, onSelectLetter }) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'start', dragFree: true });
+  const isMobileHook = useIsMobile(); // Use the hook here
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: isMobileHook ? 'start' : 'end', // Align to start on mobile, end on desktop
+    dragFree: true
+  });
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
@@ -59,7 +65,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollPrev ? "opacity-100" : "opacity-0" // Removed pointer-events-none and invisible
+          canScrollPrev ? "opacity-100" : "opacity-0 invisible"
         )}
         onClick={scrollPrev}
         disabled={!canScrollPrev}
@@ -69,8 +75,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
 
       <div className="relative flex-grow overflow-hidden">
         <div className="embla" ref={emblaRef}>
-          {/* Changed to always justify-start */}
-          <div className="embla__container flex items-center justify-start gap-4 px-2">
+          {/* Removed justify-start/end here as Embla's 'align' option handles it */}
+          <div className="embla__container flex items-center gap-4 px-2">
             <button
               onClick={() => onSelectLetter(null)}
               className={cn(
@@ -108,7 +114,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollNext ? "opacity-100" : "opacity-0" // Removed pointer-events-none and invisible
+          canScrollNext ? "opacity-100" : "opacity-0 invisible"
         )}
         onClick={scrollNext}
         disabled={!canScrollNext}
