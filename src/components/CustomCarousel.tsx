@@ -22,7 +22,7 @@ const titleIcons: { [key: string]: string } = {
   "New Movies": "bx-calendar-alt",
   "Drama": "bx-heart-crack",
   "Thriller": "bx-binocular",
-  "Sci-Fi": "bx-planet",
+  "Sci-Fi": "bx-ufo",
   "Horror": "bx-ghost",
 };
 
@@ -83,7 +83,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   if (movies.length === 0) return null;
 
-  const IconComponent = titleIcons[title] ? <i className={`font-boxicons bx ${titleIcons[title]} text-3xl mr-2`}></i> : null;
+  const IconComponent = titleIcons[title] ? <i className={`font-['BoxIcons'] bx ${titleIcons[title]} text-3xl mr-2`}></i> : null;
 
   return (
     <section className="mb-12 relative z-30">
