@@ -59,7 +59,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollPrev ? "opacity-100" : "opacity-0 pointer-events-none"
+          canScrollPrev ? "opacity-100" : "opacity-0" // Removed pointer-events-none and invisible
         )}
         onClick={scrollPrev}
         disabled={!canScrollPrev}
@@ -69,7 +69,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
 
       <div className="relative flex-grow overflow-hidden">
         <div className="embla" ref={emblaRef}>
-          <div className="embla__container flex items-center justify-start md:justify-end gap-4 px-2">
+          {/* Changed to always justify-start */}
+          <div className="embla__container flex items-center justify-start gap-4 px-2">
             <button
               onClick={() => onSelectLetter(null)}
               className={cn(
@@ -97,6 +98,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
             ))}
           </div>
         </div>
+        {/* Gradients still have pointer-events-none, which is correct */}
         <div className={cn("absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
         <div className={cn("absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
       </div>
@@ -106,7 +108,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollNext ? "opacity-100" : "opacity-0 pointer-events-none"
+          canScrollNext ? "opacity-100" : "opacity-0" // Removed pointer-events-none and invisible
         )}
         onClick={scrollNext}
         disabled={!canScrollNext}
