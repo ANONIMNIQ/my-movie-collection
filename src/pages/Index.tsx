@@ -561,7 +561,7 @@ const Index = () => {
           )}
         </AnimatePresence>
 
-        {/* Floating All Movies Header (top-left) - No longer triggers alphabet filter */}
+        {/* Floating All Movies Header (top-left) */}
         {!isMobile && (
           <FloatingAllMoviesHeader
             count={filteredAndSortedMovies.length}
