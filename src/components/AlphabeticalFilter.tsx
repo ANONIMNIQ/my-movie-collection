@@ -68,7 +68,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
 
       <div className="relative flex-grow overflow-hidden">
         <div className="embla" ref={emblaRef}>
-          <div className="embla__container flex items-center gap-4 px-2">
+          <div className="embla__container flex items-center justify-end gap-4 px-2">
             <button
               onClick={() => onSelectLetter(null)}
               className={cn(
