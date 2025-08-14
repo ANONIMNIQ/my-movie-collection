@@ -91,12 +91,9 @@
   }
 
   body {
-    @apply bg-background text-foreground; /* Removed font-space-mono from here */
+    @apply bg-background text-foreground;
     overflow-x: hidden;
   }
-
-  /* Ensure Boxicons font is used for elements with 'bx' class */
-  /* This rule is now removed as the CDN's CSS already handles it */
 
   /* Embla Carousel Styles */
   .embla {
@@ -107,6 +104,21 @@
   }
   .embla__slide {
     @apply relative flex-shrink-0;
+  }
+}
+
+/* Custom utility class for Boxicons */
+@layer utilities {
+  .font-boxicons {
+    font-family: 'boxicons' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    line-height: 1 !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
   }
 }
 
