@@ -280,7 +280,11 @@ const Index = () => {
   // Reset visibleCount and letter filter when search query or sort/filter changes
   useEffect(() => {
     setVisibleCount(BATCH_SIZE);
-    setSelectedLetter(null);
+    // Only reset selectedLetter if search query or sort/filter changes,
+    // but not if a letter itself is selected.
+    if (!selectedLetter) { // Only reset if no letter is currently selected
+      setSelectedLetter(null);
+    }
   }, [searchQuery, sortAndFilter]);
 
   const allGenres = useMemo(() => {
@@ -590,6 +594,7 @@ const Index = () => {
             sortAndFilter={sortAndFilter}
             allGenres={allGenres}
             allCountries={allCountries}
+            selectedLetter={selectedLetter} // Pass selectedLetter
             isVisible={isFloatingAllMoviesHeaderVisible}
             headerHeight={shrunkenHeaderHeight}
           />
@@ -686,82 +691,132 @@ const Index = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
-        </motion.header>
-        <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
-          <main>
-            {!isMobile && heroSliderMovies.length > 0 && (
-              <motion.div
-                ref={heroSliderRef}
-                initial={{ opacity: 0, y: 50 }}
-                animate={pageLoaded ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }}
-              >
-                <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
-              </motion.div>
-            )}
-            <motion.div className="hidden md:block pt-8" initial="hidden" animate={pageLoaded ? "visible" : "hidden"} variants={desktopMainContainerVariants}>
-              {loadingAllMovies ? (
-                <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
-                  <h2 className="text-3xl font-bold mb-4">New Movies</h2>
-                  <div className="flex overflow-hidden gap-4">
-                    {Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />)}
-                  </div>
+          </motion.header>
+          <motion.div initial="full" animate={headerShrunk ? "shrunk" : "full"} variants={mainContentAlignmentVariants}>
+            <main>
+              {!isMobile && heroSliderMovies.length > 0 && (
+                <motion.div
+                  ref={heroSliderRef}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={pageLoaded ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }}
+                >
+                  <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
                 </motion.div>
-              ) : (
-                <>
-                  <motion.div variants={contentVariants}><CustomCarousel title="New Movies" movies={categorizedMovies.newMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>
-                  {categorizedMovies.dramaMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies.dramaMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.horrorMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies.horrorMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                </>
               )}
-              <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
-                {!loadingAllMovies && (
-                  <>
-                    <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
-                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
-                      <AlphabeticalFilter movies={baseFilteredMovies} selectedLetter={selectedLetter} onSelectLetter={setSelectedLetter} />
+              <motion.div className="hidden md:block pt-8" initial="hidden" animate={pageLoaded ? "visible" : "hidden"} variants={desktopMainContainerVariants}>
+                {loadingAllMovies ? (
+                  <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
+                    <h2 className="text-3xl font-bold mb-4">New Movies</h2>
+                    <div className="flex overflow-hidden gap-4">
+                      {Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />)}
                     </div>
-                    {isAdmin && (
-                      <div className="flex items-center justify-between mb-4 px-6">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="select-all" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting} />
-                          <label htmlFor="select-all" className="text-sm font-medium">Select All ({selectedMovieIds.size} selected)</label>
-                        </div>
-                        {selectedMovieIds.size > 0 && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deconstruct</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
-                              <AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
-                      </div>
-                    )}
+                  </motion.div>
+                ) : (
+                  <>
+                    <motion.div variants={contentVariants}><CustomCarousel title="New Movies" movies={categorizedMovies.newMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>
+                    {categorizedMovies.dramaMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies.dramaMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                    {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.demotion.div>}
+                    {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                    {categorizedMovies.horrorMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies.horrorMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   </>
                 )}
-                {loadingAllMovies ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">{Array.from({ length: BATCH_SIZE }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />)}</div>
-                ) : isErrorAllMovies ? (
-                  <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
-                ) : filteredAndSortedMovies.length === 0 ? (
-                  <div className="text-center text-muted-foreground text-lg py-16">No movies found matching your search.</div>
-                ) : (
-                  <MovieGrid movies={moviesToShow} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} />
+                <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
+                  {!loadingAllMovies && (
+                    <>
+                      <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
+                        <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetter={selectedLetter} />
+                        <AlphabeticalFilter movies={baseFilteredMovies} selectedLetter={selectedLetter} onSelectLetter={setSelectedLetter} />
+                      </div>
+                      {isAdmin && (
+                        <div className="flex items-center justify-between mb-4 px-6">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox id="select-all" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting} />
+                            <label htmlFor="select-all" className="text-sm font-medium">Select All ({selectedMovieIds.size} selected)</label>
+                          </div>
+                          {selectedMovieIds.size > 0 && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deconstruct</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
+                                <AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {loadingAllMovies ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">{Array.from({ length: BATCH_SIZE }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-full rounded-lg" />)}</div>
+                  ) : isErrorAllMovies ? (
+                    <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
+                  ) : filteredAndSortedMovies.length === 0 ? (
+                    <div className="text-center text-muted-foreground text-lg py-16">No movies found matching your search.</div>
+                  ) : (
+                    <MovieGrid movies={moviesToShow} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} />
+                  )}
+                  {/* Desktop Load More Button */}
+                  <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
+                    {visibleCount < filteredAndSortedMovies.length ? (
+                      <Button
+                        onClick={() => setVisibleCount(prev => prev + BATCH_SIZE)}
+                        className="mt-4 bg-black text-white hover:bg-gray-800" // Added styling classes
+                        disabled={loadingAllMovies}
+                      >
+                        Load More
+                      </Button>
+                    ) : (
+                      filteredAndSortedMovies.length > 0 && (
+                        <p className="text-muted-foreground text-lg">No more movies.</p>
+                      )
+                    )}
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+              <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
+                <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+                  <motion.h2 className="text-3xl font-bold" initial={{ color: "rgb(255,255,255)" }} animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }} transition={{ duration: 0.6, ease: "easeOut" }}>{searchQuery ? "Found Movies" : "All Movies"}</motion.h2>
+                  <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full sm:w-auto" />
+                </motion.div>
+                {searchQuery && <motion.div variants={contentVariants} className="mb-4"><MovieCounter count={filteredAndSortedMovies.length} numberColor={"#0F0F0F"} labelColor={"hidden"} animateOnLoad={pageLoaded} /></motion.div>}
+                {isAdmin && !loadingAllMovies && (
+                  <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="select-all-mobile" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting} />
+                      <label htmlFor="select-all-mobile" className="text-sm font-medium">Select All ({selectedMovieIds.size} selected)</label>
+                    </div>
+                    {selectedMovieIds.size > 0 && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
+                          <AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </motion.div>
                 )}
-                {/* Desktop Load More Button */}
+                <div className="flex flex-col gap-4">
+                  {loadingAllMovies ? (
+                    Array.from({ length: 5 }).map((_, index) => <Skeleton key={index} className="w-full h-80 rounded-lg" />)
+                  ) : isErrorAllMovies ? (
+                    <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
+                  ) : filteredAndSortedMovies.length === 0 ? (
+                    <div className="text-center text-gray-500 text-lg py-16">No movies found matching your search.</div>
+                  ) : (
+                    moviesToShow.map(movie => <motion.div key={movie.id} variants={contentVariants}><MobileMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} /></motion.div>)
+                  )}
+                </div>
+                {/* Infinite Scroll Trigger and Messages for Mobile */}
                 <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
                   {visibleCount < filteredAndSortedMovies.length ? (
-                    <Button
-                      onClick={() => setVisibleCount(prev => prev + BATCH_SIZE)}
-                      className="mt-4 bg-black text-white hover:bg-gray-800" // Added styling classes
-                      disabled={loadingAllMovies}
-                    >
-                      Load More
-                    </Button>
+                    isLoadMoreTriggerVisible && (
+                      <div className="flex justify-center items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                        <span>Loading more movies...</span>
+                      </div>
+                    )
                   ) : (
                     filteredAndSortedMovies.length > 0 && (
                       <p className="text-muted-foreground text-lg">No more movies.</p>
@@ -769,65 +824,14 @@ const Index = () => {
                   )}
                 </motion.div>
               </motion.div>
-            </motion.div>
-            <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
-              <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
-                <motion.h2 className="text-3xl font-bold" initial={{ color: "rgb(255,255,255)" }} animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }} transition={{ duration: 0.6, ease: "easeOut" }}>{searchQuery ? "Found Movies" : "All Movies"}</motion.h2>
-                <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full sm:w-auto" />
-              </motion.div>
-              {searchQuery && <motion.div variants={contentVariants} className="mb-4"><MovieCounter count={filteredAndSortedMovies.length} numberColor={"#0F0F0F"} labelColor={"hidden"} animateOnLoad={pageLoaded} /></motion.div>}
-              {isAdmin && !loadingAllMovies && (
-                <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="select-all-mobile" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting} />
-                    <label htmlFor="select-all-mobile" className="text-sm font-medium">Select All ({selectedMovieIds.size} selected)</label>
-                  </div>
-                  {selectedMovieIds.size > 0 && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
-                        <AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-                </motion.div>
-              )}
-              <div className="flex flex-col gap-4">
-                {loadingAllMovies ? (
-                  Array.from({ length: 5 }).map((_, index) => <Skeleton key={index} className="w-full h-80 rounded-lg" />)
-                ) : isErrorAllMovies ? (
-                  <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
-                ) : filteredAndSortedMovies.length === 0 ? (
-                  <div className="text-center text-gray-500 text-lg py-16">No movies found matching your search.</div>
-                ) : (
-                  moviesToShow.map(movie => <motion.div key={movie.id} variants={contentVariants}><MobileMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} /></motion.div>)
-                )}
-              </div>
-              {/* Infinite Scroll Trigger and Messages for Mobile */}
-              <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
-                {visibleCount < filteredAndSortedMovies.length ? (
-                  isLoadMoreTriggerVisible && (
-                    <div className="flex justify-center items-center gap-2 text-muted-foreground">
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                      <span>Loading more movies...</span>
-                    </div>
-                  )
-                ) : (
-                  filteredAndSortedMovies.length > 0 && (
-                    <p className="text-muted-foreground text-lg">No more movies.</p>
-                  )
-                )}
-              </motion.div>
-            </motion.div>
-          </main>
+            </main>
+          </motion.div>
+          <motion.footer ref={footerRef} className="py-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={contentVariants}>
+            <MadeWithDyad />
+          </motion.footer>
         </motion.div>
-        <motion.footer ref={footerRef} className="py-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={contentVariants}>
-          <MadeWithDyad />
-        </motion.footer>
-      </motion.div>
-    </>
-  );
-};
+      </>
+    );
+  };
 
 export default Index;
