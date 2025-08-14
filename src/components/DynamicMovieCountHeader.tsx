@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { cn } '@/lib/utils';
+import { cn } from '@/lib/utils';
 import FlipNumbers from 'react-flip-numbers';
 
 interface DynamicMovieCountHeaderProps {
