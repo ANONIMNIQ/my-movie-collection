@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { cn } '@/lib/utils';
 import FlipNumbers from 'react-flip-numbers';
 
 interface DynamicMovieCountHeaderProps {
@@ -9,6 +9,7 @@ interface DynamicMovieCountHeaderProps {
   sortAndFilter: string;
   allGenres: string[];
   allCountries: string[];
+  selectedLetterFilter: string; // New prop
   // New optional props for styling overrides
   titleClassName?: string;
   numberClassName?: string;
@@ -23,6 +24,7 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
   sortAndFilter,
   allGenres,
   allCountries,
+  selectedLetterFilter, // Destructure new prop
   titleClassName, // Destructure new props
   numberClassName,
   flipNumberHeight,
@@ -33,6 +35,9 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
     if (searchQuery) {
       return "Found Movies";
     }
+    if (selectedLetterFilter !== "All") {
+      return selectedLetterFilter; // Show the selected letter
+    }
     if (allGenres.includes(sortAndFilter)) {
       return sortAndFilter;
     }
@@ -40,7 +45,7 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
       return allCountries.find(c => c === sortAndFilter) || "All Movies";
     }
     return "All Movies";
-  }, [searchQuery, sortAndFilter, allGenres, allCountries]);
+  }, [searchQuery, sortAndFilter, allGenres, allCountries, selectedLetterFilter]);
 
   const numberString = String(count).padStart(4, '0');
 

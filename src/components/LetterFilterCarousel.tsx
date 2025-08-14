@@ -50,7 +50,7 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
         variant="ghost"
         size="icon"
         className={cn(
-          "absolute left-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-black/60 hover:bg-black/75 text-white backdrop-blur-sm shadow-md transition-opacity",
+          "absolute left-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 text-gray-500 hover:text-gray-700 transition-opacity",
           !canScrollPrev && "opacity-0 pointer-events-none"
         )}
         onClick={scrollPrev}
@@ -59,15 +59,15 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
         <ChevronLeft className="h-5 w-5" />
       </Button>
       <div className="embla flex-grow overflow-hidden" ref={emblaRef}>
-        <div className="embla__container flex gap-2 py-2">
+        <div className="embla__container flex gap-0.5 py-2"> {/* Reduced gap */}
           {letters.map((letter) => (
             <div key={letter} className="embla__slide flex-shrink-0">
               <Button
                 variant="ghost"
                 className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-full transition-colors",
-                  "bg-white/10 text-white hover:bg-white/20",
-                  activeLetter === letter && "bg-primary text-primary-foreground hover:bg-primary"
+                  "px-2 py-1 text-sm transition-colors", // Smaller padding
+                  "bg-transparent border-none text-gray-600 hover:text-black", // Simple styling
+                  activeLetter === letter && "font-bold text-black" // Active state: bold and black
                 )}
                 onClick={() => onSelect(letter)}
               >
@@ -81,7 +81,7 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
         variant="ghost"
         size="icon"
         className={cn(
-          "absolute right-0 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-black/60 hover:bg-black/75 text-white backdrop-blur-sm shadow-md transition-opacity",
+          "absolute right-0 top-1/2 -translate-y-1/2 z-10 h-6 w-6 text-gray-500 hover:text-gray-700 transition-opacity",
           !canScrollNext && "opacity-0 pointer-events-none"
         )}
         onClick={scrollNext}
