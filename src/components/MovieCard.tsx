@@ -270,7 +270,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-[1.01] group-hover/slide:shadow-none", // Subtle scale, no glow
+            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-[1.03] group-hover/slide:shadow-glow", // Subtle scale, no glow
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
           onClick={handleCardClick}

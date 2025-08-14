@@ -713,14 +713,14 @@ const Index = () => {
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
                 {!loadingAllMovies && (
                   <>
-                    <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 gap-4 px-6 pt-8">
-                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} />
+                    <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 px-6 pt-8"> {/* Removed gap-4 */}
+                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} mr-4 /> {/* Added mr-4 */}
                       <LetterFilterCarousel
                         letters={availableLetters}
                         onSelect={setSelectedLetterFilter}
                         activeLetter={selectedLetterFilter}
-                        className="ml-auto"
-                        gradientFromColor="from-gray-200" // Pass desktop background color for gradient
+                        className="ml-auto flex-grow" {/* Added flex-grow */}
+                        gradientFromColor="from-gray-200" // Pass desktop background color
                       />
                     </div>
                     {isAdmin && (

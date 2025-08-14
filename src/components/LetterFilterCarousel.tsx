@@ -63,8 +63,8 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
           variant="ghost"
           size="icon"
           className={cn(
-            "relative h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-300",
-            !canScrollPrev && "text-gray-400 cursor-not-allowed"
+            "relative h-6 w-6 text-gray-800 hover:text-gray-900 transition-colors duration-300", // Changed text color
+            !canScrollPrev && "text-gray-300 cursor-not-allowed" // Changed disabled text color
           )}
           onClick={scrollPrev}
           disabled={!canScrollPrev}
@@ -106,8 +106,8 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
           variant="ghost"
           size="icon"
           className={cn(
-            "relative h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-300",
-            !canScrollNext && "text-gray-400 cursor-not-allowed"
+            "relative h-6 w-6 text-gray-800 hover:text-gray-900 transition-colors duration-300", // Changed text color
+            !canScrollNext && "text-gray-300 cursor-not-allowed" // Changed disabled text color
           )}
           onClick={scrollNext}
           disabled={!canScrollNext}

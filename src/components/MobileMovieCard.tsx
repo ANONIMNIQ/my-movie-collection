@@ -258,7 +258,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
       {/* Original card in the grid/list */}
       <div
         ref={cardRef}
-        className="w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer transition-all duration-300 hover:brightness-110" // Removed scale and shadow
+        className="w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer transition-all duration-300 hover:brightness-110 hover:scale-[1.03] hover:shadow-xl" // Added hover effects
         onClick={handleCardClick}
         style={{ visibility: isClicked ? 'hidden' : 'visible' }} // Hide original when animating
       >
