@@ -615,10 +615,8 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
                   >
-                    {!isMobile && (
-                      <FilmRollIcon className="w-10 h-10 mr-4" />
-                    )}
-                    Georgi's Movie Collection
+                    <FilmRollIcon className="w-6 h-6 md:w-10 md:h-10 mr-2 md:mr-4 flex-shrink-0" />
+                    <span className="truncate">Georgi's Movie Collection</span>
                   </motion.h1>
                   <motion.div
                     className="overflow-hidden"
