@@ -91,22 +91,12 @@
   }
 
   body {
-    @apply bg-background text-foreground font-space-mono; /* Applied Space Mono font here */
+    @apply bg-background text-foreground; /* Removed font-space-mono from here */
     overflow-x: hidden;
   }
 
   /* Ensure Boxicons font is used for elements with 'bx' class */
-  .bx {
-    font-family: 'boxicons' !important;
-    font-weight: normal !important; /* Ensure normal weight */
-    font-style: normal !important;  /* Ensure normal style */
-    line-height: 1 !important;      /* Standard line-height for icons */
-    text-rendering: auto !important; /* Optimize for legibility */
-    -webkit-font-smoothing: antialiased !important; /* Better rendering */
-    -moz-osx-font-smoothing: grayscale !important; /* Better rendering */
-    display: inline-block !important; /* Ensure it behaves like an inline block */
-    vertical-align: middle !important; /* Align vertically */
-  }
+  /* This rule is now removed as the CDN's CSS already handles it */
 
   /* Embla Carousel Styles */
   .embla {
