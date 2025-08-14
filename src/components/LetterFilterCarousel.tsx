@@ -9,9 +9,10 @@ interface LetterFilterCarouselProps {
   onSelect: (letter: string) => void;
   activeLetter: string;
   className?: string;
+  gradientBgColor: string; // New prop for dynamic gradient background
 }
 
-const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, onSelect, activeLetter, className }) => {
+const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, onSelect, activeLetter, className, gradientBgColor }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     loop: false,
@@ -48,26 +49,29 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
   }
 
   return (
-    <div className={cn("flex items-center", className)}> {/* Removed flex-grow from here */}
-      {/* Left arrow button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          "flex-shrink-0 h-6 w-6 text-gray-500 hover:text-gray-700 transition-opacity",
-          !canScrollPrev && "opacity-0 pointer-events-none"
-        )}
-        onClick={scrollPrev}
-        disabled={!canScrollPrev}
-      >
-        <ChevronLeft className="h-5 w-5" />
-      </Button>
-
-      {/* Left gradient overlay */}
+    <div className={cn("flex items-center relative", className)}>
+      {/* Left arrow and gradient container */}
       <div className={cn(
-        "flex-shrink-0 h-full w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none transition-opacity duration-300", // Adjusted gradient color and width
-        !canScrollPrev && "opacity-0"
-      )} />
+        "absolute left-0 top-0 bottom-0 w-8 z-10 flex items-center justify-center transition-opacity duration-300",
+        !canScrollPrev && "opacity-0 pointer-events-none"
+      )}>
+        <div className={cn(
+          "absolute inset-0",
+          gradientBgColor === "bg-gray-200" ? "bg-gradient-to-r from-gray-200 to-transparent" : "bg-gradient-to-r from-background to-transparent"
+        )} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "relative h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-300",
+            !canScrollPrev && "text-gray-400 cursor-not-allowed"
+          )}
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+      </div>
 
       <div className="embla flex-grow min-w-0 overflow-hidden" ref={emblaRef}>
         <div className="embla__container flex gap-0.5 py-2">
@@ -89,24 +93,28 @@ const LetterFilterCarousel: React.FC<LetterFilterCarouselProps> = ({ letters, on
         </div>
       </div>
 
-      {/* Right gradient overlay */}
+      {/* Right arrow and gradient container */}
       <div className={cn(
-        "flex-shrink-0 h-full w-8 bg-gradient-to-l from-black/10 to-transparent pointer-events-none transition-opacity duration-300", // Adjusted gradient color and width
-        !canScrollNext && "opacity-0"
-      )} />
-      {/* Right arrow button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          "flex-shrink-0 h-6 w-6 text-gray-500 hover:text-gray-700 transition-opacity",
-          !canScrollNext && "opacity-0 pointer-events-none"
-        )}
-        onClick={scrollNext}
-        disabled={!canScrollNext}
-      >
-        <ChevronRight className="h-5 w-5" />
-      </Button>
+        "absolute right-0 top-0 bottom-0 w-8 z-10 flex items-center justify-center transition-opacity duration-300",
+        !canScrollNext && "opacity-0 pointer-events-none"
+      )}>
+        <div className={cn(
+          "absolute inset-0",
+          gradientBgColor === "bg-gray-200" ? "bg-gradient-to-l from-gray-200 to-transparent" : "bg-gradient-to-l from-background to-transparent"
+        )} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "relative h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-300",
+            !canScrollNext && "text-gray-400 cursor-not-allowed"
+          )}
+          onClick={scrollNext}
+          disabled={!canScrollNext}
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 };

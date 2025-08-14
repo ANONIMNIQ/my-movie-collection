@@ -719,7 +719,8 @@ const Index = () => {
                         letters={availableLetters}
                         onSelect={setSelectedLetterFilter}
                         activeLetter={selectedLetterFilter}
-                        className="ml-auto" // Added ml-auto here
+                        className="ml-auto"
+                        gradientBgColor="bg-gray-200" // Pass desktop background color
                       />
                     </div>
                     {isAdmin && (
@@ -775,6 +776,7 @@ const Index = () => {
                   letters={availableLetters}
                   onSelect={setSelectedLetterFilter}
                   activeLetter={selectedLetterFilter}
+                  gradientBgColor="bg-background" // Pass mobile background color
                 />
               </div>
               <motion.div variants={contentVariants} className="mb-4">
@@ -821,7 +823,7 @@ const Index = () => {
                   filteredAndSortedMovies.length > 0 && (
                     <p className="text-muted-foreground text-lg">No more movies.</p>
                   )
-                )}
+                  )}
               </motion.div>
             </motion.div>
           </main>
