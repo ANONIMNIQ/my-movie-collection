@@ -3,7 +3,7 @@ import App from "./App.tsx";
 import "./globals.css";
 
 createRoot(document.getElementById("root")!).render(
-  <div className="font-space-mono"> {/* Apply font-space-mono here */}
+  <div> {/* Removed font-space-mono from here */}
     <App />
   </div>
 );

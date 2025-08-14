@@ -91,8 +91,21 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-space-mono; /* Apply font-space-mono here */
     overflow-x: hidden;
+  }
+
+  /* Highly specific rule for Boxicons <i> elements */
+  i[class^='bx-'], i[class*=' bx-'] {
+    font-family: 'boxicons' !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    line-height: 1 !important;
+    text-rendering: auto !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
   }
 
   /* Embla Carousel Styles */
@@ -104,21 +117,6 @@
   }
   .embla__slide {
     @apply relative flex-shrink-0;
-  }
-}
-
-/* Custom utility class for Boxicons */
-@layer utilities {
-  .font-boxicons {
-    font-family: 'boxicons' !important;
-    font-weight: normal !important;
-    font-style: normal !important;
-    line-height: 1 !important;
-    text-rendering: auto !important;
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
-    display: inline-block !important;
-    vertical-align: middle !important;
   }
 }
 

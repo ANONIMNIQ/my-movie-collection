@@ -38,7 +38,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const leaveTimeout = useRef<number | null>(null);
+  const leaveTimeout = useRef<number | null>(leaveTimeout);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
   const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
@@ -83,7 +83,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   if (movies.length === 0) return null;
 
-  const IconComponent = titleIcons[title] ? <i className={cn(`bx ${titleIcons[title]} text-3xl mr-2`, "font-boxicons")}></i> : null;
+  const IconComponent = titleIcons[title] ? <i className={`bx ${titleIcons[title]} text-3xl mr-2`}></i> : null;
 
   return (
     <section className="mb-12 relative z-30">

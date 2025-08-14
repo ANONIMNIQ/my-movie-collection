@@ -95,7 +95,7 @@ const Index = () => {
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const [isLoadMoreTriggerVisible, setIsLoadMoreTriggerVisible] = useState(false);
-  const [isFooterVisible, setIsFooterVisible] = useState(false);
+  const [isFooterVisible, setIsFooter] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -356,7 +356,7 @@ const Index = () => {
     const currentFooterRef = footerRef.current;
 
     const footerObserver = new IntersectionObserver(([entry]) => {
-      setIsFooterVisible(entry.isIntersecting);
+      setIsFooter(entry.isIntersecting);
     }, { threshold: 0 });
 
     if (currentFooterRef) footerObserver.observe(currentFooterRef);
@@ -391,7 +391,7 @@ const Index = () => {
     }
   }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE, isMobile]);
 
-  const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooterVisible;
+  const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooter;
 
   const shouldShowSearchBar = !isMobile && (isAllMoviesSectionInView || searchQuery);
 
@@ -616,7 +616,7 @@ const Index = () => {
                     variants={titleShrinkVariants}
                   >
                     {!isMobile && ( // Only render icon on desktop
-                      <i className={cn("bx bx-film-roll-alt text-4xl mr-4", "font-boxicons")}></i> // Always visible film-roll-alt icon
+                      <i className="bx bx-film-roll-alt text-4xl mr-4"></i> {/* Removed font-boxicons utility class */}
                     )}
                     Georgi's Movie Collection
                   </motion.h1>
