@@ -768,12 +768,13 @@ const Index = () => {
               ) : (
                 <>
                   {moviesToShow.map((movie) => (
-                    <MobileMovieCard
-                      key={movie.id}
-                      movie={movie}
-                      selectedMovieIds={selectedMovieIds}
-                      onSelectMovie={handleSelectMovie}
-                    />
+                    <motion.div key={movie.id} variants={contentVariants}>
+                      <MobileMovieCard
+                        movie={movie}
+                        selectedMovieIds={selectedMovieIds}
+                        onSelectMovie={handleSelectMovie}
+                      />
+                    </motion.div>
                   ))}
                   <div ref={loadMoreRef} className="h-10" />
                 </>
