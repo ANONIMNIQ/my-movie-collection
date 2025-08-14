@@ -712,7 +712,7 @@ const Index = () => {
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
                 {!loadingAllMovies && (
                   <>
-                    <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between mb-4 gap-4 px-6 pt-8">
+                    <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 gap-4 px-6 pt-8">
                       <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} />
                       {/* New LetterFilterCarousel */}
                       {!isMobile && (

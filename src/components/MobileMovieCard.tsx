@@ -176,7 +176,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
   const renderCardContent = (isAnimatingClone = false) => (
     <>
       {isAdmin && (
-        <div className={`absolute top-2 left-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-25 */}
+        <div className={`absolute top-2 left-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}>
           <Checkbox
             checked={selectedMovieIds.has(movie.id)}
             onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
@@ -185,7 +185,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
         </div>
       )}
       {isAdmin && (
-        <div className={`absolute top-2 right-2 flex gap-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-25 */}
+        <div className={`absolute top-2 right-2 flex gap-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}>
           <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => navigate(`/edit-movie/${movie.id}`)}>
             <Edit className="h-4 w-4" />
           </Button>
@@ -212,7 +212,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
       )}
 
       <div
-        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
+        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2 transition-all duration-300 hover:brightness-110"
         style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >
         {isLoading && <Skeleton className="w-full h-full" />}
@@ -258,7 +258,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
       {/* Original card in the grid/list */}
       <div
         ref={cardRef}
-        className="w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer"
+        className="w-full bg-black text-white overflow-hidden shadow-2xl cursor-pointer transition-all duration-300 hover:scale-[1.02]"
         onClick={handleCardClick}
         style={{ visibility: isClicked ? 'hidden' : 'visible' }} // Hide original when animating
       >
@@ -312,7 +312,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
                 }}
                 className="w-full h-full"
               >
-                {renderCardContent(true)} {/* Pass true to hide interactive elements */}
+                {renderCardContent(true)}
               </motion.div>
             </motion.div>
           )}
