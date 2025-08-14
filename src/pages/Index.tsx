@@ -623,7 +623,7 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={fadeOutShrinkVariants}
                   >
-                    <p className={cn("mt-2 text-lg", isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription")}>
+                    <p className={cn("mt-2 text-base md:text-lg", isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription")}>
                       A minimalist collection of cinematic gems.
                     </p>
                     <div className="mt-6">
