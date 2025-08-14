@@ -53,22 +53,20 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
   }
 
   return (
-    <div className="flex items-center w-full"> {/* Removed max-w-* to allow expansion */}
-      {/* Left Arrow */}
+    <div className="flex items-center justify-center w-full max-w-md lg:max-w-lg xl:max-w-xl group">
       <Button
         variant="ghost"
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollPrev ? "opacity-100" : "opacity-0 invisible" // Always visible if can scroll
+          canScrollPrev ? "opacity-0 group-hover:opacity-100" : "opacity-0 invisible"
         )}
         onClick={scrollPrev}
       >
         <ChevronLeft className="h-5 w-5" />
       </Button>
 
-      {/* Embla Carousel Container */}
-      <div className="relative flex-grow overflow-hidden"> {/* flex-grow to take available space */}
+      <div className="relative flex-grow overflow-hidden">
         <div className="embla" ref={emblaRef}>
           <div className="embla__container flex items-center gap-4 px-2">
             <button
@@ -98,18 +96,16 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
             ))}
           </div>
         </div>
-        {/* Gradients - these should be absolute within this relative container */}
-        <div className={cn("absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
-        <div className={cn("absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
+        <div className={cn("absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
+        <div className={cn("absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
       </div>
 
-      {/* Right Arrow */}
       <Button
         variant="ghost"
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity",
-          canScrollNext ? "opacity-100" : "opacity-0 invisible" // Always visible if can scroll
+          canScrollNext ? "opacity-0 group-hover:opacity-100" : "opacity-0 invisible"
         )}
         onClick={scrollNext}
       >
