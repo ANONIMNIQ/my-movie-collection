@@ -95,6 +95,11 @@
     overflow-x: hidden;
   }
 
+  /* Ensure Boxicons font is used for elements with 'bx' class */
+  .bx {
+    font-family: 'boxicons' !important;
+  }
+
   /* Embla Carousel Styles */
   .embla {
     overflow-x: hidden;
