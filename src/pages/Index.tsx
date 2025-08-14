@@ -714,12 +714,12 @@ const Index = () => {
                 {!loadingAllMovies && (
                   <>
                     <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 px-6 pt-8"> {/* Removed gap-4 */}
-                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} mr-4 /> {/* Added mr-4 */}
+                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} /> {/* Removed mr-4 */}
                       <LetterFilterCarousel
                         letters={availableLetters}
                         onSelect={setSelectedLetterFilter}
                         activeLetter={selectedLetterFilter}
-                        className="ml-auto flex-grow" {/* Added flex-grow */}
+                        className="ml-auto flex-grow" /* Added flex-grow */
                         gradientFromColor="from-gray-200" // Pass desktop background color
                       />
                     </div>
