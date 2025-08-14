@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -21,12 +21,13 @@ const AlphabetFilterPopover: React.FC<AlphabetFilterPopoverProps> = ({
   onSelectLetter,
   currentSelectedLetter,
 }) => {
-  const [open, setOpen] = useState(false); // State to control popover open/close
-  const timeoutRef = useRef<number | null>(null); // Ref for hover timeout
+  const [open, setOpen] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null); // Ref for the scrollable content
 
   const alphabet = useMemo(() => {
     const letters = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
-    return letters; // No 'All' here, 'All' is the trigger
+    return letters;
   }, []);
 
   const availableFirstLetters = useMemo(() => {
@@ -49,40 +50,66 @@ const AlphabetFilterPopover: React.FC<AlphabetFilterPopoverProps> = ({
   const handleMouseLeave = () => {
     timeoutRef.current = window.setTimeout(() => {
       setOpen(false);
-    }, 100); // Small delay to allow moving mouse to content
+    }, 100);
   };
 
   const handleLetterClick = (letter: string | null) => {
     onSelectLetter(letter);
-    setOpen(false); // Close popover after selection
+    setOpen(false);
   };
 
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!contentRef.current) return;
+
+    const { clientY } = e;
+    const { top, height, scrollHeight } = contentRef.current.getBoundingClientRect();
+
+    // Only scroll if content is actually overflowing
+    if (scrollHeight <= height) return;
+
+    // Calculate mouse position relative to the content area (0 to 1)
+    const mouseY = clientY - top;
+    const scrollPercentage = mouseY / height;
+
+    // Calculate target scrollTop
+    const targetScrollTop = scrollPercentage * (scrollHeight - height);
+
+    // Apply smooth scroll
+    contentRef.current.scrollTo({
+      top: targetScrollTop,
+      behavior: 'smooth', // Smooth scrolling
+    });
+  }, []);
+
   return (
-    <Popover open={open} onOpenChange={setOpen}> {/* Control open state */}
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
           className={cn(
             "h-8 w-8 rounded-full text-white text-sm font-bold",
+            "bg-black/30 backdrop-blur-xl shadow-lg", // Frosted glass for "All" button
             "hover:bg-white/20 transition-colors",
             (currentSelectedLetter === null || currentSelectedLetter === 'All') && "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
-          onMouseEnter={handleMouseEnter} // Open on hover
-          onMouseLeave={handleMouseLeave} // Close on leave (with delay)
-          onClick={() => handleLetterClick(null)} // Click 'All' to clear filter
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => handleLetterClick(null)}
         >
           All
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-2 bg-transparent border-none text-white flex flex-col items-center gap-2 shadow-none" // Removed background, border, shadow
-        side="right" // Appear to the right of the trigger
-        align="start" // Align top of popover with top of trigger
-        sideOffset={8} // Small offset from the trigger
-        onMouseEnter={handleMouseEnter} // Keep open when hovering over content
-        onMouseLeave={handleMouseLeave} // Close on leave (with delay)
-        style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }} // Max height and scrollability
+        ref={contentRef} // Assign ref here
+        className="w-auto p-2 bg-black/30 backdrop-blur-xl border-none text-white flex flex-col items-center gap-2 shadow-lg" // Frosted glass for content
+        side="bottom" // Position below the trigger
+        align="center" // Center horizontally below the trigger
+        sideOffset={8}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onMouseMove={handleMouseMove} // Add mouse move handler
+        style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'hidden' }} // Hide scrollbar
       >
         {alphabet.map(letter => {
           const isActive = currentSelectedLetter === letter;
