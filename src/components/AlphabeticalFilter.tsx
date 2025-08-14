@@ -53,7 +53,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
   }
 
   return (
-    <div className="flex items-center justify-center w-full max-w-md lg:max-w-lg xl:max-w-xl group">
+    <div className="flex items-center justify-center w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl group">
       <Button
         variant="ghost"
         size="icon"
