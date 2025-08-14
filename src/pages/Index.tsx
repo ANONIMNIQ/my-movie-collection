@@ -43,6 +43,7 @@ import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
 import { Movie } from "@/data/movies";
 import AlphabeticalFilter from "@/components/AlphabeticalFilter";
+import { FilmIcon } from "@/components/icons";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 18;
@@ -83,7 +84,6 @@ const Index = () => {
   const [isPageReadyForInteraction, setIsPageReadyForInteraction] = useState(false);
   const [isHeaderDark, setIsHeaderDark] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  // Removed isTitleHovered state as the icon will always be visible
   
   const [isTitleScrolledPastTop, setIsTitleScrolledPastTop] = useState(false);
   const [isAllMoviesSectionInView, setIsAllMoviesSectionInView] = useState(false);
@@ -600,14 +600,14 @@ const Index = () => {
             <div className="container mx-auto px-4 h-full">
               <div className="relative flex items-center justify-center h-full">
                 <motion.div
-                  className="text-center" // Removed group class and hover handlers
+                  className="text-center"
                   initial="hidden"
                   animate={pageLoaded ? "visible" : "hidden"}
                   variants={headerContentContainerVariants}
                 >
                   <motion.h1
                     className={cn(
-                      "text-4xl md:text-5xl font-bold tracking-tight flex items-center justify-center", // Added flex, items-center, justify-center
+                      "text-4xl md:text-5xl font-bold tracking-tight flex items-center justify-center",
                       (isMobile && headerShrunk) || (!isMobile && headerShrunk && isHeaderDark)
                         ? "text-foreground"
                         : "text-headerTitle"
@@ -615,8 +615,8 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
                   >
-                    {!isMobile && ( // Only render icon on desktop
-                      <i className="bx bx-film text-4xl mr-4"></i>
+                    {!isMobile && (
+                      <FilmIcon className="w-10 h-10 mr-4" />
                     )}
                     Georgi's Movie Collection
                   </motion.h1>

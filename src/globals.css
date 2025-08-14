@@ -147,8 +147,3 @@
   box-shadow: none !important;
   border-color: transparent !important;
 }
-
-/* Force BoxIcons font-family on i tags with .bx class to override Tailwind defaults */
-i.bx {
-  font-family: 'BoxIcons';
-}

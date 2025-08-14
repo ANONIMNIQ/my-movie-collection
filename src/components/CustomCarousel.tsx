@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LazyMovieCard } from './LazyMovieCard';
 import { motion } from 'framer-motion';
+import { CalendarAltIcon, MaskIcon, BinocularIcon, ChipIcon, GhostIcon } from '@/components/icons';
 
 interface CustomCarouselProps {
   title: string;
@@ -17,13 +18,12 @@ interface CustomCarouselProps {
   pageLoaded: boolean;
 }
 
-// Map titles to Boxicon class names
-const titleIcons: { [key: string]: string } = {
-  "New Movies": "bx-calendar-alt",
-  "Drama": "bx-heart-crack",
-  "Thriller": "bx-binocular",
-  "Sci-Fi": "bx-ufo",
-  "Horror": "bx-ghost",
+const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
+  "New Movies": CalendarAltIcon,
+  "Drama": MaskIcon,
+  "Thriller": BinocularIcon,
+  "Sci-Fi": ChipIcon,
+  "Horror": GhostIcon,
 };
 
 export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie, isMobile, pageLoaded }) => {
@@ -83,18 +83,18 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   if (movies.length === 0) return null;
 
-  const IconComponent = titleIcons[title] ? <i className={`bx ${titleIcons[title]} text-3xl mr-2`}></i> : null;
+  const IconComponent = titleIcons[title];
 
   return (
     <section className="mb-12 relative z-30">
       <div className="px-10">
         <motion.h2
-          className="text-3xl font-bold flex items-center" // Added flex and items-center
+          className="text-3xl font-bold flex items-center"
           initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
           animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
-          {!isMobileHook && IconComponent} {/* Render icon only on desktop */}
+          {!isMobileHook && IconComponent && <IconComponent className="w-8 h-8 mr-2" />}
           {title}
         </motion.h2>
       </div>
