@@ -54,19 +54,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
 
   return (
     <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl group">
-      {/* The chevrons are now positioned inside the main div but outside the embla viewport */}
-      {canScrollPrev && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
-          onClick={scrollPrev}
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </Button>
-      )}
-      <div className="embla overflow-hidden mx-4" ref={emblaRef}>
-        <div className="embla__container flex items-center gap-4">
+      <div className="embla overflow-hidden" ref={emblaRef}>
+        <div className="embla__container flex items-center gap-4 px-4">
           <button
             onClick={() => onSelectLetter(null)}
             className={cn(
@@ -94,11 +83,27 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
           ))}
         </div>
       </div>
+
+      {/* Gradients */}
+      <div className={cn("absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
+      <div className={cn("absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
+
+      {/* Chevrons */}
+      {canScrollPrev && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          onClick={scrollPrev}
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+      )}
       {canScrollNext && (
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-8 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          className="absolute right-0 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
           onClick={scrollNext}
         >
           <ChevronRight className="h-5 w-5" />
