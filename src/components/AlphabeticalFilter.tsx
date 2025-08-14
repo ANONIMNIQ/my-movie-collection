@@ -16,8 +16,9 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
   const isMobileHook = useIsMobile(); // Use the hook here
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start', // Always align to start for consistent behavior
-    dragFree: true
+    align: 'start', // Always align to start
+    dragFree: true,
+    containScroll: 'trimSnaps' // Ensures no empty space at the end
   });
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
@@ -43,10 +44,13 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
+    // Also update on resize, as the number of visible slides might change
+    emblaApi.on('resize', onSelect);
     return () => {
       if (emblaApi) {
         emblaApi.off('select', onSelect);
         emblaApi.off('reInit', onSelect);
+        emblaApi.off('resize', onSelect);
       }
     };
   }, [emblaApi, onSelect]);
@@ -74,9 +78,9 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
       </Button>
 
       <div className="relative flex-grow overflow-hidden">
-        <div className="embla" ref={emblaRef}>
-          {/* Conditional justify-content for alignment */}
-          <div className={cn("embla__container flex items-center gap-4 px-2", !isMobileHook && "justify-end")}>
+        {/* Apply flex and justify-end to the embla container itself on non-mobile */}
+        <div className={cn("embla", !isMobileHook && "flex justify-end")} ref={emblaRef}>
+          <div className="embla__container flex items-center gap-4 px-2">
             <button
               onClick={() => onSelectLetter(null)}
               className={cn(
@@ -104,7 +108,6 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
             ))}
           </div>
         </div>
-        {/* Gradients still have pointer-events-none, which is correct */}
         <div className={cn("absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
         <div className={cn("absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
       </div>
