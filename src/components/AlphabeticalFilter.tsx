@@ -80,7 +80,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         {/* New wrapper div for conditional justification on desktop */}
         <div className={cn("flex", !isMobileHook && "justify-end")}>
           <div className="embla" ref={emblaRef}>
-            <div className="embla__container flex items-center gap-4"> {/* Removed px-2 here */}
+            <div className="embla__container flex items-center gap-4"> {/* px-2 has been removed here */}
               <button
                 onClick={() => onSelectLetter(null)}
                 className={cn(
