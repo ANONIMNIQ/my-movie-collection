@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import FlipNumbers from 'react-flip-numbers';
-import { useIsMobile } from '@/hooks/use-mobile'; // Import useIsMobile
 
 interface DynamicMovieCountHeaderProps {
   count: number;
@@ -10,14 +9,12 @@ interface DynamicMovieCountHeaderProps {
   sortAndFilter: string;
   allGenres: string[];
   allCountries: string[];
-  selectedLetterFilter: string;
+  // New optional props for styling overrides
   titleClassName?: string;
   numberClassName?: string;
   flipNumberHeight?: number;
   flipNumberWidth?: number;
   flipNumberColor?: string;
-  hideTitle?: boolean; // New prop to hide the title
-  hideCount?: boolean;  // New prop to hide the count
 }
 
 const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
@@ -26,23 +23,15 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
   sortAndFilter,
   allGenres,
   allCountries,
-  selectedLetterFilter,
-  titleClassName,
+  titleClassName, // Destructure new props
   numberClassName,
   flipNumberHeight,
   flipNumberWidth,
   flipNumberColor,
-  hideTitle = false, // Default to false
-  hideCount = false,  // Default to false
 }) => {
-  const isMobile = useIsMobile(); // Use the hook here
-
   const displayTitle = React.useMemo(() => {
     if (searchQuery) {
       return "Found Movies";
-    }
-    if (selectedLetterFilter !== "All") {
-      return selectedLetterFilter;
     }
     if (allGenres.includes(sortAndFilter)) {
       return sortAndFilter;
@@ -51,34 +40,26 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
       return allCountries.find(c => c === sortAndFilter) || "All Movies";
     }
     return "All Movies";
-  }, [searchQuery, sortAndFilter, allGenres, allCountries, selectedLetterFilter]);
+  }, [searchQuery, sortAndFilter, allGenres, allCountries]);
 
   const numberString = String(count).padStart(4, '0');
 
   return (
-    <div className="flex items-center gap-2 flex-shrink-0">
-      {!hideTitle && (
-        <h2 className={cn("text-xl md:text-3xl font-bold", titleClassName)}>
-          {displayTitle}
-        </h2>
-      )}
-      {!hideCount && (
-        <div className={cn(
-          "font-roboto-mono font-bold tracking-wider text-headerNumber",
-          "text-xl md:text-3xl", // Default responsive font size
-          numberClassName
-        )}>
-          <FlipNumbers
-            height={flipNumberHeight || (isMobile ? 20 : 32)}
-            width={flipNumberWidth || (isMobile ? 12 : 20)}
-            color={flipNumberColor || "black"}
-            background="transparent"
-            play
-            perspective={1000}
-            numbers={numberString}
-          />
-        </div>
-      )}
+    <div className="flex items-center gap-2">
+      <h2 className={cn("text-3xl font-bold", titleClassName)}>
+        {displayTitle}
+      </h2>
+      <div className={cn("font-roboto-mono font-bold tracking-wider text-headerNumber text-3xl", numberClassName)}>
+        <FlipNumbers
+          height={flipNumberHeight || 32}
+          width={flipNumberWidth || 20}
+          color={flipNumberColor || "black"}
+          background="transparent"
+          play
+          perspective={1000}
+          numbers={numberString}
+        />
+      </div>
     </div>
   );
 };

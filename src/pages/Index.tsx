@@ -30,7 +30,6 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectItemText, // Import SelectItemText
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -41,8 +40,7 @@ import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion, AnimatePresence } from "framer-motion";
 import HeroSlider from "@/components/HeroSlider";
 import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
-import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
-import LetterFilterCarousel from "@/components/LetterFilterCarousel"; // Import the new component
+import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader"; // Import the new component
 import { Movie } from "@/data/movies";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
@@ -69,16 +67,14 @@ const Index = () => {
   const [visibleCount, setVisibleCount] = useState(BATCH_SIZE); // Initialize with BATCH_SIZE
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
-  const [selectedLetterFilter, setSelectedLetterFilter] = useState("All"); // New state for letter filter
   const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const allMoviesSectionRef = useRef<HTMLDivElement>(null);
-  const allMoviesTitleContainerRef = useRef<HTMLDivElement>(null);
+  const allMoviesTitleContainerRef = useRef<HTMLDivElement>(null); // New ref for the title container
   const prevSearchQueryRef = useRef<string>('');
   const prevSortAndFilterRef = useRef<string>(sortAndFilter);
-  const prevSelectedLetterFilterRef = useRef<string>(selectedLetterFilter); // New ref for letter filter
 
   const [pageLoaded, setPageLoaded] = useState(false);
   const [headerShrunk, setHeaderShrunk] = useState(false);
@@ -86,16 +82,17 @@ const Index = () => {
   const [isHeaderDark, setIsHeaderDark] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   
+  // New states for precise floating header and search bar control
   const [isTitleScrolledPastTop, setIsTitleScrolledPastTop] = useState(false);
   const [isAllMoviesSectionInView, setIsAllMoviesSectionInView] = useState(false);
   const [isFloatingAllMoviesHeaderVisible, setIsFloatingAllMoviesHeaderVisible] = useState(false);
 
-  const heroSliderRef = useRef<HTMLDivElement>(null);
-  const [isHeroSliderInView, setIsHeroSliderInView] = useState(false);
+  const heroSliderRef = useRef<HTMLDivElement>(null); // New ref for HeroSlider
+  const [isHeroSliderInView, setIsHeroSliderInView] = useState(false); // New state for HeroSlider visibility
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
-  const [isLoadMoreTriggerVisible, setIsLoadMoreTriggerVisible] = useState(false);
+  const [isLoadMoreTriggerVisible, setIsLoadMoreTriggerVisible] = useState(false); // Renamed for clarity
   const [isFooterVisible, setIsFooterVisible] = useState(false);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
@@ -187,6 +184,7 @@ const Index = () => {
 
     if (!currentAllMoviesSectionRef || !currentAllMoviesTitleContainerRef) return;
 
+    // Observer for the main header background change
     const headerDarkObserver = new IntersectionObserver(
       ([entry]) => {
         if (headerShrunk) {
@@ -198,6 +196,7 @@ const Index = () => {
       { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
     );
 
+    // Observer for the 'All Movies' section overall visibility (for search bar and floating header exit)
     const sectionInViewObserver = new IntersectionObserver(
       ([entry]) => {
         setIsAllMoviesSectionInView(entry.isIntersecting);
@@ -205,16 +204,22 @@ const Index = () => {
       { threshold: 0 }
     );
 
+    // Observer for the 'All Movies' title container's top edge (for floating header entry/exit)
     const titleTopObserver = new IntersectionObserver(
       ([entry]) => {
+        // When the title container is NOT intersecting the viewport area BELOW the main header,
+        // it means it has scrolled up behind it.
         setIsTitleScrolledPastTop(!entry.isIntersecting);
       },
       {
+        // The root is the viewport. The margin shrinks the viewport's top boundary
+        // down to the bottom of the shrunken header.
         rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`,
         threshold: 0,
       }
     );
 
+    // Observer for Hero Slider visibility
     let heroSliderObserver: IntersectionObserver | undefined;
     if (currentHeroSliderRef) {
       heroSliderObserver = new IntersectionObserver(
@@ -240,17 +245,20 @@ const Index = () => {
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
+  // Combine states for the floating header's actual visibility
   useEffect(() => {
+    // The floating header should be visible if the title has scrolled past the top
+    // AND the entire 'All Movies' section is still in view (i.e., hasn't scrolled off the bottom).
+    // AND the Hero Slider is NOT in view (to prevent it from appearing over the slider).
     setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView && !isHeroSliderInView);
   }, [isTitleScrolledPastTop, isAllMoviesSectionInView, isHeroSliderInView]);
 
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;
     const prevSortAndFilter = prevSortAndFilterRef.current;
-    const prevSelectedLetterFilter = prevSelectedLetterFilterRef.current;
 
     const searchInitiated = !prevSearchQuery && searchQuery;
-    const filterChanged = sortAndFilter !== prevSortAndFilter || selectedLetterFilter !== prevSelectedLetterFilter;
+    const filterChanged = sortAndFilter !== prevSortAndFilter;
 
     if ((searchInitiated || filterChanged) && allMoviesSectionRef.current) {
       const headerOffset = shrunkenHeaderHeight + 8;
@@ -265,13 +273,12 @@ const Index = () => {
 
     prevSearchQueryRef.current = searchQuery;
     prevSortAndFilterRef.current = sortAndFilter;
-    prevSelectedLetterFilterRef.current = selectedLetterFilter;
-  }, [searchQuery, sortAndFilter, selectedLetterFilter, shrunkenHeaderHeight]);
+  }, [searchQuery, sortAndFilter, shrunkenHeaderHeight]);
 
   // Reset visibleCount when search query or sort/filter changes
   useEffect(() => {
     setVisibleCount(BATCH_SIZE);
-  }, [searchQuery, sortAndFilter, selectedLetterFilter]); // Added selectedLetterFilter
+  }, [searchQuery, sortAndFilter]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -325,26 +332,8 @@ const Index = () => {
         default: result.sort((a, b) => a.title.localeCompare(b.title)); break;
       }
     }
-
-    // Apply letter filter AFTER other filters and sorting
-    if (selectedLetterFilter !== "All") {
-      result = result.filter(movie => movie.title.trim().charAt(0).toUpperCase() === selectedLetterFilter);
-    }
-
     return result;
-  }, [allMovies, searchQuery, sortAndFilter, allGenres, allCountries, selectedLetterFilter]); // Added selectedLetterFilter
-
-  const availableLetters = useMemo(() => {
-    const letters = new Set<string>();
-    filteredAndSortedMovies.forEach(movie => {
-      const firstChar = movie.title.trim().charAt(0).toUpperCase();
-      if (firstChar && /[A-Z0-9]/.test(firstChar)) { // Only include alphanumeric first characters
-        letters.add(firstChar);
-      }
-    });
-    const sortedLetters = Array.from(letters).sort();
-    return ["All", ...sortedLetters];
-  }, [filteredAndSortedMovies]);
+  }, [allMovies, searchQuery, sortAndFilter, allGenres, allCountries]);
 
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
@@ -369,12 +358,14 @@ const Index = () => {
     const currentLoadMoreRef = loadMoreRef.current;
     const currentFooterRef = footerRef.current;
 
+    // Observer for the footer (applies to both mobile and desktop for search bar positioning)
     const footerObserver = new IntersectionObserver(([entry]) => {
       setIsFooterVisible(entry.isIntersecting);
     }, { threshold: 0 });
 
     if (currentFooterRef) footerObserver.observe(currentFooterRef);
 
+    // Conditional logic for loadMoreObserver based on device
     if (isMobile) {
       const loadMoreObserver = new IntersectionObserver(
         ([entry]) => {
@@ -391,6 +382,8 @@ const Index = () => {
         if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
       };
     } else {
+      // For desktop, we only need to know if the loadMoreRef is visible for the search bar positioning.
+      // The actual loading will be handled by a button click.
       const loadMoreObserver = new IntersectionObserver(
         ([entry]) => {
           setIsLoadMoreTriggerVisible(entry.isIntersecting);
@@ -403,10 +396,14 @@ const Index = () => {
         if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
       };
     }
-  }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE, isMobile]);
+  }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE, isMobile]); // Added isMobile to dependencies
 
+  // The search bar should move up if the "Load More" trigger is visible OR if the footer is visible.
+  // This ensures it's always above the interactive elements at the bottom.
   const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooterVisible;
 
+  // Define search bar visibility based on the new states
+  // Reverted to old logic: visible if not mobile AND (all movies section is in view OR there's a search query)
   const shouldShowSearchBar = !isMobile && (isAllMoviesSectionInView || searchQuery);
 
   const handleLogout = async () => {
@@ -516,7 +513,7 @@ const Index = () => {
             <motion.div
               key="floating-search-bar"
               className={cn(
-                "fixed bottom-6 z-40 left-0 right-0 mx-auto",
+                "fixed bottom-6 z-40 left-0 right-0 mx-auto", // Z-index changed to z-40
                 "flex items-center gap-2 bg-black/30 backdrop-blur-xl rounded-full p-2 shadow-lg w-fit",
                 isFilterOpen && "pointer-events-auto"
               )}
@@ -590,7 +587,7 @@ const Index = () => {
 
         <motion.header
           className={cn(
-            "w-full text-center z-50 fixed top-0 left-0 right-0",
+            "w-full text-center z-50 fixed top-0 left-0 right-0", // z-index changed to z-50
             "transition-colors duration-500 ease-out",
             headerShrunk
               ? isMobile
@@ -713,15 +710,9 @@ const Index = () => {
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
                 {!loadingAllMovies && (
                   <>
-                    <div ref={allMoviesTitleContainerRef} className="flex items-center justify-between flex-nowrap mb-4 px-6 pt-8"> {/* Removed gap-4 */}
-                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} selectedLetterFilter={selectedLetterFilter} /> {/* Removed mr-4 */}
-                      <LetterFilterCarousel
-                        letters={availableLetters}
-                        onSelect={setSelectedLetterFilter}
-                        activeLetter={selectedLetterFilter}
-                        className="ml-auto flex-grow" /* Added flex-grow */
-                        gradientFromColor="from-gray-200" // Pass desktop background color
-                      />
+                    <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
+                      {/* This header is now always rendered here, no conditional opacity */}
+                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
                     </div>
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
@@ -756,7 +747,7 @@ const Index = () => {
                   {visibleCount < filteredAndSortedMovies.length ? (
                     <Button
                       onClick={() => setVisibleCount(prev => prev + BATCH_SIZE)}
-                      className="mt-4 bg-black text-white hover:bg-gray-800"
+                      className="mt-4 bg-black text-white hover:bg-gray-800" // Added styling classes
                       disabled={loadingAllMovies}
                     >
                       Load More
@@ -770,21 +761,11 @@ const Index = () => {
               </motion.div>
             </motion.div>
             <motion.div className="md:hidden px-4 pt-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
-              <div ref={allMoviesTitleContainerRef} className="flex flex-col items-center justify-center mb-4 gap-2"> {/* Adjusted for centering and flex-col */}
-                <DynamicMovieCountHeader
-                  count={filteredAndSortedMovies.length}
-                  searchQuery={searchQuery}
-                  sortAndFilter={sortAndFilter}
-                  allGenres={allGenres}
-                  allCountries={allCountries}
-                  selectedLetterFilter={selectedLetterFilter}
-                  hideCount={true} // Hide count on mobile
-                  titleClassName="text-black text-center" // Make title black and centered
-                />
-              </div>
-              <motion.div variants={contentVariants} className="mb-4">
-                <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full" />
+              <motion.div variants={contentVariants} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+                <motion.h2 className="text-3xl font-bold" initial={{ color: "rgb(255,255,255)" }} animate={{ color: isMobile && headerShrunk ? "rgb(0,0,0)" : "rgb(255,255,255)" }} transition={{ duration: 0.6, ease: "easeOut" }}>{searchQuery ? "Found Movies" : "All Movies"}</motion.h2>
+                <Input type="text" placeholder="Search movies..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full sm:w-auto" />
               </motion.div>
+              {searchQuery && <motion.div variants={contentVariants} className="mb-4"><MovieCounter count={filteredAndSortedMovies.length} numberColor={"#0F0F0F"} labelColor={"hidden"} animateOnLoad={pageLoaded} /></motion.div>}
               {isAdmin && !loadingAllMovies && (
                 <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
@@ -826,7 +807,7 @@ const Index = () => {
                   filteredAndSortedMovies.length > 0 && (
                     <p className="text-muted-foreground text-lg">No more movies.</p>
                   )
-                  )}
+                )}
               </motion.div>
             </motion.div>
           </main>

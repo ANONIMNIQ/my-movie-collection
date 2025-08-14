@@ -192,10 +192,10 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   };
 
   // Added forceOverlayVisible prop
-  const renderCardContent = (isAnimatingClone = false) => (
+  const renderCardContent = (isAnimatingClone = false, forceOverlayVisible = false) => (
     <>
       {isAdmin && (
-        <div className={`absolute top-2 left-2 z-30 ${isAnimatingClone ? 'opacity-0' : ''}`}>
+        <div className={`absolute top-2 left-2 z-30 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-30 */}
           <Checkbox
             checked={selectedMovieIds.has(movie.id)}
             onCheckedChange={(checked) => onSelectMovie(movie.id, !!checked)}
@@ -205,7 +205,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       )}
 
       <div className={cn(
-        "aspect-[2/3] w-full bg-muted"
+        "aspect-[2/3] w-full bg-muted",
+        !isAnimatingClone && "transition-opacity duration-300 group-hover/slide:opacity-0" // Apply this only to the original card
       )}>
         {isLoading ? (
           <Skeleton className="w-full h-full" />
@@ -213,16 +214,76 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           <img
             src={posterUrl}
             alt={movie.title}
-            className="w-full h-full object-cover transition-all duration-300 group-hover/slide:brightness-110"
+            className="w-full h-full object-cover"
             onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
             loading="lazy"
           />
         )}
       </div>
 
+      {/* Hover Overlay */}
+      <div
+        className={cn(
+          "absolute inset-0 flex flex-col transition-opacity duration-300 z-20 rounded-none pointer-events-none",
+          forceOverlayVisible ? "opacity-100" : "opacity-0 group-hover/slide:opacity-100" // Use forceOverlayVisible here
+        )}
+      >
+        {/* Top part of overlay (backdrop) */}
+        <div
+          className="relative h-[45%] w-full bg-cover bg-center flex items-center justify-center p-2"
+          style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: backdropUrl ? 'transparent' : 'black' }}
+        >
+          {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+          {logoUrl && (
+            <img
+              src={logoUrl}
+              alt={`${movie.title} logo`}
+              className="max-h-full max-w-full object-contain z-10"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          )}
+          {!backdropUrl && !logoUrl && (
+            <h3 className="text-lg font-bold text-white text-center z-10">{movie.title}</h3>
+          )}
+        </div>
+
+        {/* Bottom part of overlay (info and buttons) */}
+        <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white pointer-events-auto">
+          <div className="mb-1">
+            <Button variant="ghost" size="icon" className="h-auto w-auto p-0" onClick={() => navigate(`/movie/${movie.id}`)}>
+              <Info size={16} className="text-white cursor-pointer hover:text-gray-300 transition-colors" />
+            </Button>
+          </div>
+          <h3 className="text-lg font-bold line-clamp-1">
+            {movie.title}
+          </h3>
+          {showSynopsis && (
+            <p className="hidden md:line-clamp-1 lg:line-clamp-2 text-xs text-gray-300 mb-1">
+              {movie.synopsis || tmdbMovie?.overview || "No synopsis available."}
+            </p>
+          )}
+          <div className="text-xs text-gray-400">
+            <p>{movie.runtime ? `${movie.runtime} min` : "N/A min"} | {movie.year}</p>
+            <div className="hidden sm:flex items-center mt-1">
+              <Star className="text-yellow-400 h-3 w-3 mr-1" />
+              <span>Georgi's Rating: {typeof adminPersonalRatingData === 'number' ? adminPersonalRatingData.toFixed(1) : "N/A"}</span>
+            </div>
+          </div>
+          <div className="hidden md:flex flex-row gap-1 mt-2">
+            {trailerUrl && (
+              <Button asChild variant="outline" className="flex-1 w-full justify-center gap-1 text-xs h-7 px-2">
+                <a href={trailerUrl} target="_blank" rel="noopener noreferrer">
+                  <Youtube className="h-3 w-3" /> Trailer
+                </a>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Admin Buttons */}
       {isAdmin && (
-        <div className={`absolute top-2 right-2 flex gap-2 z-30 ${isAnimatingClone ? 'opacity-0' : ''}`}>
+        <div className={`absolute top-2 right-2 flex gap-2 z-30 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-30 */}
           <Button 
             variant="secondary" 
             size="icon" 
@@ -270,12 +331,12 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
           ref={cardRef}
           className={cn(
             "h-full flex flex-col bg-card border-none rounded-none shadow-lg overflow-hidden cursor-pointer",
-            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-[1.03] group-hover/slide:shadow-glow", // Subtle scale, no glow
+            "transition-all duration-300 ease-in-out transform-gpu group-hover/slide:scale-125 group-hover/slide:shadow-glow",
             isClicked ? 'invisible' : 'visible' // Hide original when animating
           )}
           onClick={handleCardClick}
         >
-          {renderCardContent(false)}
+          {renderCardContent(false, false)} {/* Original card: no forceOverlayVisible */}
         </Card>
       </div>
 
@@ -326,7 +387,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
                 }}
                 className="w-full h-full"
               >
-                {renderCardContent(true)}
+                {renderCardContent(true, true)} {/* Animating clone: forceOverlayVisible true */}
               </motion.div>
             </motion.div>
           )}

@@ -47,8 +47,8 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
             sortAndFilter={sortAndFilter}
             allGenres={allGenres}
             allCountries={allCountries}
-            hideTitle={false} // Explicitly show title
-            titleClassName="text-white text-base min-w-0" // Make title white and smaller, prevent shrinking
+            // Pass new styling props here for even smaller size
+            titleClassName="text-base" // Make title even smaller
             numberClassName="text-base" // Make number container even smaller
             flipNumberHeight={16} // Smaller height for numbers
             flipNumberWidth={10}  // Smaller width for numbers
