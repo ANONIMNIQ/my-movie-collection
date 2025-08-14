@@ -681,6 +681,7 @@ const Index = () => {
                 <HeroSlider movies={heroSliderMovies} adminUserId={ADMIN_USER_ID} />
               </motion.div>
             )}
+            {/* Desktop View */}
             <motion.div className="hidden md:block pt-8" initial="hidden" animate={pageLoaded ? "visible" : "hidden"} variants={desktopMainContainerVariants}>
               {loadingAllMovies ? (
                 <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
@@ -750,14 +751,42 @@ const Index = () => {
                   )}
                 </motion.div>
               </motion.div>
-            </main>
-          </motion.div>
-          <motion.footer ref={footerRef} className="py-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={contentVariants}>
-            <MadeWithDyad />
-          </motion.footer>
+            </motion.div>
+
+            {/* Mobile View */}
+            <motion.div className="md:hidden px-4 space-y-6" initial="hidden" animate={pageLoaded ? "visible" : "hidden"} variants={mobileMainContainerVariants}>
+              {loadingAllMovies ? (
+                <div className="space-y-6">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <Skeleton key={index} className="h-64 w-full rounded-lg" />
+                  ))}
+                </div>
+              ) : isErrorAllMovies ? (
+                <div className="text-center text-destructive">{errorAllMovies?.message || "Failed to load movies."}</div>
+              ) : filteredAndSortedMovies.length === 0 ? (
+                <div className="text-center text-muted-foreground text-lg py-16">No movies found.</div>
+              ) : (
+                <>
+                  {moviesToShow.map((movie) => (
+                    <MobileMovieCard
+                      key={movie.id}
+                      movie={movie}
+                      selectedMovieIds={selectedMovieIds}
+                      onSelectMovie={handleSelectMovie}
+                    />
+                  ))}
+                  <div ref={loadMoreRef} className="h-10" />
+                </>
+              )}
+            </motion.div>
+          </main>
         </motion.div>
-      </>
-    );
-  };
+        <motion.footer ref={footerRef} className="py-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={contentVariants}>
+          <MadeWithDyad />
+        </motion.footer>
+      </motion.div>
+    </>
+  );
+};
 
 export default Index;
