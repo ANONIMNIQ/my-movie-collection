@@ -590,6 +590,7 @@ const Index = () => {
             sortAndFilter={sortAndFilter}
             allGenres={allGenres}
             allCountries={allCountries}
+            selectedLetter={selectedLetter}
             isVisible={isFloatingAllMoviesHeaderVisible}
             headerHeight={shrunkenHeaderHeight}
           />
@@ -721,7 +722,14 @@ const Index = () => {
                 {!loadingAllMovies && (
                   <>
                     <div ref={allMoviesTitleContainerRef} className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4 px-6 pt-8">
-                      <DynamicMovieCountHeader count={filteredAndSortedMovies.length} searchQuery={searchQuery} sortAndFilter={sortAndFilter} allGenres={allGenres} allCountries={allCountries} />
+                      <DynamicMovieCountHeader
+                        count={filteredAndSortedMovies.length}
+                        searchQuery={searchQuery}
+                        sortAndFilter={sortAndFilter}
+                        allGenres={allGenres}
+                        allCountries={allCountries}
+                        selectedLetter={selectedLetter}
+                      />
                       <AlphabeticalFilter movies={baseFilteredMovies} selectedLetter={selectedLetter} onSelectLetter={setSelectedLetter} />
                     </div>
                     {isAdmin && (

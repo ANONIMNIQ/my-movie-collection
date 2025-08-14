@@ -9,6 +9,7 @@ interface DynamicMovieCountHeaderProps {
   sortAndFilter: string;
   allGenres: string[];
   allCountries: string[];
+  selectedLetter?: string | null; // New prop for the selected letter
   // New optional props for styling overrides
   titleClassName?: string;
   numberClassName?: string;
@@ -23,13 +24,17 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
   sortAndFilter,
   allGenres,
   allCountries,
-  titleClassName, // Destructure new props
+  selectedLetter, // Destructure new prop
+  titleClassName,
   numberClassName,
   flipNumberHeight,
   flipNumberWidth,
   flipNumberColor,
 }) => {
   const displayTitle = React.useMemo(() => {
+    if (selectedLetter) {
+      return `"${selectedLetter}" Movies`; // Prioritize selected letter
+    }
     if (searchQuery) {
       return "Found Movies";
     }
@@ -40,7 +45,7 @@ const DynamicMovieCountHeader: React.FC<DynamicMovieCountHeaderProps> = ({
       return allCountries.find(c => c === sortAndFilter) || "All Movies";
     }
     return "All Movies";
-  }, [searchQuery, sortAndFilter, allGenres, allCountries]);
+  }, [selectedLetter, searchQuery, sortAndFilter, allGenres, allCountries]);
 
   const numberString = String(count).padStart(4, '0');
 

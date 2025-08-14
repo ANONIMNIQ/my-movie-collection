@@ -9,6 +9,7 @@ interface FloatingAllMoviesHeaderProps {
   sortAndFilter: string;
   allGenres: string[];
   allCountries: string[];
+  selectedLetter: string | null; // New prop
   isVisible: boolean;
   headerHeight: number; // This is the shrunken height of the main header
 }
@@ -19,6 +20,7 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
   sortAndFilter,
   allGenres,
   allCountries,
+  selectedLetter, // Destructure new prop
   isVisible,
   headerHeight,
 }) => {
@@ -47,6 +49,7 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
             sortAndFilter={sortAndFilter}
             allGenres={allGenres}
             allCountries={allCountries}
+            selectedLetter={selectedLetter} // Pass prop down
             // Pass new styling props here for even smaller size
             titleClassName="text-base" // Make title even smaller
             numberClassName="text-base" // Make number container even smaller
