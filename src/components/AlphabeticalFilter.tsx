@@ -68,7 +68,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20",
-          !canScrollPrev && "invisible pointer-events-none" // Changed opacity-0 to invisible
+          !canScrollPrev && "invisible pointer-events-none"
         )}
         onClick={scrollPrev}
         disabled={!canScrollPrev}
@@ -84,10 +84,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
               <button
                 onClick={() => onSelectLetter(null)}
                 className={cn(
-                  "embla__slide flex-shrink-0 text-base font-medium transition-colors",
-                  selectedLetter === null
-                    ? "text-black"
-                    : "text-gray-500 hover:text-gray-800"
+                  "embla__slide flex-shrink-0 text-base font-medium transition-colors text-gray-500 hover:text-gray-800 hover:font-bold",
+                  selectedLetter === null && "text-black font-bold"
                 )}
               >
                 All
@@ -97,10 +95,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
                   key={letter}
                   onClick={() => onSelectLetter(letter)}
                   className={cn(
-                    "embla__slide flex-shrink-0 text-base font-medium transition-colors",
-                    selectedLetter === letter
-                      ? "text-black"
-                      : "text-gray-500 hover:text-gray-800"
+                    "embla__slide flex-shrink-0 text-base font-medium transition-colors text-gray-500 hover:text-gray-800 hover:font-bold",
+                    selectedLetter === letter && "text-black font-bold"
                   )}
                 >
                   {letter}
@@ -119,7 +115,7 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         size="icon"
         className={cn(
           "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20",
-          !canScrollNext && "invisible pointer-events-none" // Changed opacity-0 to invisible
+          !canScrollNext && "invisible pointer-events-none"
         )}
         onClick={scrollNext}
         disabled={!canScrollNext}
