@@ -54,56 +54,51 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
 
   return (
     <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl group">
-      <div className="embla overflow-hidden" ref={emblaRef}>
-        <div className="embla__container flex items-center gap-2">
-          <Button
-            variant={selectedLetter === null ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => onSelectLetter(null)}
-            className={cn(
-              "embla__slide flex-shrink-0 rounded-full",
-              selectedLetter === null
-                ? "bg-black text-white"
-                : "bg-white text-black border-gray-300 hover:bg-gray-200"
-            )}
-          >
-            All
-          </Button>
-          {letters.map(letter => (
-            <Button
-              key={letter}
-              variant={selectedLetter === letter ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => onSelectLetter(letter)}
-              className={cn(
-                "embla__slide flex-shrink-0 rounded-full w-9 h-9 p-0",
-                selectedLetter === letter
-                  ? "bg-black text-white"
-                  : "bg-white text-black border-gray-300 hover:bg-gray-200"
-              )}
-            >
-              {letter}
-            </Button>
-          ))}
-        </div>
-      </div>
-      <div className={cn("absolute left-0 top-0 bottom-0 w-10 bg-gradient-to-r from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollPrev ? "opacity-100" : "opacity-0")} />
-      <div className={cn("absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-gray-200 to-transparent z-10 pointer-events-none transition-opacity", canScrollNext ? "opacity-100" : "opacity-0")} />
+      {/* The chevrons are now positioned inside the main div but outside the embla viewport */}
       {canScrollPrev && (
         <Button
           variant="ghost"
           size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 h-8 w-8 rounded-full bg-white/80 hover:bg-white shadow-md text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
           onClick={scrollPrev}
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
       )}
+      <div className="embla overflow-hidden mx-4" ref={emblaRef}>
+        <div className="embla__container flex items-center gap-4">
+          <button
+            onClick={() => onSelectLetter(null)}
+            className={cn(
+              "embla__slide flex-shrink-0 text-base font-medium transition-colors",
+              selectedLetter === null
+                ? "text-black"
+                : "text-gray-500 hover:text-gray-800"
+            )}
+          >
+            All
+          </button>
+          {letters.map(letter => (
+            <button
+              key={letter}
+              onClick={() => onSelectLetter(letter)}
+              className={cn(
+                "embla__slide flex-shrink-0 text-base font-medium transition-colors",
+                selectedLetter === letter
+                  ? "text-black"
+                  : "text-gray-500 hover:text-gray-800"
+              )}
+            >
+              {letter}
+            </button>
+          ))}
+        </div>
+      </div>
       {canScrollNext && (
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 h-8 w-8 rounded-full bg-white/80 hover:bg-white shadow-md text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-8 h-8 w-8 text-gray-400 hover:text-black opacity-0 group-hover:opacity-100 transition-opacity z-20"
           onClick={scrollNext}
         >
           <ChevronRight className="h-5 w-5" />
