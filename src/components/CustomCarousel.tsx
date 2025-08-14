@@ -6,20 +6,29 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LazyMovieCard } from './LazyMovieCard';
-import { motion } from 'framer-motion'; // Import motion
+import { motion } from 'framer-motion';
 
 interface CustomCarouselProps {
   title: string;
   movies: Movie[];
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
-  isMobile: boolean; // New prop
-  pageLoaded: boolean; // New prop
+  isMobile: boolean;
+  pageLoaded: boolean;
 }
 
+// Map titles to Boxicon class names
+const titleIcons: { [key: string]: string } = {
+  "New Movies": "bx-calendar-alt",
+  "Drama": "bx-mask", // Theatre mask for drama
+  "Thriller": "bx-binoculars",
+  "Sci-Fi": "bx-planet", // Closest for Sci-Fi
+  "Horror": "bx-ghost",
+};
+
 export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, selectedMovieIds, onSelectMovie, isMobile, pageLoaded }) => {
-  const isMobileHook = useIsMobile(); // Use the hook here, but also use the prop for consistency with parent
-  const slidesToScroll = isMobileHook ? 2 : 5; // Use the hook's value for carousel behavior
+  const isMobileHook = useIsMobile();
+  const slidesToScroll = isMobileHook ? 2 : 5;
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'center',
     loop: false,
@@ -29,7 +38,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const leaveTimeout = useRef<number | null>(null); // Fixed: Initialized with null
+  const leaveTimeout = useRef<number | null>(null);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
   const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
@@ -59,7 +68,6 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
-    // Only add the scrolling class when the carousel is actually scrolling
     emblaApi.on('scroll', addScrollingClass);
     emblaApi.on('settle', removeScrollingClass);
 
@@ -75,15 +83,18 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   if (movies.length === 0) return null;
 
+  const IconComponent = titleIcons[title] ? <i className={`bx ${titleIcons[title]} text-3xl mr-2`}></i> : null;
+
   return (
-    <section className="mb-12 relative z-30"> {/* Added z-30 here */}
+    <section className="mb-12 relative z-30">
       <div className="px-10">
         <motion.h2
-          className="text-3xl font-bold" // Removed conditional text color class
-          initial={isMobile ? { color: "rgb(255,255,255)" } : {}} // Initial white color for mobile
-          animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}} // Animate to black for mobile
-          transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }} // Match main background delay
+          className="text-3xl font-bold flex items-center" // Added flex and items-center
+          initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
+          animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
+          {!isMobileHook && IconComponent} {/* Render icon only on desktop */}
           {title}
         </motion.h2>
       </div>
