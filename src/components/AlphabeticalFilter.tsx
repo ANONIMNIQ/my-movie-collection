@@ -67,8 +67,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         variant="ghost"
         size="icon"
         className={cn(
-          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity z-20", // Added z-20
-          canScrollPrev ? "opacity-100" : "opacity-0"
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20", // Faster transition
+          !canScrollPrev && "opacity-0 pointer-events-none" // Add pointer-events-none
         )}
         onClick={scrollPrev}
         disabled={!canScrollPrev}
@@ -118,8 +118,8 @@ const AlphabeticalFilter: React.FC<AlphabeticalFilterProps> = ({ movies, selecte
         variant="ghost"
         size="icon"
         className={cn(
-          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity z-20", // Added z-20
-          canScrollNext ? "opacity-100" : "opacity-0"
+          "h-8 w-8 flex-shrink-0 text-gray-400 hover:text-black hover:bg-transparent transition-opacity duration-100 z-20", // Faster transition
+          !canScrollNext && "opacity-0 pointer-events-none" // Add pointer-events-none
         )}
         onClick={scrollNext}
         disabled={!canScrollNext}
