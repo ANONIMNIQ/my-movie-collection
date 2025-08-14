@@ -448,7 +448,7 @@ const Index = () => {
     shrunk: { minHeight: `${shrunkenHeaderHeight}px`, paddingTop: shrunkenHeaderPaddingY, paddingBottom: shrunkenHeaderPaddingY, transition: { duration: 0.5, ease: "easeOut" } },
   };
   const titleShrinkVariants = {
-    full: { fontSize: isMobile ? "2.25rem" : "3rem", transition: { duration: 0.5, ease: "easeOut" } },
+    full: { fontSize: isMobile ? "1.75rem" : "3rem", transition: { duration: 0.5, ease: "easeOut" } },
     shrunk: { fontSize: isMobile ? "1.25rem" : "2rem", transition: { duration: 0.5, ease: "easeOut" } },
   };
   const fadeOutShrinkVariants = {
@@ -607,7 +607,7 @@ const Index = () => {
                 >
                   <motion.h1
                     className={cn(
-                      "text-4xl md:text-5xl font-bold tracking-tight flex items-center justify-center",
+                      "font-bold tracking-tight flex items-center justify-center",
                       (isMobile && headerShrunk) || (!isMobile && headerShrunk && isHeaderDark)
                         ? "text-foreground"
                         : "text-headerTitle"
