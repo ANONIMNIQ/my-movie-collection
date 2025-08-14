@@ -43,7 +43,7 @@ import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
 import { Movie } from "@/data/movies";
 import AlphabeticalFilter from "@/components/AlphabeticalFilter";
-import { FilmIcon } from "@/components/icons";
+import { FilmRollIcon } from "@/components/icons";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 18;
@@ -616,7 +616,7 @@ const Index = () => {
                     variants={titleShrinkVariants}
                   >
                     {!isMobile && (
-                      <FilmIcon className="w-10 h-10 mr-4" />
+                      <FilmRollIcon className="w-10 h-10 mr-4" />
                     )}
                     Georgi's Movie Collection
                   </motion.h1>

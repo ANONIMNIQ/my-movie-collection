@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LazyMovieCard } from './LazyMovieCard';
 import { motion } from 'framer-motion';
-import { CalendarAltIcon, MaskIcon, BinocularIcon, ChipIcon, GhostIcon } from '@/components/icons';
+import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon } from '@/components/icons';
 
 interface CustomCarouselProps {
   title: string;
@@ -20,9 +20,9 @@ interface CustomCarouselProps {
 
 const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "New Movies": CalendarAltIcon,
-  "Drama": MaskIcon,
+  "Drama": HeartBreakIcon,
   "Thriller": BinocularIcon,
-  "Sci-Fi": ChipIcon,
+  "Sci-Fi": UfoIcon,
   "Horror": GhostIcon,
 };
 

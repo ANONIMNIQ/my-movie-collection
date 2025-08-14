@@ -1,6 +1,6 @@
-export { FilmIcon } from './FilmIcon';
+export { FilmRollIcon } from './FilmRollIcon';
 export { CalendarAltIcon } from './CalendarAltIcon';
-export { MaskIcon } from './MaskIcon';
+export { HeartBreakIcon } from './HeartBreakIcon';
 export { BinocularIcon } from './BinocularIcon';
-export { ChipIcon } from './ChipIcon';
+export { UfoIcon } from './UfoIcon';
 export { GhostIcon } from './GhostIcon';
