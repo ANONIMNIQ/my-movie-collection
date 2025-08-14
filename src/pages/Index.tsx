@@ -616,7 +616,7 @@ const Index = () => {
                     variants={titleShrinkVariants}
                   >
                     {!isMobile && ( // Only render icon on desktop
-                      <i className="bx bx-film text-4xl mr-4"></i>
+                      <i className="font-boxicons bx bx-film text-4xl mr-4"></i>
                     )}
                     Georgi's Movie Collection
                   </motion.h1>

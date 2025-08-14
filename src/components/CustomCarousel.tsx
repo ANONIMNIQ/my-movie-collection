@@ -83,7 +83,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
 
   if (movies.length === 0) return null;
 
-  const IconComponent = titleIcons[title] ? <i className={`bx ${titleIcons[title]} text-3xl mr-2`}></i> : null;
+  const IconComponent = titleIcons[title] ? <i className={`font-boxicons bx ${titleIcons[title]} text-3xl mr-2`}></i> : null;
 
   return (
     <section className="mb-12 relative z-30">
