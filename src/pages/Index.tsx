@@ -168,7 +168,7 @@ const Index = () => {
     }
   }, [pageLoaded, headerShrunk]);
 
-  const shrunkenHeaderHeight = isMobile ? 36 : 50; // Further adjusted values
+  const shrunkenHeaderHeight = isMobile ? 36 : 50; // Keep these values for overall height
 
   useEffect(() => {
     if (isMobile) {
@@ -449,7 +449,7 @@ const Index = () => {
   };
   const titleShrinkVariants = {
     full: { fontSize: isMobile ? "1.5rem" : "3rem", transition: { duration: 0.5, ease: "easeOut" } },
-    shrunk: { fontSize: isMobile ? "1.25rem" : "2rem", transition: { duration: 0.5, ease: "easeOut" } },
+    shrunk: { fontSize: isMobile ? "1.1rem" : "1.8rem", transition: { duration: 0.5, ease: "easeOut" } }, // Adjusted font size
   };
   const fadeOutShrinkVariants = {
     full: { opacity: 1, height: "auto", marginTop: "1.5rem", marginBottom: "1.5rem", transition: { duration: 0.3, ease: "easeOut" } },
@@ -620,7 +620,7 @@ const Index = () => {
                       className={cn(
                         "flex-shrink-0 mr-2 md:mr-4",
                         headerShrunk
-                          ? "w-8 h-8 md:w-12 md:h-12" // Smaller size when shrunk
+                          ? "w-10 h-10 md:w-14 md:h-14" // Increased size when shrunk
                           : "w-12 h-12 md:w-20 md:h-20" // Original size when full
                       )}
                     />
