@@ -147,3 +147,8 @@
   box-shadow: none !important;
   border-color: transparent !important;
 }
+
+/* Disable pointer events on card info panels when filter is open */
+.filter-is-open .card-info-panel {
+  pointer-events: none !important;
+}

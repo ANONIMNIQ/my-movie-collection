@@ -479,7 +479,7 @@ const Index = () => {
         className={cn(
           "min-h-screen w-full overflow-x-hidden",
           !isMobile && "bg-background text-foreground",
-          isFilterOpen && "pointer-events-none"
+          isFilterOpen && "pointer-events-none filter-is-open"
         )}
         initial={isMobile ? { backgroundColor: "hsl(var(--background))" } : {}}
         animate={isMobile && headerShrunk ? { backgroundColor: "rgb(255,255,255)" } : {}}

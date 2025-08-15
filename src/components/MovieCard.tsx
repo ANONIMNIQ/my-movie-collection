@@ -248,7 +248,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         </div>
 
         {/* Bottom part of overlay (info and buttons) */}
-        <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white pointer-events-auto">
+        <div className="h-[55%] w-full bg-black flex flex-col justify-between p-3 text-white pointer-events-auto card-info-panel">
           <div className="mb-1">
             <Button variant="ghost" size="icon" className="h-auto w-auto p-0" onClick={() => navigate(`/movie/${movie.id}`)}>
               <Info size={16} className="text-white cursor-pointer hover:text-gray-300 transition-colors" />
