@@ -448,7 +448,7 @@ const Index = () => {
     shrunk: { minHeight: `${shrunkenHeaderHeight}px`, paddingTop: shrunkenHeaderPaddingY, paddingBottom: shrunkenHeaderPaddingY, transition: { duration: 0.5, ease: "easeOut" } },
   };
   const titleShrinkVariants = {
-    full: { fontSize: isMobile ? "1.75rem" : "3rem", transition: { duration: 0.5, ease: "easeOut" } },
+    full: { fontSize: isMobile ? "1.5rem" : "3rem", transition: { duration: 0.5, ease: "easeOut" } },
     shrunk: { fontSize: isMobile ? "1.25rem" : "2rem", transition: { duration: 0.5, ease: "easeOut" } },
   };
   const fadeOutShrinkVariants = {
@@ -623,7 +623,7 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={fadeOutShrinkVariants}
                   >
-                    <p className={cn("mt-2 text-base md:text-lg", isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription")}>
+                    <p className={cn("mt-2 text-sm md:text-lg", isMobile && headerShrunk ? "text-muted-foreground" : "text-headerDescription")}>
                       A minimalist collection of cinematic gems.
                     </p>
                     <div className="mt-6">
