@@ -168,7 +168,7 @@ const Index = () => {
     }
   }, [pageLoaded, headerShrunk]);
 
-  const shrunkenHeaderHeight = isMobile ? 40 : 60; // Further adjusted values
+  const shrunkenHeaderHeight = isMobile ? 36 : 50; // Further adjusted values
 
   useEffect(() => {
     if (isMobile) {
@@ -616,7 +616,14 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
                   >
-                    <MovieReelIcon className="w-12 h-12 md:w-20 md:h-20 mr-2 md:mr-4 flex-shrink-0" />
+                    <MovieReelIcon
+                      className={cn(
+                        "flex-shrink-0 mr-2 md:mr-4",
+                        headerShrunk
+                          ? "w-8 h-8 md:w-12 md:h-12" // Smaller size when shrunk
+                          : "w-12 h-12 md:w-20 md:h-20" // Original size when full
+                      )}
+                    />
                     <span className="truncate">Georgi's Movie Collection</span>
                   </motion.h1>
                   <motion.div
