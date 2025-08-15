@@ -615,7 +615,7 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
                   >
-                    <MovieReelIcon className="w-8 h-8 md:w-12 md:h-12 mr-2 md:mr-4 flex-shrink-0" />
+                    <MovieReelIcon className="w-10 h-10 md:w-16 md:h-16 mr-2 md:mr-4 flex-shrink-0" /> {/* Increased size */}
                     <span className="truncate">Georgi's Movie Collection</span>
                   </motion.h1>
                   <motion.div
