@@ -181,11 +181,25 @@ const MovieDetail = () => {
     ? castToDisplay.join(", ")
     : (tmdbMovie?.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "");
   
-  const director = movie.director || tmdbMovie?.credits?.crew?.find((c: any) => c.job === "Director")?.name || "";
-  
   const originCountry = Array.isArray(movie.origin_country) && movie.origin_country.length > 0
     ? movie.origin_country.join(', ')
     : (tmdbMovie?.production_countries?.map((c: any) => c.name).join(', ') || "");
+
+  // Helper function to get crew members by job, removing duplicates
+  const getCrewMembers = (job: string | string[]) => {
+    const jobs = Array.isArray(job) ? job : [job];
+    const members = tmdbMovie?.credits?.crew
+      ?.filter((c: any) => jobs.includes(c.job))
+      ?.map((p: any) => p.name);
+    
+    return members ? [...new Set(members)].join(", ") : "";
+  };
+
+  const directors = getCrewMembers("Director") || movie.director;
+  const writers = getCrewMembers(["Screenplay", "Writer", "Story"]);
+  const editors = getCrewMembers("Editor");
+  const musicComposers = getCrewMembers("Original Music Composer");
+  const cinematographers = getCrewMembers("Director of Photography");
 
   return (
     <AnimatePresence onExitComplete={() => navigate('/')}> {/* Navigate after exit animation */}
@@ -335,10 +349,36 @@ const MovieDetail = () => {
                     <PersonalRating movieId={movie.id} initialRating={currentUserPersonalRatingData} />
                   </motion.div>
                 )}
-                <motion.div variants={textRevealVariants}>
-                  <p className="font-semibold">Director</p>
-                  <p className="text-muted-foreground">{director || "N/A"}</p>
-                </motion.div>
+                {directors && (
+                  <motion.div variants={textRevealVariants}>
+                    <p className="font-semibold">Director</p>
+                    <p className="text-muted-foreground">{directors}</p>
+                  </motion.div>
+                )}
+                {writers && (
+                  <motion.div variants={textRevealVariants}>
+                    <p className="font-semibold">Writer</p>
+                    <p className="text-muted-foreground">{writers}</p>
+                  </motion.div>
+                )}
+                {editors && (
+                  <motion.div variants={textRevealVariants}>
+                    <p className="font-semibold">Editor</p>
+                    <p className="text-muted-foreground">{editors}</p>
+                  </motion.div>
+                )}
+                {musicComposers && (
+                  <motion.div variants={textRevealVariants}>
+                    <p className="font-semibold">Music</p>
+                    <p className="text-muted-foreground">{musicComposers}</p>
+                  </motion.div>
+                )}
+                {cinematographers && (
+                  <motion.div variants={textRevealVariants}>
+                    <p className="font-semibold">Cinematography</p>
+                    <p className="text-muted-foreground">{cinematographers}</p>
+                  </motion.div>
+                )}
                 <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Origin Country</p>
                   <p className="text-muted-foreground">{originCountry || "N/A"}</p>
