@@ -25,7 +25,10 @@ const FloatingAllMoviesHeader: React.FC<FloatingAllMoviesHeaderProps> = ({
   headerHeight,
 }) => {
   // Calculate the target Y position for the floating header, adding a small gap (e.g., 16px or 1rem)
-  const targetY = headerHeight + 16; // 16px gap
+  // The main header has 0.5rem (8px) padding top/bottom when shrunk, so its actual height is headerHeight + 16px.
+  // We want the floating header to be below that, with an additional 16px gap.
+  const actualShrunkHeaderHeight = headerHeight + 16; // 50px (minHeight) + 8px (padding-top) + 8px (padding-bottom) = 66px
+  const targetY = actualShrunkHeaderHeight + 16; // 66px + 16px (desired gap) = 82px
 
   return (
     <AnimatePresence>
