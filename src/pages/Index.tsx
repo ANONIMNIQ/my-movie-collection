@@ -43,7 +43,7 @@ import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
 import { Movie } from "@/data/movies";
 import AlphabeticalFilter from "@/components/AlphabeticalFilter";
-import { FilmRollIcon } from "@/components/icons";
+import { MovieReelIcon } from "@/components/icons"; // Changed import to MovieReelIcon
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 18;
@@ -615,7 +615,7 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
                   >
-                    <FilmRollIcon className="w-6 h-6 md:w-10 md:h-10 mr-2 md:mr-4 flex-shrink-0" />
+                    <MovieReelIcon className="w-6 h-6 md:w-10 md:h-10 mr-2 md:mr-4 flex-shrink-0" /> {/* Changed to MovieReelIcon */}
                     <span className="truncate">Georgi's Movie Collection</span>
                   </motion.h1>
                   <motion.div
