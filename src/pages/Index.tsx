@@ -168,7 +168,7 @@ const Index = () => {
     }
   }, [pageLoaded, headerShrunk]);
 
-  const shrunkenHeaderHeight = isMobile ? 48 : 72;
+  const shrunkenHeaderHeight = isMobile ? 44 : 68; // Adjusted values
 
   useEffect(() => {
     if (isMobile) {
