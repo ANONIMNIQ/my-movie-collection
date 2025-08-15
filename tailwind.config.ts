@@ -22,6 +22,7 @@ export default {
         orbitron: ["Orbitron", "sans-serif"],
         'roboto-mono': ['"Roboto Mono"', 'monospace'],
         'space-mono': ['"Space Mono"', 'monospace'],
+        lato: ['Lato', 'sans-serif'], // Added Lato font
       },
       boxShadow: {
         glow: "0 0 25px 0px rgb(0 0 0 / 0.9)",

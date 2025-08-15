@@ -610,12 +610,13 @@ const Index = () => {
                       "font-bold tracking-tight flex items-center justify-center",
                       (isMobile && headerShrunk) || (!isMobile && headerShrunk && isHeaderDark)
                         ? "text-foreground"
-                        : "text-headerTitle"
+                        : "text-headerTitle",
+                      "font-lato" // Apply Lato font here
                     )}
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
                   >
-                    <MovieReelIcon className="w-12 h-12 md:w-20 md:h-20 mr-2 md:mr-4 flex-shrink-0" /> {/* Increased size */}
+                    <MovieReelIcon className="w-12 h-12 md:w-20 md:h-20 mr-2 md:mr-4 flex-shrink-0" />
                     <span className="truncate">Georgi's Movie Collection</span>
                   </motion.h1>
                   <motion.div
