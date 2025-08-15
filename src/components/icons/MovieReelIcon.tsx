@@ -3,7 +3,7 @@ import React from 'react';
 interface IconProps extends React.SVGProps<SVGSVGElement> {}
 
 export const MovieReelIcon: React.FC<IconProps> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" x="0px" y="0px" width="1385px" height="504px" viewBox="0 0 1385 504" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlnsXlink="http://www.w3.org/1999/xlink" preserveAspectRatio="none" x="0px" y="0px" width="1385px" height="504px" viewBox="0 0 1385 504" {...props}>
     <defs>
       <linearGradient id="Gradient_1" gradientUnits="userSpaceOnUse" x1="693.5625" y1="465.3625" x2="701.9375" y2="7.737500000000011" spreadMethod="pad">
         <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
@@ -187,7 +187,7 @@ export const MovieReelIcon: React.FC<IconProps> = (props) => (
       </g>
     </defs>
     <g transform="matrix( 1, 0, 0, 1, 0,0) ">
-      <use xlink:href="#Layer0_0_FILL"/>
+      <use href="#Layer0_0_FILL"/>
     </g>
   </svg>
 );
