@@ -9,7 +9,7 @@ import { useSession } from "@/contexts/SessionContext";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Loader2 } from "lucide-react"; // Import Loader2 icon
-import { showSuccess, showError } import "@/utils/toast";
+import { showSuccess, showError } from "@/utils/toast";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import {
   AlertDialog,
@@ -615,7 +615,7 @@ const Index = () => {
                     animate={headerShrunk ? "shrunk" : "full"}
                     variants={titleShrinkVariants}
                   >
-                    <MovieReelIcon className="w-8 h-8 md:w-12 md:h-12 mr-2 md:mr-4 flex-shrink-0" /> {/* Changed to MovieReelIcon */}
+                    <MovieReelIcon className="w-8 h-8 md:w-12 md:h-12 mr-2 md:mr-4 flex-shrink-0" />
                     <span className="truncate">Georgi's Movie Collection</span>
                   </motion.h1>
                   <motion.div
