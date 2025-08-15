@@ -94,7 +94,11 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
-          {!isMobileHook && IconComponent && <IconComponent className="w-8 h-8 mr-2" />}
+          {!isMobileHook && IconComponent && (
+            <div className="bg-white rounded-full p-2 flex items-center justify-center mr-2 w-10 h-10">
+              <IconComponent className="w-6 h-6 text-black" />
+            </div>
+          )}
           {title}
         </motion.h2>
       </div>
