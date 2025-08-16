@@ -161,6 +161,19 @@ const Index = () => {
     };
   }, []);
 
+  // Effect to disable scrolling until the page is ready for interaction
+  useEffect(() => {
+    if (!isPageReadyForInteraction) {
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.documentElement.style.overflow = '';
+    }
+    // Cleanup function to ensure scrolling is re-enabled if the component unmounts
+    return () => {
+      document.documentElement.style.overflow = '';
+    };
+  }, [isPageReadyForInteraction]);
+
   useEffect(() => {
     if (pageLoaded && !headerShrunk) {
       const shrinkTimer = setTimeout(() => setHeaderShrunk(true), 800);
