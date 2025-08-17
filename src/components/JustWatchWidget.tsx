@@ -5,6 +5,7 @@ import { ExternalLink } from 'lucide-react';
 interface JustWatchWidgetProps {
   tmdbId: string;
   title: string;
+  year: string;
 }
 
 // Declare JustWatchWidget on the window object for TypeScript
@@ -14,7 +15,7 @@ declare global {
   }
 }
 
-const JustWatchWidget: React.FC<JustWatchWidgetProps> = ({ tmdbId, title }) => {
+const JustWatchWidget: React.FC<JustWatchWidgetProps> = ({ tmdbId, title, year }) => {
   const [widgetFailed, setWidgetFailed] = useState(false);
 
   useEffect(() => {
@@ -60,7 +61,8 @@ const JustWatchWidget: React.FC<JustWatchWidgetProps> = ({ tmdbId, title }) => {
     return () => clearTimeout(timeoutId);
   }, [tmdbId]);
 
-  const justWatchUrl = `https://www.justwatch.com/search?q=${encodeURIComponent(title)}`;
+  // Construct a more specific search URL including the year to prevent 404 errors.
+  const justWatchUrl = `https://www.justwatch.com/search?q=${encodeURIComponent(title + ' ' + year)}`;
 
   return (
     <div className="mt-8">
@@ -69,7 +71,7 @@ const JustWatchWidget: React.FC<JustWatchWidgetProps> = ({ tmdbId, title }) => {
         {widgetFailed && (
           <div className="p-4 border border-dashed border-muted-foreground/50 rounded-lg text-center bg-card/50">
             <p className="text-muted-foreground mb-4">
-              The "Where to Watch" widget couldn't be loaded. This might be due to a browser extension (like an ad blocker).
+              The "Where to Watch" widget couldn't be loaded. This might be due to a browser extension or built-in privacy feature.
             </p>
             <Button asChild>
               <a href={justWatchUrl} target="_blank" rel="noopener noreferrer">
