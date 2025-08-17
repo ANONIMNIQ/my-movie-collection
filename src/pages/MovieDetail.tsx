@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
+import WatchProviders from "@/components/WatchProviders";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -388,6 +389,14 @@ const MovieDetail = () => {
                   <p className="text-muted-foreground">{cast || "N/A"}</p>
                 </motion.div>
               </motion.div>
+
+              {tmdbMovie && tmdbMovie['watch/providers'] && (
+                <motion.div variants={textRevealVariants}>
+                  <Separator className="my-8 bg-muted-foreground/30" />
+                  <WatchProviders providers={tmdbMovie['watch/providers']} />
+                </motion.div>
+              )}
+
             </motion.div>
           </div>
         </motion.div>
