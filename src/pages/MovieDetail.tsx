@@ -14,6 +14,7 @@ import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import WatchProviders from "@/components/WatchProviders";
+import { useUserCountry } from "@/hooks/useUserCountry";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
 
@@ -42,6 +43,7 @@ const MovieDetail = () => {
   const userId = session?.user?.id;
   const [showTrailer, setShowTrailer] = useState(false);
   const [isExiting, setIsExiting] = useState(false); // New state to control exit animation
+  const { data: countryCode, isLoading: isLoadingCountry } = useUserCountry();
 
   // Scroll to top on component mount
   useEffect(() => {
@@ -141,7 +143,7 @@ const MovieDetail = () => {
   }, [trailerKey]);
 
   // Combine all loading states
-  const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb;
+  const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb || isLoadingCountry;
 
   const handleBackClick = () => {
     setIsExiting(true); // Trigger exit animation
@@ -390,10 +392,10 @@ const MovieDetail = () => {
                 </motion.div>
               </motion.div>
 
-              {tmdbMovie && tmdbMovie['watch/providers'] && (
+              {tmdbMovie && tmdbMovie['watch/providers'] && countryCode && (
                 <motion.div variants={textRevealVariants}>
                   <Separator className="my-8 bg-muted-foreground/30" />
-                  <WatchProviders providers={tmdbMovie['watch/providers']} />
+                  <WatchProviders providers={tmdbMovie['watch/providers']} countryCode={countryCode} />
                 </motion.div>
               )}
 

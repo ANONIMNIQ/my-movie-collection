@@ -27,14 +27,15 @@ interface WatchProvidersProps {
       [countryCode: string]: WatchData;
     };
   };
+  countryCode: string;
 }
 
-const WatchProviders: React.FC<WatchProvidersProps> = ({ providers }) => {
-  // For simplicity, we'll default to the US region.
-  const regionData = providers?.results?.US;
+const WatchProviders: React.FC<WatchProvidersProps> = ({ providers, countryCode }) => {
+  // Use the detected country code, with a fallback to the US if the specific country isn't in the results.
+  const regionData = providers?.results?.[countryCode] || providers?.results?.US;
 
   if (!regionData || (!regionData.flatrate && !regionData.rent && !regionData.buy)) {
-    return null; // Don't render anything if no providers are available for the US
+    return null; // Don't render if no providers are available for the detected region or the US fallback.
   }
 
   const renderProviderList = (title: string, providerList?: Provider[]) => {
@@ -84,7 +85,7 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers }) => {
           {renderProviderList('Buy', regionData.buy)}
           <div className="text-sm text-muted-foreground pt-4 border-t border-muted-foreground/20">
             <p>
-              Provider information for the US region. Data provided by JustWatch.
+              Provider information for the {countryCode} region. Data provided by JustWatch.
               <a
                 href={regionData.link}
                 target="_blank"
