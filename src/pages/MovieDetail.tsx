@@ -362,7 +362,7 @@ const MovieDetail = () => {
               </motion.div>
 
               <motion.div variants={textRevealVariants}>
-                {tmdbMovie?.id && <JustWatchWidget tmdbId={String(tmdbMovie.id)} />}
+                {tmdbMovie?.id && <JustWatchWidget tmdbId={String(tmdbMovie.id)} title={movie.title} />}
               </motion.div>
 
             </motion.div>
