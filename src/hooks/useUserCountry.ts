@@ -20,6 +20,6 @@ export const useUserCountry = () => {
     gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    retry: false,
+    retry: 2, // Retry up to 2 times on failure to improve reliability
   });
 };
