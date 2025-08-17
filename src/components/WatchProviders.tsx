@@ -163,14 +163,6 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers }) => {
             {!selectedProviderData.flatrate && !selectedProviderData.rent && !selectedProviderData.buy && (
               <p className="text-muted-foreground">No streaming options found for this region.</p>
             )}
-
-            {selectedProviderData.link && (
-              <a href={selectedProviderData.link} target="_blank" rel="noopener noreferrer" className="block mt-4">
-                <Button variant="outline" className="w-full">
-                  View all options on JustWatch <ExternalLink className="ml-2 h-4 w-4" />
-                </Button>
-              </a>
-            )}
           </CardContent>
         </Card>
       ) : (
