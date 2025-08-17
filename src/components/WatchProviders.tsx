@@ -49,9 +49,9 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers }) => {
     setAvailableCountries(countries);
 
     const detectCountry = async () => {
-      // 1. Try GeoIP API for more accurate detection
+      // 1. Try a more reliable GeoIP API for accurate detection
       try {
-        const response = await fetch('https://freegeoip.app/json/');
+        const response = await fetch('https://ipapi.co/json/');
         if (response.ok) {
           const data = await response.json();
           const geoCountryCode = data.country_code?.toUpperCase();
