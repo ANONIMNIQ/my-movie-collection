@@ -13,9 +13,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
-import WatchProviders from "@/components/WatchProviders";
-import { useUserCountry } from "@/hooks/useUserCountry";
-import { Skeleton } from "@/components/ui/skeleton";
+import JustWatchWidget from "@/components/JustWatchWidget";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
@@ -33,32 +31,6 @@ const containerVariants = {
       delayChildren: 0.1,
     },
   },
-};
-
-// New isolated component to handle its own data dependencies and loading state
-const WhereToWatchSection = ({ tmdbMovie }: { tmdbMovie: any }) => {
-  const { data: countryCode, isLoading: isLoadingCountry } = useUserCountry();
-
-  if (isLoadingCountry) {
-    return (
-      <>
-        <Separator className="my-8 bg-muted-foreground/30" />
-        <h2 className="text-2xl font-semibold mb-4">Where to Watch</h2>
-        <Skeleton className="w-full h-40 rounded-lg" />
-      </>
-    );
-  }
-
-  if (tmdbMovie && tmdbMovie['watch/providers'] && countryCode) {
-    return (
-      <>
-        <Separator className="my-8 bg-muted-foreground/30" />
-        <WatchProviders providers={tmdbMovie['watch/providers']} countryCode={countryCode} />
-      </>
-    );
-  }
-
-  return null; // Render nothing if providers or country code are not available
 };
 
 const MovieDetail = () => {
@@ -390,7 +362,7 @@ const MovieDetail = () => {
               </motion.div>
 
               <motion.div variants={textRevealVariants}>
-                <WhereToWatchSection tmdbMovie={tmdbMovie} />
+                {tmdbMovie?.id && <JustWatchWidget tmdbId={String(tmdbMovie.id)} />}
               </motion.div>
 
             </motion.div>
