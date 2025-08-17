@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
-import JustWatchWidget from "@/components/JustWatchWidget";
+import WatchProviders from "@/components/WatchProviders";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
@@ -362,7 +362,9 @@ const MovieDetail = () => {
               </motion.div>
 
               <motion.div variants={textRevealVariants}>
-                {tmdbMovie?.id && <JustWatchWidget tmdbId={String(tmdbMovie.id)} title={movie.title} year={movie.year} />}
+                {tmdbMovie?.['watch/providers']?.results && (
+                  <WatchProviders providers={tmdbMovie['watch/providers'].results} />
+                )}
               </motion.div>
 
             </motion.div>
