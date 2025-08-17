@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowLeft, Youtube, Play, ExternalLink } from "lucide-react"; // Import ExternalLink icon
+import { Star, ArrowLeft, Youtube, Play, ExternalLink } from "lucide-react";
 import { useTmdbMovie } from "@/hooks/useTmdbMovie";
 import { supabase } from "@/integrations/supabase/client";
 import { Movie } from "@/data/movies";
@@ -12,45 +12,67 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
-import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
+import { motion, AnimatePresence } from "framer-motion";
 import WatchProviders from "@/components/WatchProviders";
 import { useUserCountry } from "@/hooks/useUserCountry";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db"; // Your specific User ID
+const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-// Animation variants for individual text elements
 const textRevealVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }, // Reduced duration
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
-// Animation variants for containers to stagger children
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05, // Reduced stagger
-      delayChildren: 0.1, // Reduced delay
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
     },
   },
 };
 
+// New isolated component to handle its own data dependencies and loading state
+const WhereToWatchSection = ({ tmdbMovie }: { tmdbMovie: any }) => {
+  const { data: countryCode, isLoading: isLoadingCountry } = useUserCountry();
+
+  if (isLoadingCountry) {
+    return (
+      <>
+        <Separator className="my-8 bg-muted-foreground/30" />
+        <h2 className="text-2xl font-semibold mb-4">Where to Watch</h2>
+        <Skeleton className="w-full h-40 rounded-lg" />
+      </>
+    );
+  }
+
+  if (tmdbMovie && tmdbMovie['watch/providers'] && countryCode) {
+    return (
+      <>
+        <Separator className="my-8 bg-muted-foreground/30" />
+        <WatchProviders providers={tmdbMovie['watch/providers']} countryCode={countryCode} />
+      </>
+    );
+  }
+
+  return null; // Render nothing if providers or country code are not available
+};
+
 const MovieDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const { session } = useSession();
   const userId = session?.user?.id;
   const [showTrailer, setShowTrailer] = useState(false);
-  const [isExiting, setIsExiting] = useState(false); // New state to control exit animation
-  const { data: countryCode, isLoading: isLoadingCountry } = useUserCountry();
+  const [isExiting, setIsExiting] = useState(false);
 
-  // Scroll to top on component mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Fetch main movie data using useQuery
   const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie, error: movieError } = useQuery<Movie, Error>({
     queryKey: ["movie", id],
     queryFn: async () => {
@@ -60,7 +82,6 @@ const MovieDetail = () => {
         .select("*")
         .eq("id", id)
         .single();
-
       if (error) {
         console.error("Error fetching movie details from Supabase:", error);
         throw new Error("Failed to load movie details from database.");
@@ -68,19 +89,18 @@ const MovieDetail = () => {
       return data as Movie;
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5, // Cache data for 5 minutes
+    staleTime: 1000 * 60 * 5,
     retry: false,
   });
 
-  const { data: tmdbMovie, isLoading: isLoadingTmdb, error: tmdbError } = useTmdbMovie(
-    id || "", // Pass movie ID
+  const { data: tmdbMovie, isLoading: isLoadingTmdb } = useTmdbMovie(
+    id || "",
     movie?.title ?? "",
     movie?.year ?? "",
-    movie?.tmdb_id // New: Pass tmdb_id from movie data
+    movie?.tmdb_id
   );
 
-  // Fetch admin's personal rating for this movie (visible to all)
-  const { data: adminPersonalRatingData, isLoading: isLoadingAdminPersonalRating, error: adminRatingError } = useQuery({
+  const { data: adminPersonalRatingData, isLoading: isLoadingAdminPersonalRating } = useQuery({
     queryKey: ['admin_user_rating', id, ADMIN_USER_ID],
     queryFn: async () => {
       if (!id) return null;
@@ -100,8 +120,7 @@ const MovieDetail = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Fetch current user's personal rating (for interactive rating if logged in)
-  const { data: currentUserPersonalRatingData, isLoading: isLoadingCurrentUserPersonalRating, error: userRatingError } = useQuery({
+  const { data: currentUserPersonalRatingData, isLoading: isLoadingCurrentUserPersonalRating } = useQuery({
     queryKey: ['current_user_rating', id, userId],
     queryFn: async () => {
       if (!userId || !id) return null;
@@ -121,41 +140,30 @@ const MovieDetail = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Find YouTube trailer
   const trailer = tmdbMovie?.videos?.results?.find(
     (video: any) => video.type === "Trailer" && video.site === "YouTube"
   );
   const trailerKey = trailer ? trailer.key : null;
-
-  // Get IMDb ID
   const imdbId = tmdbMovie?.imdb_id;
   const imdbUrl = imdbId ? `https://www.imdb.com/title/${imdbId}/` : null;
 
-  // Timer to switch from backdrop to trailer
   useEffect(() => {
     if (trailerKey) {
-      const timer = setTimeout(() => {
-        setShowTrailer(true);
-      }, 10000); // 10 seconds
-
-      return () => clearTimeout(timer); // Cleanup on unmount
+      const timer = setTimeout(() => setShowTrailer(true), 10000);
+      return () => clearTimeout(timer);
     }
   }, [trailerKey]);
 
-  // Combine all loading states
-  const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb || isLoadingCountry;
-
   const handleBackClick = () => {
-    setIsExiting(true); // Trigger exit animation
-    // The actual navigation will happen after the exit animation completes
-    // AnimatePresence handles delaying the unmount until the exit animation is done.
+    setIsExiting(true);
   };
+
+  const overallLoading = isLoadingMovie || isLoadingAdminPersonalRating || isLoadingCurrentUserPersonalRating || isLoadingTmdb;
 
   if (overallLoading) {
     return <MovieDetailSkeleton />;
   }
 
-  // Check for movie data more robustly
   if (isErrorMovie || !movie || !movie.id) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
@@ -172,29 +180,22 @@ const MovieDetail = () => {
     );
   }
 
-  // Prioritize Supabase data, fallback to TMDb if Supabase data is empty/placeholder
   const backdropUrl = tmdbMovie?.backdrop_path ? `https://image.tmdb.org/t/p/original${tmdbMovie.backdrop_path}` : null;
   const synopsis = movie.synopsis || tmdbMovie?.overview || "";
-  
-  // Safely access genres and movie_cast, providing empty array if null
   const genresToDisplay = movie.genres || [];
   const castToDisplay = movie.movie_cast || [];
-
   const cast = castToDisplay.length > 0
     ? castToDisplay.join(", ")
     : (tmdbMovie?.credits?.cast?.slice(0, 10).map((c: any) => c.name).join(", ") || "");
-  
   const originCountry = Array.isArray(movie.origin_country) && movie.origin_country.length > 0
     ? movie.origin_country.join(', ')
     : (tmdbMovie?.production_countries?.map((c: any) => c.name).join(', ') || "");
 
-  // Helper function to get crew members by job, removing duplicates
   const getCrewMembers = (job: string | string[]) => {
     const jobs = Array.isArray(job) ? job : [job];
     const members = tmdbMovie?.credits?.crew
       ?.filter((c: any) => jobs.includes(c.job))
       ?.map((p: any) => p.name);
-    
     return members ? [...new Set(members)].join(", ") : "";
   };
 
@@ -205,17 +206,16 @@ const MovieDetail = () => {
   const cinematographers = getCrewMembers("Director of Photography");
 
   return (
-    <AnimatePresence onExitComplete={() => navigate('/')}> {/* Navigate after exit animation */}
+    <AnimatePresence onExitComplete={() => navigate('/')}>
       {!isExiting && (
         <motion.div
           className="relative min-h-screen bg-background text-foreground"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.3 } }} // Reduced duration to 0.3s
+          exit={{ opacity: 0, transition: { duration: 0.3 } }}
           transition={{ duration: 0.5 }}
         >
-          {/* Backdrop Image or Video with Overlay */}
-          <div className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden"> {/* This container ensures fixed height */}
+          <div className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden">
             {showTrailer && trailerKey ? (
               <YouTubePlayerBackground videoId={trailerKey} />
             ) : backdropUrl ? (
@@ -235,8 +235,7 @@ const MovieDetail = () => {
 
           <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
             <motion.button
-              onClick={handleBackClick} // Use the new handler
-              variant="ghost"
+              onClick={handleBackClick}
               className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
               initial="hidden"
               animate="visible"
@@ -246,7 +245,6 @@ const MovieDetail = () => {
               Back to Collection
             </motion.button>
             
-            {/* Movie Logo or Title (not animated with reveal) */}
             {tmdbMovie?.images?.logos?.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie?.images?.logos?.[0] ? (
               <img
                 src={`https://image.tmdb.org/t/p/w500${(tmdbMovie.images.logos.find((logo: any) => logo.iso_639_1 === 'en') || tmdbMovie.images.logos[0]).file_path}`}
@@ -302,17 +300,17 @@ const MovieDetail = () => {
               <motion.p
                 initial="hidden"
                 animate="visible"
-                variants={containerVariants} // Apply container variants to the paragraph itself
+                variants={containerVariants}
                 className="text-lg text-muted-foreground mb-8"
               >
                 {(synopsis || "No synopsis available.")
-                  .split(/(?<=[.!?])\s+/) // Split by sentence-ending punctuation followed by space
-                  .filter(Boolean) // Remove empty strings
+                  .split(/(?<=[.!?])\s+/)
+                  .filter(Boolean)
                   .map((sentence, index) => (
                     <motion.span
                       key={index}
                       variants={textRevealVariants}
-                      className="block" // Make each sentence a block to ensure new line
+                      className="block"
                     >
                       {sentence}
                     </motion.span>
@@ -340,7 +338,6 @@ const MovieDetail = () => {
                     <span>{movie.community_rating?.toFixed(1) ?? "N/A"}</span>
                   </div>
                 </motion.div>
-                {/* Georgi's Rating */}
                 <motion.div variants={textRevealVariants}>
                   <p className="font-semibold">Georgi's Rating</p>
                   <PersonalRating movieId={movie.id} initialRating={adminPersonalRatingData} readOnly={true} />
@@ -392,12 +389,9 @@ const MovieDetail = () => {
                 </motion.div>
               </motion.div>
 
-              {tmdbMovie && tmdbMovie['watch/providers'] && countryCode && (
-                <motion.div variants={textRevealVariants}>
-                  <Separator className="my-8 bg-muted-foreground/30" />
-                  <WatchProviders providers={tmdbMovie['watch/providers']} countryCode={countryCode} />
-                </motion.div>
-              )}
+              <motion.div variants={textRevealVariants}>
+                <WhereToWatchSection tmdbMovie={tmdbMovie} />
+              </motion.div>
 
             </motion.div>
           </div>

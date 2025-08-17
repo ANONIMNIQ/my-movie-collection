@@ -102,7 +102,7 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers, countryCode 
           <div className="text-sm text-muted-foreground pt-4 border-t border-muted-foreground/20">
             {isFallback && (
               <p className="mb-2">
-                No providers found for your region ({countryCode}). Showing available options for the US region instead.
+                Providers for your region ({countryCode}) were not available. Showing options for the US region as a fallback.
               </p>
             )}
             <p>
