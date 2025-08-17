@@ -34,13 +34,24 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers, countryCode 
   const userRegionData = providers?.results?.[countryCode];
   const usRegionData = providers?.results?.US;
 
-  // Determine which data to use: user's region first, then fallback to US.
-  const regionData = userRegionData || usRegionData;
-  // Determine which country code to display in the UI.
-  const displayedCountryCode = userRegionData ? countryCode : 'US';
+  const hasUserRegionProviders = userRegionData && (userRegionData.flatrate || userRegionData.rent || userRegionData.buy);
+  const hasUsRegionProviders = usRegionData && (usRegionData.flatrate || usRegionData.rent || usRegionData.buy);
 
-  if (!regionData || (!regionData.flatrate && !regionData.rent && !regionData.buy)) {
-    return null; // Don't render if no providers are available for the detected region or the US fallback.
+  let regionData: WatchData | undefined;
+  let displayedCountryCode: string;
+  let isFallback = false;
+
+  if (hasUserRegionProviders) {
+    regionData = userRegionData;
+    displayedCountryCode = countryCode;
+  } else if (hasUsRegionProviders) {
+    regionData = usRegionData;
+    displayedCountryCode = 'US';
+    isFallback = true;
+  }
+
+  if (!regionData) {
+    return null;
   }
 
   const renderProviderList = (title: string, providerList?: Provider[]) => {
@@ -57,7 +68,7 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers, countryCode 
               <Tooltip>
                 <TooltipTrigger asChild>
                   <a
-                    href={regionData.link}
+                    href={regionData!.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="transition-transform hover:scale-110"
@@ -89,6 +100,11 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers, countryCode 
           {renderProviderList('Rent', regionData.rent)}
           {renderProviderList('Buy', regionData.buy)}
           <div className="text-sm text-muted-foreground pt-4 border-t border-muted-foreground/20">
+            {isFallback && (
+              <p className="mb-2">
+                No providers found for your region ({countryCode}). Showing available options for the US region instead.
+              </p>
+            )}
             <p>
               Provider information for the {displayedCountryCode} region. Data provided by JustWatch.
               <a
