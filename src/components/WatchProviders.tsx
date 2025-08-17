@@ -34,9 +34,12 @@ interface WatchProvidersProps {
 const WatchProviders: React.FC<WatchProvidersProps> = ({ providers }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [availableCountries, setAvailableCountries] = useState<{ code: string; name: string }[]>([]);
+  const [detectionAttempted, setDetectionAttempted] = useState(false);
 
   useEffect(() => {
     const countryCodes = Object.keys(providers);
+    if (countryCodes.length === 0) return;
+
     const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
     
     const countries = countryCodes
@@ -45,18 +48,48 @@ const WatchProviders: React.FC<WatchProvidersProps> = ({ providers }) => {
       
     setAvailableCountries(countries);
 
-    // Auto-detect user's country from browser language
-    const userLang = navigator.language; // e.g., "en-US"
-    const userCountryCode = userLang.split('-')[1]?.toUpperCase();
+    const detectCountry = async () => {
+      // 1. Try GeoIP API for more accurate detection
+      try {
+        const response = await fetch('https://freegeoip.app/json/');
+        if (response.ok) {
+          const data = await response.json();
+          const geoCountryCode = data.country_code?.toUpperCase();
+          if (geoCountryCode && providers[geoCountryCode]) {
+            setSelectedCountry(geoCountryCode);
+            return; // Success!
+          }
+        }
+      } catch (error) {
+        console.warn("GeoIP detection failed, falling back to browser language.", error);
+      }
 
-    if (userCountryCode && providers[userCountryCode]) {
-      setSelectedCountry(userCountryCode);
-    } else if (providers['US']) {
-      setSelectedCountry('US'); // Fallback to US
-    } else if (countries.length > 0) {
-      setSelectedCountry(countries[0].code); // Fallback to the first available country
+      // 2. Fallback to browser language
+      const userLang = navigator.language;
+      const userCountryCode = userLang.split('-')[1]?.toUpperCase();
+      if (userCountryCode && providers[userCountryCode]) {
+        setSelectedCountry(userCountryCode);
+        return;
+      }
+
+      // 3. Fallback to US if available
+      if (providers['US']) {
+        setSelectedCountry('US');
+        return;
+      }
+
+      // 4. Fallback to the first available country
+      if (countries.length > 0) {
+        setSelectedCountry(countries[0].code);
+      }
+    };
+
+    if (!detectionAttempted && countryCodes.length > 0) {
+      detectCountry();
+      setDetectionAttempted(true);
     }
-  }, [providers]);
+
+  }, [providers, detectionAttempted]);
 
   const selectedProviderData = useMemo(() => {
     return providers[selectedCountry];
