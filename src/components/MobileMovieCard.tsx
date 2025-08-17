@@ -128,7 +128,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
                 return null;
             }
             const details = await fetchFromTmdb(`/movie/${finalTmdbId}`, {
-                append_to_response: "credits,release_dates,images,videos",
+                append_to_response: "credits,release_dates,images,videos,watch/providers",
             });
             return details;
         },
