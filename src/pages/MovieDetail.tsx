@@ -14,6 +14,8 @@ import React, { useState, useEffect, useRef } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
 import WatchProviders from "@/components/WatchProviders";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
@@ -42,6 +44,7 @@ const MovieDetail = () => {
   const [isExiting, setIsExiting] = useState(false);
   const [isBackLinkVisible, setIsBackLinkVisible] = useState(true);
   const backLinkRef = useRef<HTMLButtonElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -213,14 +216,17 @@ const MovieDetail = () => {
             {!isBackLinkVisible && (
               <motion.button
                 onClick={handleBackClick}
-                className="fixed top-4 left-4 z-50 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-primary shadow-lg hover:bg-white/30"
+                className={cn(
+                  "fixed top-4 left-4 z-50 inline-flex items-center rounded-full bg-white/20 backdrop-blur-md text-primary shadow-lg hover:bg-white/30",
+                  isMobile ? "h-10 w-10 justify-center p-0" : "gap-2 px-4 py-2"
+                )}
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -100, opacity: 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <ArrowLeft size={16} />
-                Back
+                <ArrowLeft size={isMobile ? 20 : 16} />
+                {!isMobile && "Back"}
               </motion.button>
             )}
           </AnimatePresence>
