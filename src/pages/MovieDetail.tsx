@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import MovieDetailSkeleton from "@/components/MovieDetailSkeleton";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
 import WatchProviders from "@/components/WatchProviders";
@@ -40,6 +40,8 @@ const MovieDetail = () => {
   const userId = session?.user?.id;
   const [showTrailer, setShowTrailer] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [isBackLinkVisible, setIsBackLinkVisible] = useState(true);
+  const backLinkRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -126,6 +128,26 @@ const MovieDetail = () => {
     }
   }, [trailerKey]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsBackLinkVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentRef = backLinkRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, []);
+
   const handleBackClick = () => {
     setIsExiting(true);
   };
@@ -187,6 +209,22 @@ const MovieDetail = () => {
           exit={{ opacity: 0, transition: { duration: 0.3 } }}
           transition={{ duration: 0.5 }}
         >
+          <AnimatePresence>
+            {!isBackLinkVisible && (
+              <motion.button
+                onClick={handleBackClick}
+                className="fixed top-4 left-4 z-50 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-primary shadow-lg hover:bg-white/30"
+                initial={{ y: -100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -100, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <ArrowLeft size={16} />
+                Back
+              </motion.button>
+            )}
+          </AnimatePresence>
+
           <div className="absolute inset-x-0 top-0 h-[60vh] overflow-hidden">
             {showTrailer && trailerKey ? (
               <YouTubePlayerBackground videoId={trailerKey} />
@@ -207,6 +245,7 @@ const MovieDetail = () => {
 
           <div className="relative z-10 container mx-auto px-4 py-8 md:pt-[60vh] md:pb-12">
             <motion.button
+              ref={backLinkRef}
               onClick={handleBackClick}
               className="inline-flex items-center gap-2 text-primary hover:underline mb-8"
               initial="hidden"
