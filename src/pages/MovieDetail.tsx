@@ -15,7 +15,7 @@ import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
 import WatchProviders from "@/components/WatchProviders";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } => "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
