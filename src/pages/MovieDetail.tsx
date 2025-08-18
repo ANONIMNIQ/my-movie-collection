@@ -15,7 +15,7 @@ import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
 import WatchProviders from "@/components/WatchProviders";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
+import { cn } => "@/lib/utils";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
@@ -223,7 +223,7 @@ const MovieDetail = () => {
                 initial={{ x: -100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -100, opacity: 0 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
                 <ArrowLeft size={isMobile ? 20 : 16} />
                 {!isMobile && "Back"}
