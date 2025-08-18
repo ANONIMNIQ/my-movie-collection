@@ -223,7 +223,7 @@ const MovieDetail = () => {
                 initial={{ x: -100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -100, opacity: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
               >
                 <ArrowLeft size={isMobile ? 20 : 16} />
                 {!isMobile && "Back"}
