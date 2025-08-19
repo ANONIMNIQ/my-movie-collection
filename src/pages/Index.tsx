@@ -100,25 +100,7 @@ const initialCannesSelectionTitles = new Set([
 ]);
 
 const initialTiffSelectionTitles = new Set([
-  "Everything Everywhere All at Once", "Arrival", "Prisoners", "Blade Runner 2049", "Room", "Whiplash", "Silver Linings Playbook", "Jojo Rabbit", "Nomadland", "Three Billboards Outside Ebbing, Missouri", "Green Book", "Parasite", "The Master", "Incendies", "12 Years a Slave", "La La Land", "Manchester by the Sea", "Spotlight", "The Imitation Game", "Argo", "Slumdog Millionaire", "American Beauty", "Amelie", "City of God", "Eternal Sunshine of the SpoIndex.tsx:189 Available genres found in your collection: Array(26)0: "Action"1: "Adventure"2: "Animation"3: "Anime"4: "Children"5: "Comedy"6: "Crime"7: "Documentary"8: "Drama"9: "Family"10: "Fantasy"11: "History"12: "Horror"13: "Indie"14: "Martial Arts"15: "Music"16: "Musical"17: "Mystery"18: "Reality"19: "Romance"20: "Science Fiction"21: "Sport"22: "Suspense"23: "Thriller"24: "War"25: "Western"length: 26[[Prototype]]: Array(0)
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.48127854-07f2-40a5-9373-3c75206482db&movie_id=eq.06321ae4-4b49-40d1-9d52-91bc7159b8f5:1   Failed to load resource: the server responded with a status of 406 ()
-(index):1 [Intervention] Images loaded lazily and replaced with placeholders. Load events are deferred. See https://go.microsoft.com/fwlink/?linkid=2048113
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.48127854-07f2-40a5-9373-3c75206482db&movie_id=eq.ca2cc39d-f886-470f-a206-73cbdd9f2936:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.48127854-07f2-40a5-9373-3c75206482db&movie_id=eq.c60fc738-ca28-462e-896d-23120cdcdaad:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.48127854-07f2-40a5-9373-3c75206482db&movie_id=eq.2cec7ac4-b595-46bc-a57d-3889be662b15:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.48127854-07f2-40a5-9373-3c75206482db&movie_id=eq.3d3e5484-a81a-4bc8-9e65-61b78410c952:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.48127854-07f2-40a5-9373-3c75206482db&movie_id=eq.6475dfe7-8667-4753-9fe2-9b18d9440a7d:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.48127854-07f2-40a5-9373-3c75206482db&movie_id=eq.5196c27b-5915-4495-a8d9-95658a48f61b:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.8e85526a-5ae1-4c6d-b746-0a5f75fe57f0:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.dca03792-ade3-4581-9a85-5cb93b4a79df:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.85bfd5f8-58ef-49dc-ab4d-ff57b4ab1709:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.de15303d-340d-4770-a045-3fe2086d27ed:1   Failed to load resource: the server responded with a status of 406 ()
-khdgcwkbfeakmqbuzahf.supabase.co/rest/v1/user_ratings?select=rating&user_id=eq.e954fab7-7263-4ba7-915c-5102097aa861:1   Failed to load resource: the server responded with a status of 406 ()
-iframe.js:1 
-n3_iLOp6IhM?autoplay=1&controls=0&disablekb=1&fs=0&loop=1&modestbranding=1&rel=0&showinfo=0&iv_load…:1  [Deprecation] -ms-high-contrast is in the process of being deprecated. Please see https://blogs.windows.com/msedgedev/2024/04/29/deprecating-ms-high-contrast/ for tips on updating to the new Forced Colors Mode standard.
-n3_iLOp6IhM?autoplay=1&controls=0&disablekb=1&fs=0&loop=1&modestbranding=1&rel=0&showinfo=0&iv_load…:1  [Deprecation] -ms-high-contrast is in the process of being deprecated. Please see https://blogs.windows.com/msedgedev/2024/04/29/deprecating-ms-high-contrast/ for tips on updating to the new Forced Colors Mode standard.
-VM36 iframe.js:1 
-VM255 iframe.js:1tless Mind", "No Country for Old Men", "There Will Be Blood", "The Social Network", "Birdman or (The Unexpected Virtue of Ignorance)", "The Shape of Water", "Roma", "Marriage Story", "Nomadland", "The Power of the Dog", "Belfast", "The Fabelmans", "Women Talking", "American Fiction", "Past Lives", "Poor Things", "Anatomy of a Fall", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "The Holdovers", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers"
+  "Everything Everywhere All at Once", "Arrival", "Prisoners", "Blade Runner 2049", "Room", "Whiplash", "Silver Linings Playbook", "Jojo Rabbit", "Nomadland", "Three Billboards Outside Ebbing, Missouri", "Green Book", "Parasite", "The Master", "Incendies", "12 Years a Slave", "La La Land", "Manchester by the Sea", "Spotlight", "The Imitation Game", "Argo", "Slumdog Millionaire", "American Beauty", "Amelie", "City of God", "Eternal Sunshine of the Spotless Mind"
 ]);
 
 const initialBerlinaleSelectionTitles = new Set([
@@ -139,7 +121,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
-  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
+  const [selectedMovieIds, setSelectedMovieIds] = new Set();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isManagingCarousels, setIsManagingCarousels] = useState(false); // New state for carousel management loading
   const queryClient = useQueryClient();
