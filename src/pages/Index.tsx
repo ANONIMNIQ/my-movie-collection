@@ -329,31 +329,27 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
-    // Ensure all dependencies are available before proceeding
     if (!allMovies || !adminCarouselEntries || !adminGroupedCarousels) {
       return {
         newMovies: [],
-        // Initialize other carousel types as empty if dependencies are missing
       };
     }
-
+  
     const newMovies: Movie[] = [];
     const predefinedCarousels: Record<string, Movie[]> = {};
     const customCarousels: Record<string, Movie[]> = {};
-
+  
     const currentYear = new Date().getFullYear().toString();
-    allMovies.forEach((movie) => { // Now `allMovies` is guaranteed to be defined
+    allMovies.forEach((movie) => {
       if (movie.year === currentYear) newMovies.push(movie);
     });
-
+  
     const collectionTypes = new Map<string, string>();
-    adminCarouselEntries.forEach(entry => { // Now `adminCarouselEntries` is guaranteed to be defined
+    adminCarouselEntries.forEach(entry => {
       collectionTypes.set(entry.collection_name, entry.type);
     });
-
-    // adminGroupedCarousels is already checked above
+  
     for (const collectionName in adminGroupedCarousels) {
-      // Use hasOwnProperty to avoid iterating over prototype properties
       if (Object.prototype.hasOwnProperty.call(adminGroupedCarousels, collectionName)) {
         const type = collectionTypes.get(collectionName);
         if (type === 'predefined') {
@@ -363,11 +359,21 @@ const Index = () => {
         }
       }
     }
-
+  
+    // Dynamically create genre carousels
+    const dramaMovies = allMovies.filter(m => m.genres.includes('Drama')).sort(() => 0.5 - Math.random()).slice(0, 20);
+    const thrillerMovies = allMovies.filter(m => m.genres.includes('Thriller')).sort(() => 0.5 - Math.random()).slice(0, 20);
+    const sciFiMovies = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort(() => 0.5 - Math.random()).slice(0, 20);
+    const horrorMovies = allMovies.filter(m => m.genres.includes('Horror')).sort(() => 0.5 - Math.random()).slice(0, 20);
+  
     return {
       newMovies,
       ...predefinedCarousels,
       ...customCarousels,
+      "Drama": dramaMovies,
+      "Thriller": thrillerMovies,
+      "Sci-Fi": sciFiMovies,
+      "Horror": horrorMovies,
     };
   }, [allMovies, adminGroupedCarousels, adminCarouselEntries]);
 
@@ -977,6 +983,10 @@ const Index = () => {
                   {categorizedMovies["Berlinale selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Berlinale selection" movies={categorizedMovies["Berlinale selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies["Venice selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Venice selection" movies={categorizedMovies["Venice selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies["Sundance selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sundance selection" movies={categorizedMovies["Sundance selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Drama"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies["Drama"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Thriller"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies["Thriller"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Sci-Fi"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies["Sci-Fi"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Horror"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies["Horror"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {/* Display Custom Carousels */}
                   {isLoadingAdminGroupedCarousels ? (
                     <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
