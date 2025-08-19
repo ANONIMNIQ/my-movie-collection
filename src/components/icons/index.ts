@@ -7,3 +7,6 @@ export { GhostIcon } from './GhostIcon';
 export { TrophyIcon } from './TrophyIcon';
 export { CannesIcon } from './CannesIcon';
 export { TiffIcon } from './TiffIcon';
+export { BerlinaleIcon } from './BerlinaleIcon';
+export { VeniceIcon } from './VeniceIcon';
+export { SundanceIcon } from './SundanceIcon';

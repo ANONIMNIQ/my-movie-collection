@@ -43,7 +43,7 @@ import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
 import { Movie } from "@/data/movies";
 import AlphabeticalFilter from "@/components/AlphabeticalFilter";
-import { MovieReelIcon, CannesIcon, TiffIcon } from "@/components/icons"; // Changed import to MovieReelIcon, added CannesIcon and TiffIcon
+import { MovieReelIcon, CannesIcon, TiffIcon, BerlinaleIcon, VeniceIcon, SundanceIcon } from "@/components/icons"; // Changed import to MovieReelIcon, added CannesIcon and TiffIcon
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 18;
@@ -361,6 +361,18 @@ const Index = () => {
     "Everything Everywhere All at Once", "Arrival", "Prisoners", "Blade Runner 2049", "Room", "Whiplash", "Silver Linings Playbook", "Jojo Rabbit", "Nomadland", "Three Billboards Outside Ebbing, Missouri", "Green Book", "Parasite", "The Master", "Incendies", "12 Years a Slave", "La La Land", "Manchester by the Sea", "Spotlight", "The Imitation Game", "Argo", "Slumdog Millionaire", "American Beauty", "Amelie", "City of God", "Eternal Sunshine of the Spotless Mind", "No Country for Old Men", "There Will Be Blood", "The Social Network", "Birdman or (The Unexpected Virtue of Ignorance)", "The Shape of Water", "Roma", "Marriage Story", "Nomadland", "The Power of the Dog", "Belfast", "The Fabelmans", "Women Talking", "American Fiction", "Past Lives", "Poor Things", "Anatomy of a Fall", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "The Holdovers", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers"
   ]), []);
 
+  const berlinaleSelectionTitles = useMemo(() => new Set([
+    "Another Round", "Boyhood", "Capernaum", "Dog Day Afternoon", "First Reformed", "Frances Ha", "God's Own Country", "The Babadook", "The Banshees of Inisherin", "The Big Lebowski", "The French Dispatch"
+  ]), []);
+
+  const veniceSelectionTitles = useMemo(() => new Set([
+    "Atonement", "Children of Men", "Dunkirk", "Ex Machina", "The Conversation", "The Deer Hunter", "The Departed", "The Cook, the Thief, His Wife & Her Lover", "Dancer in the Dark", "Burning"
+  ]), []);
+
+  const sundanceSelectionTitles = useMemo(() => new Set([
+    "Eighth Grade", "Call Me by Your Name", "Get Out", "Blindspotting", "Booksmart", "Bad Education", "Coherence", "The One I Love", "Safety Not Guaranteed", "Palm Springs", "Ruby Sparks"
+  ]), []);
+
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
     const mindBendingMovies: Movie[] = [];
@@ -369,8 +381,11 @@ const Index = () => {
     const scifiMovies: Movie[] = [];
     const horrorMovies: Movie[] = [];
     const mysteryPsychologicalThrillers: Movie[] = [];
-    const cannesMovies: Movie[] = []; // New category for Cannes
-    const tiffMovies: Movie[] = []; // New category for TIFF
+    const cannesMovies: Movie[] = [];
+    const tiffMovies: Movie[] = [];
+    const berlinaleMovies: Movie[] = []; // New category
+    const veniceMovies: Movie[] = [];    // New category
+    const sundanceMovies: Movie[] = [];  // New category
 
     const currentYear = new Date().getFullYear().toString();
     (allMovies || []).forEach((movie) => {
@@ -381,11 +396,14 @@ const Index = () => {
       if (movie.genres.includes("Sci-Fi") || movie.genres.includes("Science Fiction")) scifiMovies.push(movie);
       if (movie.genres.includes("Horror")) horrorMovies.push(movie);
       if (mysteryThrillerTitles.has(movie.title)) mysteryPsychologicalThrillers.push(movie);
-      if (cannesSelectionTitles.has(movie.title)) cannesMovies.push(movie); // Populate Cannes category
-      if (tiffSelectionTitles.has(movie.title)) tiffMovies.push(movie); // Populate TIFF category
+      if (cannesSelectionTitles.has(movie.title)) cannesMovies.push(movie);
+      if (tiffSelectionTitles.has(movie.title)) tiffMovies.push(movie);
+      if (berlinaleSelectionTitles.has(movie.title)) berlinaleMovies.push(movie); // Populate Berlinale category
+      if (veniceSelectionTitles.has(movie.title)) veniceMovies.push(movie);       // Populate Venice category
+      if (sundanceSelectionTitles.has(movie.title)) sundanceMovies.push(movie);   // Populate Sundance category
     });
-    return { newMovies, mindBendingMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies, mysteryPsychologicalThrillers, cannesMovies, tiffMovies };
-  }, [allMovies, mindBendingTitles, mysteryThrillerTitles, cannesSelectionTitles, tiffSelectionTitles]);
+    return { newMovies, mindBendingMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies, mysteryPsychologicalThrillers, cannesMovies, tiffMovies, berlinaleMovies, veniceMovies, sundanceMovies };
+  }, [allMovies, mindBendingTitles, mysteryThrillerTitles, cannesSelectionTitles, tiffSelectionTitles, berlinaleSelectionTitles, veniceSelectionTitles, sundanceSelectionTitles]);
 
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
@@ -742,6 +760,9 @@ const Index = () => {
                   {categorizedMovies.mysteryPsychologicalThrillers.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best mystery / psychological thrillers in my collection" movies={categorizedMovies.mysteryPsychologicalThrillers} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.cannesMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Cannes selection" movies={categorizedMovies.cannesMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.tiffMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="TIFF selection" movies={categorizedMovies.tiffMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies.berlinaleMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Berlinale selection" movies={categorizedMovies.berlinaleMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies.veniceMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Venice selection" movies={categorizedMovies.veniceMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.demotion.div>}
+                  {categorizedMovies.sundanceMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sundance selection" movies={categorizedMovies.sundanceMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.dramaMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies.dramaMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
@@ -854,12 +875,12 @@ const Index = () => {
                 ) : (
                   filteredAndSortedMovies.length > 0 && (
                     <p className="text-muted-foreground text-lg">No more movies.</p>
-                  )
-                )}
+                    )
+                  )}
+                </motion.div>
               </motion.div>
-            </motion.div>
-          </main>
-        </motion.div>
+            </main>
+          </motion.div>
         <motion.footer ref={footerRef} className="py-8" initial="hidden" animate={headerShrunk ? "visible" : "hidden"} variants={contentVariants}>
           <MadeWithDyad />
         </motion.footer>

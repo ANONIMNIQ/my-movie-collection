@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LazyMovieCard } from './LazyMovieCard';
 import { motion } from 'framer-motion';
-import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon, CannesIcon, TiffIcon } from '@/components/icons'; // Added TiffIcon
+import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon, CannesIcon, TiffIcon, BerlinaleIcon, VeniceIcon, SundanceIcon } from '@/components/icons'; // Added TiffIcon
 
 interface CustomCarouselProps {
   title: string;
@@ -23,7 +23,10 @@ const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "The best thought provoking / mind-bending movies in my collection": TrophyIcon,
   "The best mystery / psychological thrillers in my collection": TrophyIcon,
   "Cannes selection": CannesIcon,
-  "TIFF selection": TiffIcon, // New entry for TIFF
+  "TIFF selection": TiffIcon,
+  "Berlinale selection": BerlinaleIcon, // New entry for Berlinale
+  "Venice selection": VeniceIcon,       // New entry for Venice
+  "Sundance selection": SundanceIcon,   // New entry for Sundance
   "Drama": HeartBreakIcon,
   "Thriller": BinocularIcon,
   "Sci-Fi": UfoIcon,
@@ -88,7 +91,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   if (movies.length === 0) return null;
 
   const IconComponent = titleIcons[title];
-  const isSpecialIcon = title === "Cannes selection" || title === "TIFF selection";
+  const isSpecialIcon = title === "Cannes selection" || title === "TIFF selection" || title === "Berlinale selection" || title === "Venice selection" || title === "Sundance selection";
 
   return (
     <section className="mb-12 relative z-30">
