@@ -43,7 +43,7 @@ import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
 import { Movie } from "@/data/movies";
 import AlphabeticalFilter from "@/components/AlphabeticalFilter";
-import { MovieReelIcon } from "@/components/icons"; // Changed import to MovieReelIcon
+import { MovieReelIcon, CannesIcon } from "@/components/icons"; // Changed import to MovieReelIcon, added CannesIcon
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 18;
@@ -353,6 +353,10 @@ const Index = () => {
     "Memento", "Vanilla Sky", "Psycho", "Identity", "The Prestige", "Babel", "Magnolia", "Mr. Brooks", "Black Book", "The Air I Breathe", "A Beautiful Mind", "The Orphanage", "21", "From Hell", "Donnie Darko", "Bully", "Silent Hill", "Children of Men", "The Life Before Her Eyes", "Unknown", "Pan's Labyrinth", "Oldboy", "Thesis", "Videodrome", "Pulp Fiction", "Reservoir Dogs", "11:14", "Running Scared", "The Others", "Hard Candy", "Audition", "Ichi the Killer", "Memories of Murder", "Shutter Island", "Inception", "Mr. Nobody", "The Life of David Gale", "The Green Mile", "Black Swan", "No Country for Old Men", "Mystic River", "Source Code", "The Skin I Live In", "Timecrimes", "Triangle", "The Thirteenth Floor", "The Girl with the Dragon Tattoo", "Cypher", "The Aura", "Blind", "Joint Security Area", "The Devil's Backbone", "Exam", "Stalker", "One Hour Photo", "Mulholland Drive", "Fight Club", "Cloud Atlas", "Sleep Tight", "The Hidden Face", "The Body", "The Island", "The Assassination of Richard Nixon", "Run Lola Run", "Trance", "The Hunt", "You're Next", "Sucker Punch", "U Turn", "Snowpiercer", "The 7th Floor", "The Best Offer", "February 29", "Spiral", "Sound of My Voice", "The Great Hypnotist"
   ]), []);
 
+  const cannesSelectionTitles = useMemo(() => new Set([
+    "Apocalypse Now", "Burning", "Dancer in the Dark", "The Cook, the Thief, His Wife & Her Lover", "Amélie", "Oldboy", "The Handmaiden", "Capernaum", "Parasite", "Anatomy of a Fall", "Pulp Fiction", "Taxi Driver", "The Piano", "Fahrenheit 451", "The Tree of Life", "Blue Is the Warmest Colour", "Titane", "Triangle of Sadness", "Shoplifters", "The Square", "Winter Sleep", "The Class", "4 Months, 3 Weeks and 2 Days", "The Wind That Shakes the Barley", "The Son's Room", "Rosetta", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Best Intentions", "Barton Fink", "Wild at Heart", "Sex, Lies, and Videotape", "Under the Sun of Satan", "Yol", "Missing", "Kagemusha", "All That Jazz", "The Tin Drum", "The Conversation", "Scarecrow", "The Hireling", "The Go-Between", "The French Connection", "MASH", "If....", "The Umbrellas of Cherbourg", "The Leopard", "Viridiana", "The Cranes Are Flying", "The Silent World", "Marty", "Rome, Open City", "The Third Man", "The Red Shoes", "The Wages of Fear", "The Seventh Seal", "Hiroshima Mon Amour", "La Dolce Vita", "L'Avventura", "Belle de Jour", "Blow-Up", "Z", "Easy Rider", "Midnight Cowboy", "The Conformist", "Death in Venice", "A Clockwork Orange", "Deliverance", "Last Tango in Paris", "Amarcord", "Nashville", "All the President's Men", "Network", "Coming Home", "The Deer Hunter", "Apocalypse Now", "All That Jazz", "Kagemusha", "Man of Iron", "Missing", "Yol", "The Ballad of Narayama", "Paris, Texas", "When Father Was Away on Business", "The Mission", "Under the Sun of Satan", "Pelle the Conqueror", "Sex, Lies, and Videotape", "Wild at Heart", "Barton Fink", "The Best Intentions", "Farewell My Concubine", "The Piano", "Pulp Fiction", "Underground", "Secrets & Lies", "The Eel", "Taste of Cherry", "Eternity and a Day", "Rosetta", "Dancer in the Dark", "The Son's Room", "The Piano Teacher", "The Man Without a Past", "Elephant", "Fahrenheit 9/11", "L'Enfant", "The Child", "The Wind That Shakes the Barley", "4 Months, 3 Weeks and 2 Days", "The Class", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Tree of Life", "Amour", "Blue Is the Warmest Colour", "Winter Sleep", "Dheepan", "I, Daniel Blake", "The Square", "Shoplifters", "Parasite", "Titane", "Triangle of Sadness", "Anatomy of a Fall"
+  ]), []);
+
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
     const mindBendingMovies: Movie[] = [];
@@ -360,7 +364,8 @@ const Index = () => {
     const thrillerMovies: Movie[] = [];
     const scifiMovies: Movie[] = [];
     const horrorMovies: Movie[] = [];
-    const mysteryPsychologicalThrillers: Movie[] = []; // New category
+    const mysteryPsychologicalThrillers: Movie[] = [];
+    const cannesMovies: Movie[] = []; // New category for Cannes
 
     const currentYear = new Date().getFullYear().toString();
     (allMovies || []).forEach((movie) => {
@@ -370,10 +375,11 @@ const Index = () => {
       if (movie.genres.includes("Thriller")) thrillerMovies.push(movie);
       if (movie.genres.includes("Sci-Fi") || movie.genres.includes("Science Fiction")) scifiMovies.push(movie);
       if (movie.genres.includes("Horror")) horrorMovies.push(movie);
-      if (mysteryThrillerTitles.has(movie.title)) mysteryPsychologicalThrillers.push(movie); // Populate new category
+      if (mysteryThrillerTitles.has(movie.title)) mysteryPsychologicalThrillers.push(movie);
+      if (cannesSelectionTitles.has(movie.title)) cannesMovies.push(movie); // Populate Cannes category
     });
-    return { newMovies, mindBendingMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies, mysteryPsychologicalThrillers };
-  }, [allMovies, mindBendingTitles, mysteryThrillerTitles]);
+    return { newMovies, mindBendingMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies, mysteryPsychologicalThrillers, cannesMovies };
+  }, [allMovies, mindBendingTitles, mysteryThrillerTitles, cannesSelectionTitles]);
 
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
@@ -728,8 +734,10 @@ const Index = () => {
                   <motion.div variants={contentVariants}><CustomCarousel title="New Movies" movies={categorizedMovies.newMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>
                   {categorizedMovies.mindBendingMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best thought provoking / mind-bending movies in my collection" movies={categorizedMovies.mindBendingMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.mysteryPsychologicalThrillers.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best mystery / psychological thrillers in my collection" movies={categorizedMovies.mysteryPsychologicalThrillers} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies.cannesMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Cannes selection" movies={categorizedMovies.cannesMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.dramaMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies.dramaMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.d
+v>}
                   {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.horrorMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies.horrorMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                 </>

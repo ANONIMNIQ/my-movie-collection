@@ -5,3 +5,4 @@ export { BinocularIcon } from './BinocularIcon';
 export { UfoIcon } from './UfoIcon';
 export { GhostIcon } from './GhostIcon';
 export { TrophyIcon } from './TrophyIcon';
+export { CannesIcon } from './CannesIcon';

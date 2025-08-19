@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LazyMovieCard } from './LazyMovieCard';
 import { motion } from 'framer-motion';
-import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon } from '@/components/icons';
+import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon, CannesIcon } from '@/components/icons'; // Added CannesIcon
 
 interface CustomCarouselProps {
   title: string;
@@ -21,7 +21,8 @@ interface CustomCarouselProps {
 const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "New Movies": CalendarAltIcon,
   "The best thought provoking / mind-bending movies in my collection": TrophyIcon,
-  "The best mystery / psychological thrillers in my collection": TrophyIcon, // Updated entry
+  "The best mystery / psychological thrillers in my collection": TrophyIcon,
+  "Cannes selection": CannesIcon, // New entry for Cannes
   "Drama": HeartBreakIcon,
   "Thriller": BinocularIcon,
   "Sci-Fi": UfoIcon,
