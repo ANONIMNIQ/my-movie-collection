@@ -98,22 +98,22 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     <section className="mb-12 relative z-30">
       <div className="px-10">
         <motion.h2
-          className="text-3xl font-bold flex items-center"
+          className="text-3xl font-bold flex items-center h-12"
           initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
           animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
           {!isMobileHook && IconComponent && (
             <div className={cn(
-              "flex items-center justify-center mr-2 w-12 h-12", // Standardized container size
-              isSpecialIcon ? "" : "bg-white rounded-full" // Conditional styling
+              "flex items-center justify-center mr-2 w-12 h-12 flex-shrink-0",
+              isSpecialIcon ? "" : "bg-white rounded-full"
             )}>
               <IconComponent className={cn(
-                isSpecialIcon ? "h-full w-full p-1 text-white" : "h-6 w-6 text-black" // Let SVG fill container, add some padding
+                isSpecialIcon ? "h-full w-full p-1 text-white" : "h-6 w-6 text-black"
               )} />
             </div>
           )}
-          {title}
+          <span>{title}</span>
         </motion.h2>
       </div>
       <div className="relative z-10 mt-[-2rem]">
