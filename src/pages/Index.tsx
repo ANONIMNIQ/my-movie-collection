@@ -152,6 +152,10 @@ const Index = () => {
   const [showNewCarouselDialog, setShowNewCarouselDialog] = useState(false);
   const [newCarouselName, setNewCarouselName] = useState("");
 
+  // State for search bar visibility and position
+  const [shouldShowSearchBar, setShouldShowSearchBar] = useState(false);
+  const [shouldMoveSearchUp, setShouldMoveSearchUp] = useState(false);
+
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
   const { data: allMovies, isLoading: loadingAllMovies, isError: isErrorAllMovies, error: errorAllMovies } = useQuery<Movie[], Error>({
@@ -326,31 +330,37 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
+    // Ensure all dependencies are available before proceeding
+    if (!allMovies || !adminCarouselEntries || !adminGroupedCarousels) {
+      return {
+        newMovies: [],
+        // Initialize other carousel types as empty if dependencies are missing
+      };
+    }
+
     const newMovies: Movie[] = [];
     const predefinedCarousels: Record<string, Movie[]> = {};
     const customCarousels: Record<string, Movie[]> = {};
 
     const currentYear = new Date().getFullYear().toString();
-    (allMovies || []).forEach((movie) => {
+    allMovies.forEach((movie) => { // Now `allMovies` is guaranteed to be defined
       if (movie.year === currentYear) newMovies.push(movie);
     });
 
     const collectionTypes = new Map<string, string>();
-    (adminCarouselEntries || []).forEach(entry => {
+    adminCarouselEntries.forEach(entry => { // Now `adminCarouselEntries` is guaranteed to be defined
       collectionTypes.set(entry.collection_name, entry.type);
     });
 
-    // Ensure adminGroupedCarousels is an object before iterating
-    if (adminGroupedCarousels && typeof adminGroupedCarousels === 'object') {
-      for (const collectionName in adminGroupedCarousels) {
-        // Use hasOwnProperty to avoid iterating over prototype properties
-        if (Object.prototype.hasOwnProperty.call(adminGroupedCarousels, collectionName)) {
-          const type = collectionTypes.get(collectionName); // Line 361
-          if (type === 'predefined') {
-            predefinedCarousels[collectionName] = adminGroupedCarousels[collectionName];
-          } else if (type === 'custom') {
-            customCarousels[collectionName] = adminGroupedCarousels[collectionName];
-          }
+    // adminGroupedCarousels is already checked above
+    for (const collectionName in adminGroupedCarousels) {
+      // Use hasOwnProperty to avoid iterating over prototype properties
+      if (Object.prototype.hasOwnProperty.call(adminGroupedCarousels, collectionName)) {
+        const type = collectionTypes.get(collectionName);
+        if (type === 'predefined') {
+          predefinedCarousels[collectionName] = adminGroupedCarousels[collectionName];
+        } else if (type === 'custom') {
+          customCarousels[collectionName] = adminGroupedCarousels[collectionName];
         }
       }
     }
@@ -404,12 +414,16 @@ const Index = () => {
       setIsTitleScrolledPastTop(false);
       setIsAllMoviesSectionInView(false);
       setIsHeroSliderInView(false);
+      setShouldShowSearchBar(false); // Ensure mobile search bar is off
+      setShouldMoveSearchUp(false); // Ensure mobile search bar is off
       return;
     }
 
     const currentAllMoviesSectionRef = allMoviesSectionRef.current;
     const currentAllMoviesTitleContainerRef = allMoviesTitleContainerRef.current;
     const currentHeroSliderRef = heroSliderRef.current;
+    const currentLoadMoreRef = loadMoreRef.current;
+    const currentFooterRef = footerRef.current;
 
     if (!currentAllMoviesSectionRef || !currentAllMoviesTitleContainerRef) return;
 
@@ -452,9 +466,28 @@ const Index = () => {
       heroSliderObserver.observe(currentHeroSliderRef);
     }
 
+    // Observer for loadMoreRef (for infinite scroll and search bar positioning)
+    const loadMoreObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsLoadMoreTriggerVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    // Observer for footerRef (to move search bar up)
+    const footerObserver = new IntersectionObserver(
+      ([entry]) => {
+        setIsFooter(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
     headerDarkObserver.observe(currentAllMoviesSectionRef);
     sectionInViewObserver.observe(currentAllMoviesSectionRef);
     titleTopObserver.observe(currentAllMoviesTitleContainerRef);
+    if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
+    if (currentFooterRef) footerObserver.observe(currentFooterRef);
+
 
     return () => {
       headerDarkObserver.unobserve(currentAllMoviesSectionRef);
@@ -463,12 +496,16 @@ const Index = () => {
       if (heroSliderObserver && currentHeroSliderRef) {
         heroSliderObserver.unobserve(currentHeroSliderRef);
       }
+      if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
+      if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
   useEffect(() => {
+    setShouldShowSearchBar(headerShrunk && !isHeroSliderInView);
+    setShouldMoveSearchUp(isFooterVisible);
     setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView && !isHeroSliderInView);
-  }, [isTitleScrolledPastTop, isAllMoviesSectionInView, isHeroSliderInView]);
+  }, [headerShrunk, isHeroSliderInView, isFooterVisible, isTitleScrolledPastTop, isAllMoviesSectionInView]);
 
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;
