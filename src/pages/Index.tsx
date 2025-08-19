@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -998,41 +998,18 @@ const Index = () => {
                 </motion.div>
               ) : (
                 <>
-                  <motion.div variants={contentVariants}><CustomCarousel title="New Movies" movies={categorizedMovies["New Movies"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>
-                  {categorizedMovies["Oscar winners"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Oscar winners" movies={categorizedMovies["Oscar winners"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["The best thought provoking / mind-bending movies in my collection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best thought provoking / mind-bending movies in my collection" movies={categorizedMovies["The best thought provoking / mind-bending movies in my collection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["The best mystery / psychological thrillers in my collection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best mystery / psychological thrillers in my collection" movies={categorizedMovies["The best mystery / psychological thrillers in my collection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Cannes selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Cannes selection" movies={categorizedMovies["Cannes selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["TIFF selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="TIFF selection" movies={categorizedMovies["TIFF selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Berlinale selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Berlinale selection" movies={categorizedMovies["Berlinale selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Venice selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Venice selection" movies={categorizedMovies["Venice selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Sundance selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sundance selection" movies={categorizedMovies["Sundance selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Drama"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies["Drama"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Thriller"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies["Thriller"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Sci-Fi"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies["Sci-Fi"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies["Horror"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies["Horror"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {/* Display Custom Carousels */}
-                  {isLoadingCustomCarousels ? (
-                    <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
-                      <h2 className="text-3xl font-bold mb-4">Your Custom Carousels</h2>
-                      <div className="flex overflow-hidden gap-4">
-                        {Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />)}
-                      </div>
+                  {Object.entries(categorizedMovies).map(([collectionName, movies]) => (
+                    <motion.div variants={contentVariants} key={collectionName}>
+                      <CustomCarousel
+                        title={collectionName}
+                        movies={movies}
+                        selectedMovieIds={selectedMovieIds}
+                        onSelectMovie={handleSelectMovie}
+                        isMobile={isMobile}
+                        pageLoaded={pageLoaded}
+                      />
                     </motion.div>
-                  ) : (
-                    Object.entries(categorizedMovies).filter(([collectionName]) => customCarouselNames.includes(collectionName)).map(([collectionName, movies]) => (
-                      <motion.div variants={contentVariants} key={collectionName}>
-                        <CustomCarousel
-                          title={collectionName}
-                          movies={movies}
-                          selectedMovieIds={selectedMovieIds}
-                          onSelectMovie={handleSelectMovie}
-                          isMobile={isMobile}
-                          pageLoaded={pageLoaded}
-                        />
-                      </motion.div>
-                    ))
-                  )}
+                  ))}
                 </>
               )}
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
