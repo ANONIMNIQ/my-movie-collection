@@ -204,7 +204,7 @@ const Index = () => {
   });
 
   const { data: predefinedCarousels, isLoading: isLoadingPredefinedCarousels } = useQuery<Record<string, Movie[]>, Error>({
-    queryKey: ["predefinedCarousels", allMovies],
+    queryKey: ["predefinedCarousels"],
     queryFn: async () => {
       if (!allMovies) return {};
       const { data: entries, error } = await supabase
@@ -233,7 +233,7 @@ const Index = () => {
   });
 
   const { data: customCarousels, isLoading: isLoadingCustomCarousels } = useQuery<Record<string, Movie[]>, Error>({
-    queryKey: ["customCarousels", allMovies],
+    queryKey: ["customCarousels"],
     queryFn: async () => {
       if (!allMovies) return {};
       const { data: entries, error } = await supabase
@@ -344,18 +344,28 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
+    // 1. Always start with the automatically generated genre carousels.
+    // This ensures that for public visitors, carousels like "Sci-Fi" are always created from the full movie list.
     const carousels: Record<string, Movie[]> = {};
-
     if (allMovies) {
-      // 1. Generate base genre carousels
-      carousels["New Movies"] = allMovies.filter(m => m.year === new Date().getFullYear().toString());
-      carousels["Drama"] = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
-      carousels["Thriller"] = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
-      carousels["Sci-Fi"] = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
-      carousels["Horror"] = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
+      const genresToDisplay = ["New Movies", "Drama", "Thriller", "Sci-Fi", "Horror"];
+      
+      // Special case for New Movies
+      const newMovies = allMovies.filter(m => m.year === new Date().getFullYear().toString());
+      if (newMovies.length > 0) {
+        carousels["New Movies"] = newMovies;
+      }
+
+      genresToDisplay.slice(1).forEach(genre => {
+        const moviesInGenre = allMovies.filter(m => m.genres.includes(genre)).sort((a, b) => a.title.localeCompare(b.title));
+        if (moviesInGenre.length > 0) {
+          carousels[genre] = moviesInGenre;
+        }
+      });
     }
 
-    // 2. Merge predefined carousels, but DON'T overwrite with an empty list
+    // 2. Layer the public, predefined carousels from the database on top.
+    // This will overwrite a genre carousel if a predefined one with the same name exists and has movies.
     if (predefinedCarousels) {
       for (const name in predefinedCarousels) {
         if (predefinedCarousels[name] && predefinedCarousels[name].length > 0) {
@@ -364,9 +374,13 @@ const Index = () => {
       }
     }
 
-    // 3. Merge admin-only custom carousels
+    // 3. For the admin, layer their custom carousels on top of everything else.
     if (isAdmin && customCarousels) {
-      Object.assign(carousels, customCarousels);
+      for (const name in customCarousels) {
+        if (customCarousels[name] && customCarousels[name].length > 0) {
+          carousels[name] = customCarousels[name];
+        }
+      }
     }
 
     return carousels;
