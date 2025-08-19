@@ -20,7 +20,8 @@ interface CustomCarouselProps {
 
 const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "New Movies": CalendarAltIcon,
-  "The best thought provoking / mind-bending movies in my collection": TrophyIcon, // Updated key
+  "The best thought provoking / mind-bending movies in my collection": TrophyIcon,
+  "Best mystery / psychological thrillers in my collection": TrophyIcon, // New entry
   "Drama": HeartBreakIcon,
   "Thriller": BinocularIcon,
   "Sci-Fi": UfoIcon,
@@ -39,7 +40,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const leaveTimeout = useRef<number | null>(null);
+  const leaveTimeout = useRef<number | null>(leaveTimeout);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
   const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
