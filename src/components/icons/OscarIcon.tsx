@@ -4,7 +4,7 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {}
 
 export const OscarIcon: React.FC<IconProps> = (props) => (
   <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-    viewBox="0 0 500 500" xmlSpace="preserve" {...props}>
+    viewBox="0 0 500 500" {...props}>
     <g id="watermark_1_">
       <g>
         <g id="watermark" opacity={0.61}>
@@ -359,7 +359,7 @@ export const OscarIcon: React.FC<IconProps> = (props) => (
     <path fill="#FFFFFF" d="M217.28,478.878h1.607c1.263,0,2.114,0.812,2.114,1.974c0,1.161-0.851,1.973-2.114,1.973h-1.607
       V478.878z M218.864,482.464c1.049,0,1.725-0.665,1.725-1.612c0-0.947-0.677-1.613-1.725-1.613h-1.167v3.225H218.864z"/>
     <path fill="#FFFFFF" d="M234.041,481.77h-2.199l-0.474,1.054h-0.434l1.804-3.947h0.412l1.804,3.947h-0.44L234.041,481.77z
-      M233.889,481.432l-0.947-2.12l-0.947,2.12H233.889z"/>
+      M233.889,481.432l-0.947-2.12l-0.947-2.12H233.889z"/>
     <path fill="#FFFFFF" d="M239.685,478.878h0.417v3.586h2.21v0.361h-2.627V478.878z"/>
     <path fill="#FFFFFF" d="M247.082,478.878h0.417v3.586h2.21v0.361h-2.627V478.878z"/>
     <path fill="#FFFFFF" d="M260.449,479.239v1.551h2.041v0.361h-2.041v1.675h-0.417v-3.947h2.706v0.361H260.449z"/>
