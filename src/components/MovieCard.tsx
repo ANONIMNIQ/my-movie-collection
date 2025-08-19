@@ -32,14 +32,15 @@ interface MovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
-  showSynopsis?: boolean; // New prop
+  showSynopsis?: boolean;
+  shouldPrefetch?: boolean; // New prop for prefetching
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis = true }: MovieCardProps) => {
+export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis = true, shouldPrefetch = false }: MovieCardProps) => {
   const navigate = useNavigate();
-  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.id, movie.title, movie.year, movie.tmdb_id);
+  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.id, movie.title, movie.year, movie.tmdb_id, shouldPrefetch); // Pass shouldPrefetch
   const { session } = useSession();
   const queryClient = useQueryClient();
   const userId = session?.user?.id;

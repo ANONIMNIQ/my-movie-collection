@@ -29,13 +29,14 @@ interface MobileMovieCardProps {
   movie: Movie;
   selectedMovieIds: Set<string>;
   onSelectMovie: (id: string, isSelected: boolean) => void;
+  shouldPrefetch?: boolean; // New prop for prefetching
 }
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
-export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: MobileMovieCardProps) => {
+export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, shouldPrefetch = false }: MobileMovieCardProps) => {
   const navigate = useNavigate();
-  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.id, movie.title, movie.year, movie.tmdb_id);
+  const { data: tmdbMovie, isLoading } = useTmdbMovie(movie.id, movie.title, movie.year, movie.tmdb_id, shouldPrefetch); // Pass shouldPrefetch
   const { session } = useSession();
   const queryClient = useQueryClient(); // Get query client
   const [isClicked, setIsClicked] = useState(false);
@@ -200,7 +201,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie }: Mobi
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete the movie "{movie.title}" from your collection.
-                </AlertDialogDescription>
+                </DAlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>

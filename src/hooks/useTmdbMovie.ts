@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchFromTmdb } from "@/lib/tmdb";
 
-export const useTmdbMovie = (supabaseMovieId: string, title: string, year: string, tmdbIdFromDb?: string | null) => {
+export const useTmdbMovie = (supabaseMovieId: string, title: string, year: string, tmdbIdFromDb?: string | null, enabled = true) => {
   return useQuery({
     queryKey: ["tmdb", supabaseMovieId], // Use Supabase movie ID as the primary cache key
     queryFn: async () => {
@@ -33,7 +33,7 @@ export const useTmdbMovie = (supabaseMovieId: string, title: string, year: strin
       });
       return details;
     },
-    enabled: !!supabaseMovieId && !!title, // Enable if Supabase movie ID and title are available
+    enabled: enabled && !!supabaseMovieId && !!title, // Enable if Supabase movie ID and title are available AND the enabled prop is true
     staleTime: 1000 * 60 * 60 * 24, // Cache data for 24 hours
     retry: false,
   });
