@@ -206,7 +206,6 @@ const Index = () => {
   const { data: adminCarouselEntries, isLoading: isLoadingAdminCarouselEntries } = useQuery<{ movie_id: string; collection_name: string; type: string }[], Error>({
     queryKey: ["adminCarouselEntries", ADMIN_USER_ID],
     queryFn: async () => {
-      if (!isAdmin) return [];
       const { data, error } = await supabase
         .from('carousel_collections')
         .select('movie_id, collection_name, type')
@@ -214,7 +213,7 @@ const Index = () => {
       if (error) throw error;
       return data;
     },
-    enabled: isAdmin,
+    enabled: !!ADMIN_USER_ID,
     staleTime: 1000 * 60 * 5,
   });
 
