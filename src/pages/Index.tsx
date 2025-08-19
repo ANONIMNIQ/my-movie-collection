@@ -345,8 +345,13 @@ const Index = () => {
     return baseFilteredMovies.filter(movie => movie.title.toUpperCase().startsWith(selectedLetter));
   }, [baseFilteredMovies, selectedLetter]);
 
+  const mindBendingTitles = useMemo(() => new Set([
+    "Primer", "Coherence", "Triangle", "The Prestige", "Memento", "Shutter Island", "Arrival", "Blade Runner 2049", "Ex Machina", "Annihilation", "Source Code", "Donnie Darko", "Eternal Sunshine of the Spotless Mind", "Being John Malkovich", "Synecdoche, New York", "Adaptation.", "Fight Club", "The Matrix", "Inception", "Paprika", "Perfect Blue", "A Scanner Darkly", "Waking Life", "Pi", "The Fountain", "Cloud Atlas", "Mr. Nobody", "Gattaca", "Moon", "District 9", "Children of Men", "Her", "Under the Skin", "Upstream Color", "Another Earth", "I Origins", "The Man from Earth", "Predestination", "Looper", "12 Monkeys", "Dark City", "The Thirteenth Floor", "eXistenZ", "Videodrome", "Jacob's Ladder", "Mulholland Drive", "Lost Highway", "Inland Empire", "Eraserhead", "Persona", "Stalker", "Solaris", "2001: A Space Odyssey", "Brazil", "Naked Lunch", "The Game", "Oldboy", "The Handmaiden", "A Tale of Two Sisters", "The Others", "The Sixth Sense", "Identity", "The Machinist", "Black Swan", "The Skin I Live In", "Enemy", "Nocturnal Animals", "Gone Girl", "Prisoners", "Zodiac", "Se7en", "The Silence of the Lambs", "Get Out", "Us", "Hereditary", "Midsommar", "The Lighthouse", "The Witch", "It Comes at Night", "A Ghost Story", "I'm Thinking of Ending Things", "The Killing of a Sacred Deer", "Dogtooth", "The Lobster", "The Favourite", "Sorry to Bother You", "Swiss Army Man", "The Art of Self-Defense", "Vivarium", "The Platform", "Cube", "Circle", "Exam", "Timecrimes", "Sound of My Voice", "The Invitation", "The Gift", "Goodnight Mommy", "The Lodge", "Honeymoon", "Creep", "The One I Love", "Safety Not Guaranteed", "Palm Springs", "About Time", "Ruby Sparks", "The Truman Show", "Stranger than Fiction", "Groundhog Day", "Edge of Tomorrow", "Everything Everywhere All at Once"
+  ]), []);
+
   const categorizedMovies = useMemo(() => {
     const newMovies: Movie[] = [];
+    const mindBendingMovies: Movie[] = [];
     const dramaMovies: Movie[] = [];
     const thrillerMovies: Movie[] = [];
     const scifiMovies: Movie[] = [];
@@ -354,13 +359,14 @@ const Index = () => {
     const currentYear = new Date().getFullYear().toString();
     (allMovies || []).forEach((movie) => {
       if (movie.year === currentYear) newMovies.push(movie);
+      if (mindBendingTitles.has(movie.title)) mindBendingMovies.push(movie);
       if (movie.genres.includes("Drama")) dramaMovies.push(movie);
       if (movie.genres.includes("Thriller")) thrillerMovies.push(movie);
       if (movie.genres.includes("Sci-Fi") || movie.genres.includes("Science Fiction")) scifiMovies.push(movie);
       if (movie.genres.includes("Horror")) horrorMovies.push(movie);
     });
-    return { newMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies };
-  }, [allMovies]);
+    return { newMovies, mindBendingMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies };
+  }, [allMovies, mindBendingTitles]);
 
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
@@ -713,6 +719,7 @@ const Index = () => {
               ) : (
                 <>
                   <motion.div variants={contentVariants}><CustomCarousel title="New Movies" movies={categorizedMovies.newMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>
+                  {categorizedMovies.mindBendingMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best thought provoking / mind-bending movies" movies={categorizedMovies.mindBendingMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.dramaMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies.dramaMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
