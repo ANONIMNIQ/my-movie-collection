@@ -30,7 +30,7 @@ const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "Sundance selection": SundanceIcon,
   "Drama": HeartBreakIcon,
   "Thriller": BinocularIcon,
-  "Sci-Fi": UfoIcon,
+  "Science Fiction": UfoIcon, // Changed to UfoIcon
   "Horror": GhostIcon,
 };
 
