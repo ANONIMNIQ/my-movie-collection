@@ -361,10 +361,10 @@ const Index = () => {
     }
   
     // Dynamically create genre carousels
-    const dramaMovies = allMovies.filter(m => m.genres.includes('Drama')).sort(() => 0.5 - Math.random()).slice(0, 20);
-    const thrillerMovies = allMovies.filter(m => m.genres.includes('Thriller')).sort(() => 0.5 - Math.random()).slice(0, 20);
-    const sciFiMovies = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort(() => 0.5 - Math.random()).slice(0, 20);
-    const horrorMovies = allMovies.filter(m => m.genres.includes('Horror')).sort(() => 0.5 - Math.random()).slice(0, 20);
+    const dramaMovies = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
+    const thrillerMovies = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
+    const sciFiMovies = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
+    const horrorMovies = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
   
     return {
       newMovies,
