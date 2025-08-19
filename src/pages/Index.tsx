@@ -344,15 +344,10 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
-    const carousels: Record<string, Movie[]> = {
-      "New Movies": [],
-      "Drama": [],
-      "Thriller": [],
-      "Sci-Fi": [],
-      "Horror": [],
-    };
+    const carousels: Record<string, Movie[]> = {};
 
     if (allMovies) {
+      // 1. Generate base genre carousels
       carousels["New Movies"] = allMovies.filter(m => m.year === new Date().getFullYear().toString());
       carousels["Drama"] = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
       carousels["Thriller"] = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
@@ -360,12 +355,16 @@ const Index = () => {
       carousels["Horror"] = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
     }
 
-    // Merge public predefined carousels
+    // 2. Merge predefined carousels, but DON'T overwrite with an empty list
     if (predefinedCarousels) {
-      Object.assign(carousels, predefinedCarousels);
+      for (const name in predefinedCarousels) {
+        if (predefinedCarousels[name] && predefinedCarousels[name].length > 0) {
+          carousels[name] = predefinedCarousels[name];
+        }
+      }
     }
 
-    // Merge admin-only custom carousels
+    // 3. Merge admin-only custom carousels
     if (isAdmin && customCarousels) {
       Object.assign(carousels, customCarousels);
     }
