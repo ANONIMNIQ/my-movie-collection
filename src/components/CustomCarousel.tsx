@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LazyMovieCard } from './LazyMovieCard';
 import { motion } from 'framer-motion';
-import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon, CannesIcon } from '@/components/icons'; // Added CannesIcon
+import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon, CannesIcon, TiffIcon } from '@/components/icons'; // Added TiffIcon
 
 interface CustomCarouselProps {
   title: string;
@@ -22,7 +22,8 @@ const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "New Movies": CalendarAltIcon,
   "The best thought provoking / mind-bending movies in my collection": TrophyIcon,
   "The best mystery / psychological thrillers in my collection": TrophyIcon,
-  "Cannes selection": CannesIcon, // New entry for Cannes
+  "Cannes selection": CannesIcon,
+  "TIFF selection": TiffIcon, // New entry for TIFF
   "Drama": HeartBreakIcon,
   "Thriller": BinocularIcon,
   "Sci-Fi": UfoIcon,
@@ -87,6 +88,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   if (movies.length === 0) return null;
 
   const IconComponent = titleIcons[title];
+  const isSpecialIcon = title === "Cannes selection" || title === "TIFF selection";
 
   return (
     <section className="mb-12 relative z-30">
@@ -100,10 +102,10 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           {!isMobileHook && IconComponent && (
             <div className={cn(
               "flex items-center justify-center mr-2",
-              title === "Cannes selection" ? "" : "bg-white rounded-full p-2 w-10 h-10" // No background/padding/fixed size for Cannes container
+              isSpecialIcon ? "" : "bg-white rounded-full p-2 w-10 h-10" // No background/padding/fixed size for special icons
             )}>
               <IconComponent className={cn(
-                title === "Cannes selection" ? "w-12 h-12 text-white" : "w-6 h-6 text-black" // Bigger and white for Cannes
+                isSpecialIcon ? "w-12 h-12 text-white" : "w-6 h-6 text-black" // Bigger and white for special icons
               )} />
             </div>
           )}
