@@ -340,13 +340,17 @@ const Index = () => {
       collectionTypes.set(entry.collection_name, entry.type);
     });
 
-    if (adminGroupedCarousels) {
+    // Ensure adminGroupedCarousels is an object before iterating
+    if (adminGroupedCarousels && typeof adminGroupedCarousels === 'object') {
       for (const collectionName in adminGroupedCarousels) {
-        const type = collectionTypes.get(collectionName);
-        if (type === 'predefined') {
-          predefinedCarousels[collectionName] = adminGroupedCarousels[collectionName];
-        } else if (type === 'custom') {
-          customCarousels[collectionName] = adminGroupedCarousels[collectionName];
+        // Use hasOwnProperty to avoid iterating over prototype properties
+        if (Object.prototype.hasOwnProperty.call(adminGroupedCarousels, collectionName)) {
+          const type = collectionTypes.get(collectionName); // Line 361
+          if (type === 'predefined') {
+            predefinedCarousels[collectionName] = adminGroupedCarousels[collectionName];
+          } else if (type === 'custom') {
+            customCarousels[collectionName] = adminGroupedCarousels[collectionName];
+          }
         }
       }
     }
