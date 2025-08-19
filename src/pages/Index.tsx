@@ -329,52 +329,65 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
-    if (!allMovies || !adminCarouselEntries || !adminGroupedCarousels) {
+    if (!allMovies) {
       return {
         newMovies: [],
+        "Drama": [],
+        "Thriller": [],
+        "Sci-Fi": [],
+        "Horror": [],
       };
     }
   
     const newMovies: Movie[] = [];
-    const predefinedCarousels: Record<string, Movie[]> = {};
-    const customCarousels: Record<string, Movie[]> = {};
-  
     const currentYear = new Date().getFullYear().toString();
     allMovies.forEach((movie) => {
       if (movie.year === currentYear) newMovies.push(movie);
     });
-  
-    const collectionTypes = new Map<string, string>();
-    adminCarouselEntries.forEach(entry => {
-      collectionTypes.set(entry.collection_name, entry.type);
-    });
-  
-    for (const collectionName in adminGroupedCarousels) {
-      if (Object.prototype.hasOwnProperty.call(adminGroupedCarousels, collectionName)) {
-        const type = collectionTypes.get(collectionName);
-        if (type === 'predefined') {
-          predefinedCarousels[collectionName] = adminGroupedCarousels[collectionName];
-        } else if (type === 'custom') {
-          customCarousels[collectionName] = adminGroupedCarousels[collectionName];
-        }
-      }
-    }
-  
-    // Dynamically create genre carousels
+
+    // Always create genre carousels for public view
     const dramaMovies = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
     const thrillerMovies = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
     const sciFiMovies = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
     const horrorMovies = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
-  
-    return {
+
+    const baseCarousels = {
       newMovies,
-      ...predefinedCarousels,
-      ...customCarousels,
       "Drama": dramaMovies,
       "Thriller": thrillerMovies,
       "Sci-Fi": sciFiMovies,
       "Horror": horrorMovies,
     };
+
+    // Add admin-specific carousels if data is available
+    if (adminCarouselEntries && adminGroupedCarousels) {
+      const predefinedCarousels: Record<string, Movie[]> = {};
+      const customCarousels: Record<string, Movie[]> = {};
+      
+      const collectionTypes = new Map<string, string>();
+      adminCarouselEntries.forEach(entry => {
+        collectionTypes.set(entry.collection_name, entry.type);
+      });
+    
+      for (const collectionName in adminGroupedCarousels) {
+        if (Object.prototype.hasOwnProperty.call(adminGroupedCarousels, collectionName)) {
+          const type = collectionTypes.get(collectionName);
+          if (type === 'predefined') {
+            predefinedCarousels[collectionName] = adminGroupedCarousels[collectionName];
+          } else if (type === 'custom') {
+            customCarousels[collectionName] = adminGroupedCarousels[collectionName];
+          }
+        }
+      }
+      
+      return {
+        ...baseCarousels,
+        ...predefinedCarousels,
+        ...customCarousels,
+      };
+    }
+
+    return baseCarousels;
   }, [allMovies, adminGroupedCarousels, adminCarouselEntries]);
 
   const allGenres = useMemo(() => {
