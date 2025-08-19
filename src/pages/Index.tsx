@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Loader2 } from "lucide-react"; // Import Loader2 icon
 import { showSuccess, showError } from "@/utils/toast";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useQuery } => "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -736,8 +736,7 @@ const Index = () => {
                   {categorizedMovies.mysteryPsychologicalThrillers.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best mystery / psychological thrillers in my collection" movies={categorizedMovies.mysteryPsychologicalThrillers} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.cannesMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Cannes selection" movies={categorizedMovies.cannesMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.dramaMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies.dramaMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.d
-v>}
+                  {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.horrorMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies.horrorMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                 </>
