@@ -105,7 +105,9 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
         >
           {!isMobileHook && IconComponent && (
             isSpecialIcon ? (
-              <IconComponent className="mr-4 h-8 w-auto text-white" />
+              <div className="mr-4 flex items-center h-full">
+                <IconComponent className="h-8 w-auto text-white" />
+              </div>
             ) : (
               <div className={cn(
                 "flex items-center justify-center mr-2 w-12 h-12 flex-shrink-0",
