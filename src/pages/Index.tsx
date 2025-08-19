@@ -563,10 +563,12 @@ const Index = () => {
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
   useEffect(() => {
-    setShouldShowSearchBar(headerShrunk && !isHeroSliderInView);
+    // New logic for the search bar: show it only when the "All Movies" section is in view on desktop.
+    setShouldShowSearchBar(isAllMoviesSectionInView && !isMobile);
+    
     setShouldMoveSearchUp(isFooterVisible);
     setIsFloatingAllMoviesHeaderVisible(isTitleScrolledPastTop && isAllMoviesSectionInView && !isHeroSliderInView);
-  }, [headerShrunk, isHeroSliderInView, isFooterVisible, isTitleScrolledPastTop, isAllMoviesSectionInView]);
+  }, [isAllMoviesSectionInView, isMobile, isFooterVisible, isTitleScrolledPastTop, isHeroSliderInView]);
 
   useEffect(() => {
     const prevSearchQuery = prevSearchQueryRef.current;
