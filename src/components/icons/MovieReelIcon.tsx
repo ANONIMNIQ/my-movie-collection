@@ -6,8 +6,8 @@ export const MovieReelIcon: React.FC<IconProps> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 1385 504" {...props}>
     <defs>
       <linearGradient id="Gradient_1" gradientUnits="userSpaceOnUse" x1="693.5625" y1="465.3625" x2="701.9375" y2="7.737500000000011" spreadMethod="pad">
-        <stop offset="0%" stop-color="currentColor" stop-opacity="0"/>
-        <stop offset="100%" stop-color="currentColor"/>
+        <stop offset="0%" stopColor="currentColor" stopOpacity="0"/>
+        <stop offset="100%" stopColor="currentColor"/>
       </linearGradient>
       <g id="Layer0_0_FILL">
         <path fill="url(#Gradient_1)" stroke="none" d="
