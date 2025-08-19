@@ -46,7 +46,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const leaveTimeout = useRef<number | null>(null); // Corrected initialization
+  const leaveTimeout = useRef<number | null>(null);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
   const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
@@ -98,26 +98,22 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     <section className="mb-12 relative z-30">
       <div className="px-10">
         <motion.h2
-          className="text-3xl font-bold flex items-center h-12"
+          className="text-3xl font-bold flex items-center"
           initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
           animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
           {!isMobileHook && IconComponent && (
-            isSpecialIcon ? (
-              <div className="mr-4 flex items-center justify-center h-12"> {/* Container matches h2 height */}
-                <IconComponent className="h-full w-auto" /> {/* Icon fills container height */}
-              </div>
-            ) : (
-              <div className={cn(
-                "flex items-center justify-center mr-2 w-12 h-12 flex-shrink-0",
-                "bg-white rounded-full"
-              )}>
-                <IconComponent className="h-6 w-6 text-black" />
-              </div>
-            )
+            <div className={cn(
+              "flex items-center justify-center mr-2",
+              isSpecialIcon ? "" : "bg-white rounded-full p-2 w-10 h-10" // No background/padding/fixed size for special icons
+            )}>
+              <IconComponent className={cn(
+                isSpecialIcon ? "w-12 h-12 text-white" : "w-6 h-6 text-black" // Bigger and white for special icons
+              )} />
+            </div>
           )}
-          <span>{title}</span>
+          {title}
         </motion.h2>
       </div>
       <div className="relative z-10 mt-[-2rem]">
