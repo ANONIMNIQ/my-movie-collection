@@ -172,7 +172,7 @@ const Index = () => {
       if (!isAdmin) return [];
       const { data, error } = await supabase
         .from('carousel_collections')
-        .select('movie_id, collection_name')
+        .select('movie_id, collection_name, type')
         .eq('user_id', ADMIN_USER_ID);
       if (error) throw error;
       return data;
@@ -208,7 +208,13 @@ const Index = () => {
 
   const customCarouselNames = useMemo(() => {
     if (!adminCarouselEntries) return [];
-    const names = Array.from(new Set(adminCarouselEntries.map(entry => entry.collection_name)));
+    const names = Array.from(new Set(adminCarouselEntries.filter((entry: any) => entry.type === 'custom').map(entry => entry.collection_name)));
+    return names.sort();
+  }, [adminCarouselEntries]);
+
+  const predefinedCarouselNames = useMemo(() => {
+    if (!adminCarouselEntries) return [];
+    const names = Array.from(new Set(adminCarouselEntries.filter((entry: any) => entry.type === 'predefined').map(entry => entry.collection_name)));
     return names.sort();
   }, [adminCarouselEntries]);
 
@@ -217,6 +223,131 @@ const Index = () => {
     const shuffled = [...adminPerfectRatedMovies].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, Math.min(shuffled.length, 6));
   }, [adminPerfectRatedMovies]);
+
+  // Hardcoded lists for initial migration
+  const initialOscarWinnersTitles = useMemo(() => new Set([
+    "Parasite", "Everything Everywhere All at Once", "American Beauty", "No Country for Old Men", "Birdman or (The Unexpected Virtue of Ignorance)", "Spotlight", "Green Book", "La La Land", "Manchester by the Sea", "Whiplash", "Argo", "Slumdog Millionaire", "The Social Network", "The Imitation Game", "12 Years a Slave", "Roma", "Marriage Story", "Nomadland", "The Power of the Dog", "Belfast", "Women Talking", "American Fiction", "Poor Things", "Anatomy of a Fall", "Oppenheimer", "The Holdovers", "The Zone of Interest", "Forrest Gump", "Gladiator", "The Dark Knight", "The Departed", "Fargo", "Alien", "Adaptation.", "The Abyss", "2001: A Space Odyssey", "Apocalypse Now", "Arrival", "Atonement", "Back to the Future", "Barry Lyndon", "Boyhood", "Bridge of Spies", "Call Me by Your Name", "Chinatown", "Close Encounters of the Third Kind", "Coco", "The Deer Hunter", "Departures", "Dog Day Afternoon", "Dunkirk", "Ex Machina", "Finding Nemo", "Get Out", "Dead Poets Society", "Crouching Tiger, Hidden Dragon"
+  ]), []);
+
+  const initialMindBendingTitles = useMemo(() => new Set([
+    "Primer", "Coherence", "Triangle", "The Prestige", "Memento", "Shutter Island", "Arrival", "Blade Runner 2049", "Ex Machina", "Annihilation", "Source Code", "Donnie Darko", "Eternal Sunshine of the Spotless Mind", "Being John Malkovich", "Synecdoche, New York", "Adaptation.", "Fight Club", "The Matrix", "Inception", "Paprika", "Perfect Blue", "A Scanner Darkly", "Waking Life", "Pi", "The Fountain", "Cloud Atlas", "Mr. Nobody", "Gattaca", "Moon", "District 9", "Children of Men", "Her", "Under the Skin", "Upstream Color", "Another Earth", "I Origins", "The Man from Earth", "Predestination", "Looper", "12 Monkeys", "Dark City", "The Thirteenth Floor", "eXistenZ", "Videodrome", "Jacob's Ladder", "Mulholland Drive", "Lost Highway", "Inland Empire", "Eraserhead", "Persona", "Stalker", "Solaris", "2001: A Space Odyssey", "Brazil", "Naked Lunch", "The Game", "Oldboy", "The Handmaiden", "A Tale of Two Sisters", "The Others", "The Sixth Sense", "Identity", "The Machinist", "Black Swan", "The Skin I Live In", "Enemy", "Nocturnal Animals", "Gone Girl", "Prisoners", "Zodiac", "Se7en", "The Silence of the Lambs", "Get Out", "Us", "Hereditary", "Midsommar", "The Lighthouse", "The Witch", "It Comes at Night", "A Ghost Story", "I'm Thinking of Ending Things", "The Killing of a Sacred Deer", "Dogtooth", "The Lobster", "The Favourite", "Sorry to Bother You", "Swiss Army Man", "The Art of Self-Defense", "Vivarium", "The Platform", "Cube", "Circle", "Exam", "Timecrimes", "Sound of My Voice", "The Invitation", "The Gift", "Goodnight Mommy", "The Lodge", "Honeymoon", "Creep", "The One I Love", "Safety Not Guaranteed", "Palm Springs", "About Time", "Ruby Sparks", "The Truman Show", "Stranger than Fiction", "Groundhog Day", "Edge of Tomorrow", "Everything Everywhere All at Once"
+  ]), []);
+
+  const initialMysteryThrillerTitles = useMemo(() => new Set([
+    "Memento", "Vanilla Sky", "Psycho", "Identity", "The Prestige", "Babel", "Magnolia", "Mr. Brooks", "Black Book", "The Air I Breathe", "A Beautiful Mind", "The Orphanage", "21", "From Hell", "Donnie Darko", "Bully", "Silent Hill", "Children of Men", "The Life Before Her Eyes", "Unknown", "Pan's Labyrinth", "Oldboy", "Thesis", "Videodrome", "Pulp Fiction", "Reservoir Dogs", "11:14", "Running Scared", "The Others", "Hard Candy", "Audition", "Ichi the Killer", "Memories of Murder", "Shutter Island", "Inception", "Mr. Nobody", "The Life of David Gale", "The Green Mile", "Black Swan", "No Country for Old Men", "Mystic River", "Source Code", "The Skin I Live In", "Timecrimes", "Triangle", "The Thirteenth Floor", "The Girl with the Dragon Tattoo", "Cypher", "The Aura", "Blind", "Joint Security Area", "The Devil's Backbone", "Exam", "Stalker", "One Hour Photo", "Mulholland Drive", "Fight Club", "Cloud Atlas", "Sleep Tight", "The Hidden Face", "The Body", "The Island", "The Assassination of Richard Nixon", "Run Lola Run", "Trance", "The Hunt", "You're Next", "Sucker Punch", "U Turn", "Snowpiercer", "The 7th Floor", "The Best Offer", "February 29", "Spiral", "Sound of My Voice", "The Great Hypnotist"
+  ]), []);
+
+  const initialCannesSelectionTitles = useMemo(() => new Set([
+    "Apocalypse Now", "Burning", "Dancer in the Dark", "The Cook, the Thief, His Wife & Her Lover", "Amélie", "Oldboy", "The Handmaiden", "Capernaum", "Parasite", "Anatomy of a Fall", "Pulp Fiction", "Taxi Driver", "The Piano", "Fahrenheit 451", "The Tree of Life", "Blue Is the Warmest Colour", "Titane", "Triangle of Sadness", "Shoplifters", "The Square", "Winter Sleep", "The Class", "4 Months, 3 Weeks and 2 Days", "The Wind That Shakes the Barley", "The Son's Room", "Rosetta", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Best Intentions", "Barton Fink", "Wild at Heart", "Sex, Lies, and Videotape", "Under the Sun of Satan", "Yol", "Missing", "Kagemusha", "All That Jazz", "The Tin Drum", "The Conversation", "Scarecrow", "The Hireling", "The Go-Between", "The French Connection", "MASH", "If....", "The Umbrellas of Cherbourg", "The Leopard", "Viridiana", "The Cranes Are Flying", "The Silent World", "Marty", "Rome, Open City", "The Third Man", "The Red Shoes", "The Wages of Fear", "The Seventh Seal", "Hiroshima Mon Amour", "La Dolce Vita", "L'Avventura", "Belle de Jour", "Blow-Up", "Z", "Easy Rider", "Midnight Cowboy", "The Conformist", "Death in Venice", "A Clockwork Orange", "Deliverance", "Last Tango in Paris", "Amarcord", "Nashville", "All the President's Men", "Network", "Coming Home", "The Deer Hunter", "Apocalypse Now", "All That Jazz", "Kagemusha", "Man of Iron", "Missing", "Yol", "The Ballad of Narayama", "Paris, Texas", "When Father Was Away on Business", "The Mission", "Under the Sun of Satan", "Pelle the Conqueror", "Sex, Lies, and Videotape", "Wild at Heart", "Barton Fink", "The Best Intentions", "Farewell My Concubine", "The Piano", "Pulp Fiction", "Underground", "Secrets & Lies", "The Eel", "Taste of Cherry", "Eternity and a Day", "Rosetta", "Dancer in the Dark", "The Son's Room", "The Piano Teacher", "The Man Without a Past", "Elephant", "Fahrenheit 9/11", "L'Enfant", "The Child", "The Wind That Shakes a Barley", "4 Months, 3 Weeks and 2 Days", "The Class", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Tree of Life", "Amour", "Blue Is the Warmest Colour", "Winter Sleep", "Dheepan", "I, Daniel Blake", "The Square", "Shoplifters", "Parasite", "Titane", "Triangle of Sadness", "Anatomy of a Fall"
+  ]), []);
+
+  const initialTiffSelectionTitles = useMemo(() => new Set([
+    "Everything Everywhere All at Once", "Arrival", "Prisoners", "Blade Runner 2049", "Room", "Whiplash", "Silver Linings Playbook", "Jojo Rabbit", "Nomadland", "Three Billboards Outside Ebbing, Missouri", "Green Book", "Parasite", "The Master", "Incendies", "12 Years a Slave", "La La Land", "Manchester by the Sea", "Spotlight", "The Imitation Game", "Argo", "Slumdog Millionaire", "American Beauty", "Amelie", "City of God", "Eternal Sunshine of the Spotless Mind", "No Country for Old Men", "There Will Be Blood", "The Social Network", "Birdman or (The Unexpected Virtue of Ignorance)", "The Shape of Water", "Roma", "Marriage Story", "Nomadland", "The Power of the Dog", "Belfast", "The Fabelmans", "Women Talking", "American Fiction", "Past Lives", "Poor Things", "Anatomy of a Fall", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "The Holdovers", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers"
+  ]), []);
+
+  const initialBerlinaleSelectionTitles = useMemo(() => new Set([
+    "Another Round", "Boyhood", "Capernaum", "Dog Day Afternoon", "First Reformed", "Frances Ha", "God's Own Country", "The Babadook", "The Banshees of Inisherin", "The Big Lebowski", "The French Dispatch"
+  ]), []);
+
+  const initialVeniceSelectionTitles = useMemo(() => new Set([
+    "Atonement", "Children of Men", "Dunkirk", "Ex Machina", "The Conversation", "The Deer Hunter", "The Departed", "The Cook, the Thief, His Wife & Her Lover", "Dancer in the Dark", "Burning"
+  ]), []);
+
+  const initialSundanceSelectionTitles = useMemo(() => new Set([
+    "Eighth Grade", "Call Me by Your Name", "Get Out", "Blindspotting", "Booksmart", "Bad Education", "Coherence", "The One I Love", "Safety Not Guaranteed", "Palm Springs", "Ruby Sparks"
+  ]), []);
+
+  // One-time migration effect
+  useEffect(() => {
+    const migratePredefinedCarousels = async () => {
+      if (!isAdmin || !allMovies || allMovies.length === 0) return;
+
+      const { data: existingPredefinedEntries, error } = await supabase
+        .from('carousel_collections')
+        .select('collection_name')
+        .eq('user_id', ADMIN_USER_ID)
+        .eq('type', 'predefined')
+        .limit(1); // Just check if any predefined entry exists
+
+      if (error) {
+        console.error("Error checking for existing predefined carousels:", error);
+        return;
+      }
+
+      if (existingPredefinedEntries && existingPredefinedEntries.length > 0) {
+        console.log("Predefined carousels already migrated.");
+        return; // Already migrated, do nothing
+      }
+
+      console.log("Migrating predefined carousels...");
+      const predefinedCarouselsToMigrate = [
+        { name: "Oscar winners", titles: initialOscarWinnersTitles },
+        { name: "The best thought provoking / mind-bending movies in my collection", titles: initialMindBendingTitles },
+        { name: "The best mystery / psychological thrillers in my collection", titles: initialMysteryThrillerTitles },
+        { name: "Cannes selection", titles: initialCannesSelectionTitles },
+        { name: "TIFF selection", titles: initialTiffSelectionTitles },
+        { name: "Berlinale selection", titles: initialBerlinaleSelectionTitles },
+        { name: "Venice selection", titles: initialVeniceSelectionTitles },
+        { name: "Sundance selection", titles: initialSundanceSelectionTitles },
+      ];
+
+      const inserts: { user_id: string; movie_id: string; collection_name: string; type: string }[] = [];
+      predefinedCarouselsToMigrate.forEach(carousel => {
+        carousel.titles.forEach(title => {
+          const movie = allMovies.find(m => m.title === title);
+          if (movie) {
+            inserts.push({
+              user_id: ADMIN_USER_ID,
+              movie_id: movie.id,
+              collection_name: carousel.name,
+              type: 'predefined',
+            });
+          }
+        });
+      });
+
+      if (inserts.length > 0) {
+        const { error: insertError } = await supabase.from('carousel_collections').insert(inserts);
+        if (insertError) {
+          console.error("Error migrating predefined carousels:", insertError);
+          showError("Failed to migrate some predefined carousel data.");
+        } else {
+          console.log("Predefined carousels migrated successfully.");
+          queryClient.invalidateQueries({ queryKey: ["adminCarouselEntries"] });
+          queryClient.invalidateQueries({ queryKey: ["adminCustomCarousels"] });
+        }
+      }
+    };
+
+    if (!sessionLoading && isAdmin && allMovies && allMovies.length > 0) {
+      migratePredefinedCarousels();
+    }
+  }, [sessionLoading, isAdmin, allMovies, initialOscarWinnersTitles, initialMindBendingTitles, initialMysteryThrillerTitles, initialCannesSelectionTitles, initialTiffSelectionTitles, initialBerlinaleSelectionTitles, initialVeniceSelectionTitles, initialSundanceSelectionTitles, queryClient]);
+
+
+  const categorizedMovies = useMemo(() => {
+    const newMovies: Movie[] = [];
+    const groupedPredefined: Record<string, Movie[]> = {};
+
+    const currentYear = new Date().getFullYear().toString();
+    (allMovies || []).forEach((movie) => {
+      if (movie.year === currentYear) newMovies.push(movie);
+    });
+
+    // Populate predefined carousels from adminCustomCarousels (which now includes predefined types)
+    if (adminCustomCarousels) {
+      for (const collectionName in adminCustomCarousels) {
+        const entriesInCollection = adminCarouselEntries?.filter((entry: any) => entry.collection_name === collectionName && entry.type === 'predefined');
+        if (entriesInCollection && entriesInCollection.length > 0) {
+          groupedPredefined[collectionName] = adminCustomCarousels[collectionName];
+        }
+      }
+    }
+
+    return { newMovies, ...groupedPredefined };
+  }, [allMovies, adminCustomCarousels, adminCarouselEntries]);
+
+  const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
   useEffect(() => {
     setHeaderShrunk(false);
@@ -413,118 +544,6 @@ const Index = () => {
     return baseFilteredMovies.filter(movie => movie.title.toUpperCase().startsWith(selectedLetter));
   }, [baseFilteredMovies, selectedLetter]);
 
-  const oscarWinnersTitles = useMemo(() => new Set([
-    "Parasite", "Everything Everywhere All at Once", "American Beauty", "No Country for Old Men", "Birdman or (The Unexpected Virtue of Ignorance)", "Spotlight", "Green Book", "La La Land", "Manchester by the Sea", "Whiplash", "Argo", "Slumdog Millionaire", "The Social Network", "The Imitation Game", "12 Years a Slave", "Roma", "Marriage Story", "Nomadland", "The Power of the Dog", "Belfast", "Women Talking", "American Fiction", "Poor Things", "Anatomy of a Fall", "Oppenheimer", "The Holdovers", "The Zone of Interest", "Forrest Gump", "Gladiator", "The Dark Knight", "The Departed", "Fargo", "Alien", "Adaptation.", "The Abyss", "2001: A Space Odyssey", "Apocalypse Now", "Arrival", "Atonement", "Back to the Future", "Barry Lyndon", "Boyhood", "Bridge of Spies", "Call Me by Your Name", "Chinatown", "Close Encounters of the Third Kind", "Coco", "The Deer Hunter", "Departures", "Dog Day Afternoon", "Dunkirk", "Ex Machina", "Finding Nemo", "Get Out", "Dead Poets Society", "Crouching Tiger, Hidden Dragon"
-  ]), []);
-
-  const mindBendingTitles = useMemo(() => new Set([
-    "Primer", "Coherence", "Triangle", "The Prestige", "Memento", "Shutter Island", "Arrival", "Blade Runner 2049", "Ex Machina", "Annihilation", "Source Code", "Donnie Darko", "Eternal Sunshine of the Spotless Mind", "Being John Malkovich", "Synecdoche, New York", "Adaptation.", "Fight Club", "The Matrix", "Inception", "Paprika", "Perfect Blue", "A Scanner Darkly", "Waking Life", "Pi", "The Fountain", "Cloud Atlas", "Mr. Nobody", "Gattaca", "Moon", "District 9", "Children of Men", "Her", "Under the Skin", "Upstream Color", "Another Earth", "I Origins", "The Man from Earth", "Predestination", "Looper", "12 Monkeys", "Dark City", "The Thirteenth Floor", "eXistenZ", "Videodrome", "Jacob's Ladder", "Mulholland Drive", "Lost Highway", "Inland Empire", "Eraserhead", "Persona", "Stalker", "Solaris", "2001: A Space Odyssey", "Brazil", "Naked Lunch", "The Game", "Oldboy", "The Handmaiden", "A Tale of Two Sisters", "The Others", "The Sixth Sense", "Identity", "The Machinist", "Black Swan", "The Skin I Live In", "Enemy", "Nocturnal Animals", "Gone Girl", "Prisoners", "Zodiac", "Se7en", "The Silence of the Lambs", "Get Out", "Us", "Hereditary", "Midsommar", "The Lighthouse", "The Witch", "It Comes at Night", "A Ghost Story", "I'm Thinking of Ending Things", "The Killing of a Sacred Deer", "Dogtooth", "The Lobster", "The Favourite", "Sorry to Bother You", "Swiss Army Man", "The Art of Self-Defense", "Vivarium", "The Platform", "Cube", "Circle", "Exam", "Timecrimes", "Sound of My Voice", "The Invitation", "The Gift", "Goodnight Mommy", "The Lodge", "Honeymoon", "Creep", "The One I Love", "Safety Not Guaranteed", "Palm Springs", "About Time", "Ruby Sparks", "The Truman Show", "Stranger than Fiction", "Groundhog Day", "Edge of Tomorrow", "Everything Everywhere All at Once"
-  ]), []);
-
-  const mysteryThrillerTitles = useMemo(() => new Set([
-    "Memento", "Vanilla Sky", "Psycho", "Identity", "The Prestige", "Babel", "Magnolia", "Mr. Brooks", "Black Book", "The Air I Breathe", "A Beautiful Mind", "The Orphanage", "21", "From Hell", "Donnie Darko", "Bully", "Silent Hill", "Children of Men", "The Life Before Her Eyes", "Unknown", "Pan's Labyrinth", "Oldboy", "Thesis", "Videodrome", "Pulp Fiction", "Reservoir Dogs", "11:14", "Running Scared", "The Others", "Hard Candy", "Audition", "Ichi the Killer", "Memories of Murder", "Shutter Island", "Inception", "Mr. Nobody", "The Life of David Gale", "The Green Mile", "Black Swan", "No Country for Old Men", "Mystic River", "Source Code", "The Skin I Live In", "Timecrimes", "Triangle", "The Thirteenth Floor", "The Girl with the Dragon Tattoo", "Cypher", "The Aura", "Blind", "Joint Security Area", "The Devil's Backbone", "Exam", "Stalker", "One Hour Photo", "Mulholland Drive", "Fight Club", "Cloud Atlas", "Sleep Tight", "The Hidden Face", "The Body", "The Island", "The Assassination of Richard Nixon", "Run Lola Run", "Trance", "The Hunt", "You're Next", "Sucker Punch", "U Turn", "Snowpiercer", "The 7th Floor", "The Best Offer", "February 29", "Spiral", "Sound of My Voice", "The Great Hypnotist"
-  ]), []);
-
-  const cannesSelectionTitles = useMemo(() => new Set([
-    "Apocalypse Now", "Burning", "Dancer in the Dark", "The Cook, the Thief, His Wife & Her Lover", "Amélie", "Oldboy", "The Handmaiden", "Capernaum", "Parasite", "Anatomy of a Fall", "Pulp Fiction", "Taxi Driver", "The Piano", "Fahrenheit 451", "The Tree of Life", "Blue Is the Warmest Colour", "Titane", "Triangle of Sadness", "Shoplifters", "The Square", "Winter Sleep", "The Class", "4 Months, 3 Weeks and 2 Days", "The Wind That Shakes the Barley", "The Son's Room", "Rosetta", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Best Intentions", "Barton Fink", "Wild at Heart", "Sex, Lies, and Videotape", "Under the Sun of Satan", "Yol", "Missing", "Kagemusha", "All That Jazz", "The Tin Drum", "The Conversation", "Scarecrow", "The Hireling", "The Go-Between", "The French Connection", "MASH", "If....", "The Umbrellas of Cherbourg", "The Leopard", "Viridiana", "The Cranes Are Flying", "The Silent World", "Marty", "Rome, Open City", "The Third Man", "The Red Shoes", "The Wages of Fear", "The Seventh Seal", "Hiroshima Mon Amour", "La Dolce Vita", "L'Avventura", "Belle de Jour", "Blow-Up", "Z", "Easy Rider", "Midnight Cowboy", "The Conformist", "Death in Venice", "A Clockwork Orange", "Deliverance", "Last Tango in Paris", "Amarcord", "Nashville", "All the President's Men", "Network", "Coming Home", "The Deer Hunter", "Apocalypse Now", "All That Jazz", "Kagemusha", "Man of Iron", "Missing", "Yol", "The Ballad of Narayama", "Paris, Texas", "When Father Was Away on Business", "The Mission", "Under the Sun of Satan", "Pelle the Conqueror", "Sex, Lies, and Videotape", "Wild at Heart", "Barton Fink", "The Best Intentions", "Farewell My Concubine", "The Piano", "Pulp Fiction", "Underground", "Secrets & Lies", "The Eel", "Taste of Cherry", "Eternity and a Day", "Rosetta", "Dancer in the Dark", "The Son's Room", "The Piano Teacher", "The Man Without a Past", "Elephant", "Fahrenheit 9/11", "L'Enfant", "The Child", "The Wind That Shakes a Barley", "4 Months, 3 Weeks and 2 Days", "The Class", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Tree of Life", "Amour", "Blue Is the Warmest Colour", "Winter Sleep", "Dheepan", "I, Daniel Blake", "The Square", "Shoplifters", "Parasite", "Titane", "Triangle of Sadness", "Anatomy of a Fall"
-  ]), []);
-
-  const tiffSelectionTitles = useMemo(() => new Set([
-    "Everything Everywhere All at Once", "Arrival", "Prisoners", "Blade Runner 2049", "Room", "Whiplash", "Silver Linings Playbook", "Jojo Rabbit", "Nomadland", "Three Billboards Outside Ebbing, Missouri", "Green Book", "Parasite", "The Master", "Incendies", "12 Years a Slave", "La La Land", "Manchester by the Sea", "Spotlight", "The Imitation Game", "Argo", "Slumdog Millionaire", "American Beauty", "Amelie", "City of God", "Eternal Sunshine of the Spotless Mind", "No Country for Old Men", "There Will Be Blood", "The Social Network", "Birdman or (The Unexpected Virtue of Ignorance)", "The Shape of Water", "Roma", "Marriage Story", "Nomadland", "The Power of the Dog", "Belfast", "The Fabelmans", "Women Talking", "American Fiction", "Past Lives", "Poor Things", "Anatomy of a Fall", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "The Holdovers", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers", "Anatomy of a Fall", "Poor Things", "Past Lives", "The Holdovers", "American Fiction", "Oppenheimer", "Killers of the Flower Moon", "Maestro", "Spider-Man: Across the Spider-Verse", "Godzilla Minus One", "Perfect Days", "Fallen Leaves", "The Zone of Interest", "All of Us Strangers"
-  ]), []);
-
-  const berlinaleSelectionTitles = useMemo(() => new Set([
-    "Another Round", "Boyhood", "Capernaum", "Dog Day Afternoon", "First Reformed", "Frances Ha", "God's Own Country", "The Babadook", "The Banshees of Inisherin", "The Big Lebowski", "The French Dispatch"
-  ]), []);
-
-  const veniceSelectionTitles = useMemo(() => new Set([
-    "Atonement", "Children of Men", "Dunkirk", "Ex Machina", "The Conversation", "The Deer Hunter", "The Departed", "The Cook, the Thief, His Wife & Her Lover", "Dancer in the Dark", "Burning"
-  ]), []);
-
-  const sundanceSelectionTitles = useMemo(() => new Set([
-    "Eighth Grade", "Call Me by Your Name", "Get Out", "Blindspotting", "Booksmart", "Bad Education", "Coherence", "The One I Love", "Safety Not Guaranteed", "Palm Springs", "Ruby Sparks"
-  ]), []);
-
-  const categorizedMovies = useMemo(() => {
-    const newMovies: Movie[] = [];
-    const oscarWinnersMovies: Movie[] = []; // New category
-    const mindBendingMovies: Movie[] = [];
-    const dramaMovies: Movie[] = [];
-    const thrillerMovies: Movie[] = [];
-    const scifiMovies: Movie[] = [];
-    const horrorMovies: Movie[] = [];
-    const mysteryPsychologicalThrillers: Movie[] = [];
-    const cannesMovies: Movie[] = [];
-    const tiffMovies: Movie[] = [];
-    const berlinaleMovies: Movie[] = [];
-    const veniceMovies: Movie[] = [];
-    const sundanceMovies: Movie[] = [];
-
-    const currentYear = new Date().getFullYear().toString();
-    (allMovies || []).forEach((movie) => {
-      if (movie.year === currentYear) newMovies.push(movie);
-      if (oscarWinnersTitles.has(movie.title)) oscarWinnersMovies.push(movie); // Populate Oscar winners category
-      if (mindBendingTitles.has(movie.title)) mindBendingMovies.push(movie);
-      if (movie.genres.includes("Drama")) dramaMovies.push(movie);
-      if (movie.genres.includes("Thriller")) thrillerMovies.push(movie);
-      if (movie.genres.includes("Sci-Fi") || movie.genres.includes("Science Fiction")) scifiMovies.push(movie);
-      if (movie.genres.includes("Horror")) horrorMovies.push(movie);
-      if (mysteryThrillerTitles.has(movie.title)) mysteryPsychologicalThrillers.push(movie);
-      if (cannesSelectionTitles.has(movie.title)) cannesMovies.push(movie);
-      if (tiffSelectionTitles.has(movie.title)) tiffMovies.push(movie);
-      if (berlinaleSelectionTitles.has(movie.title)) berlinaleMovies.push(movie);
-      if (veniceSelectionTitles.has(movie.title)) veniceMovies.push(movie);
-      if (sundanceSelectionTitles.has(movie.title)) sundanceMovies.push(movie);
-    });
-    return { newMovies, oscarWinnersMovies, mindBendingMovies, dramaMovies, thrillerMovies, scifiMovies, horrorMovies, mysteryPsychologicalThrillers, cannesMovies, tiffMovies, berlinaleMovies, veniceMovies, sundanceMovies };
-  }, [allMovies, oscarWinnersTitles, mindBendingTitles, mysteryThrillerTitles, cannesSelectionTitles, tiffSelectionTitles, berlinaleSelectionTitles, veniceSelectionTitles, sundanceSelectionTitles]);
-
-  const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
-
-  useEffect(() => {
-    const currentLoadMoreRef = loadMoreRef.current;
-    const currentFooterRef = footerRef.current;
-
-    const footerObserver = new IntersectionObserver(([entry]) => {
-      setIsFooter(entry.isIntersecting);
-    }, { threshold: 0 });
-
-    if (currentFooterRef) footerObserver.observe(currentFooterRef);
-
-    if (isMobile) {
-      const loadMoreObserver = new IntersectionObserver(
-        ([entry]) => {
-          setIsLoadMoreTriggerVisible(entry.isIntersecting);
-          if (entry.isIntersecting && visibleCount < filteredAndSortedMovies.length) {
-            setVisibleCount(prev => prev + BATCH_SIZE);
-          }
-        },
-        { threshold: 0, rootMargin: '200px' }
-      );
-      if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
-      return () => {
-        if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
-        if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
-      };
-    } else {
-      const loadMoreObserver = new IntersectionObserver(
-        ([entry]) => {
-          setIsLoadMoreTriggerVisible(entry.isIntersecting);
-        },
-        { threshold: 0, rootMargin: '200px' }
-      );
-      if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
-      return () => {
-        if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
-        if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
-      };
-    }
-  }, [visibleCount, filteredAndSortedMovies.length, BATCH_SIZE, isMobile]);
-
-  const shouldMoveSearchUp = isLoadMoreTriggerVisible || isFooterVisible;
-
-  const shouldShowSearchBar = !isMobile && (isAllMoviesSectionInView || searchQuery);
-
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) showError("Logout failed: " + error.message);
@@ -589,11 +608,16 @@ const Index = () => {
     let failedCount = 0;
     const errors: string[] = [];
 
+    // Determine if the collection is predefined or custom
+    const isPredefined = predefinedCarouselNames.includes(collectionName);
+    const collectionType = isPredefined ? 'predefined' : 'custom';
+
     if (action === 'add') {
       const inserts = movieIdsArray.map(movieId => ({
         user_id: ADMIN_USER_ID,
         movie_id: movieId,
         collection_name: collectionName,
+        type: collectionType, // Use determined type
       }));
       const { error } = await supabase.from('carousel_collections').upsert(inserts, { onConflict: 'user_id, movie_id, collection_name' });
       if (error) {
@@ -892,18 +916,14 @@ const Index = () => {
               ) : (
                 <>
                   <motion.div variants={contentVariants}><CustomCarousel title="New Movies" movies={categorizedMovies.newMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>
-                  {categorizedMovies.oscarWinnersMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Oscar winners" movies={categorizedMovies.oscarWinnersMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.mindBendingMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best thought provoking / mind-bending movies in my collection" movies={categorizedMovies.mindBendingMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.mysteryPsychologicalThrillers.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best mystery / psychological thrillers in my collection" movies={categorizedMovies.mysteryPsychologicalThrillers} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.cannesMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Cannes selection" movies={categorizedMovies.cannesMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.tiffMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="TIFF selection" movies={categorizedMovies.tiffMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.berlinaleMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Berlinale selection" movies={categorizedMovies.berlinaleMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.veniceMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Venice selection" movies={categorizedMovies.veniceMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.sundanceMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sundance selection" movies={categorizedMovies.sundanceMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.dramaMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Drama" movies={categorizedMovies.dramaMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
-                  {categorizedMovies.horrorMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies.horrorMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Oscar winners"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Oscar winners" movies={categorizedMovies["Oscar winners"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["The best thought provoking / mind-bending movies in my collection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best thought provoking / mind-bending movies in my collection" movies={categorizedMovies["The best thought provoking / mind-bending movies in my collection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["The best mystery / psychological thrillers in my collection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="The best mystery / psychological thrillers in my collection" movies={categorizedMovies["The best mystery / psychological thrillers in my collection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Cannes selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Cannes selection" movies={categorizedMovies["Cannes selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["TIFF selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="TIFF selection" movies={categorizedMovies["TIFF selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Berlinale selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Berlinale selection" movies={categorizedMovies["Berlinale selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Venice selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Venice selection" movies={categorizedMovies["Venice selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {categorizedMovies["Sundance selection"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sundance selection" movies={categorizedMovies["Sundance selection"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {/* Display Custom Carousels */}
                   {isLoadingAdminCustomCarousels ? (
                     <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
@@ -913,7 +933,7 @@ const Index = () => {
                       </div>
                     </motion.div>
                   ) : (
-                    Object.entries(adminCustomCarousels || {}).map(([collectionName, movies]) => (
+                    Object.entries(adminCustomCarousels || {}).filter(([collectionName]) => !predefinedCarouselNames.includes(collectionName)).map(([collectionName, movies]) => (
                       <motion.div variants={contentVariants} key={collectionName}>
                         <CustomCarousel
                           title={collectionName}
@@ -969,16 +989,32 @@ const Index = () => {
                                 <DropdownMenuItem onClick={() => setShowNewCarouselDialog(true)} disabled={selectedMovieIds.size === 0}>
                                   Add to new carousel...
                                 </DropdownMenuItem>
+                                {predefinedCarouselNames.length > 0 && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel>Predefined Carousels</DropdownMenuLabel>
+                                    {predefinedCarouselNames.map(name => (
+                                      <React.Fragment key={name}>
+                                        <DropdownMenuItem key={`${name}-add`} onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
+                                          Add to "{name}"
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem key={`${name}-remove`} onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
+                                          Remove from "{name}"
+                                        </DropdownMenuItem>
+                                      </React.Fragment>
+                                    ))}
+                                  </>
+                                )}
                                 {customCarouselNames.length > 0 && (
                                   <>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuLabel>Existing Carousels</DropdownMenuLabel>
+                                    <DropdownMenuLabel>Your Custom Carousels</DropdownMenuLabel>
                                     {customCarouselNames.map(name => (
                                       <React.Fragment key={name}>
-                                        <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
+                                        <DropdownMenuItem key={`${name}-add`} onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
                                           Add to "{name}"
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
+                                        <DropdownMenuItem key={`${name}-remove`} onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
                                           Remove from "{name}"
                                         </DropdownMenuItem>
                                       </React.Fragment>
@@ -1052,16 +1088,32 @@ const Index = () => {
                         <DropdownMenuItem onClick={() => setShowNewCarouselDialog(true)} disabled={selectedMovieIds.size === 0}>
                           Add to new carousel...
                         </DropdownMenuItem>
+                        {predefinedCarouselNames.length > 0 && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel>Predefined Carousels</DropdownMenuLabel>
+                            {predefinedCarouselNames.map(name => (
+                              <React.Fragment key={name}>
+                                <DropdownMenuItem key={`${name}-add`} onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
+                                  Add to "{name}"
+                                </DropdownMenuItem>
+                                <DropdownMenuItem key={`${name}-remove`} onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
+                                  Remove from "{name}"
+                                </DropdownMenuItem>
+                              </React.Fragment>
+                            ))}
+                          </>
+                        )}
                         {customCarouselNames.length > 0 && (
                           <>
                             <DropdownMenuSeparator />
-                            <DropdownMenuLabel>Existing Carousels</DropdownMenuLabel>
+                            <DropdownMenuLabel>Your Custom Carousels</DropdownMenuLabel>
                             {customCarouselNames.map(name => (
                               <React.Fragment key={name}>
-                                <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
+                                <DropdownMenuItem key={`${name}-add`} onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
                                   Add to "{name}"
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
+                                <DropdownMenuItem key={`${name}-remove`} onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
                                   Remove from "{name}"
                                 </DropdownMenuItem>
                               </React.Fragment>
