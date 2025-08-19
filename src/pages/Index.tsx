@@ -173,6 +173,23 @@ const Index = () => {
     retry: false,
   });
 
+  // Temporary diagnostic effect
+  useEffect(() => {
+    if (allMovies && allMovies.length > 0) {
+      const allGenresFound = new Set<string>();
+      allMovies.forEach(movie => {
+        if (Array.isArray(movie.genres)) {
+          movie.genres.forEach(genre => {
+            if (genre) {
+              allGenresFound.add(genre);
+            }
+          });
+        }
+      });
+      console.log("Available genres found in your collection:", Array.from(allGenresFound).sort());
+    }
+  }, [allMovies]);
+
   const { data: adminPerfectRatedMovies, isLoading: loadingAdminRatings } = useQuery<Movie[], Error>({
     queryKey: ["adminPerfectRatedMovies"],
     queryFn: async () => {
