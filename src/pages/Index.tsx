@@ -173,23 +173,6 @@ const Index = () => {
     retry: false,
   });
 
-  // Temporary diagnostic effect
-  useEffect(() => {
-    if (allMovies && allMovies.length > 0) {
-      const allGenresFound = new Set<string>();
-      allMovies.forEach(movie => {
-        if (Array.isArray(movie.genres)) {
-          movie.genres.forEach(genre => {
-            if (genre) {
-              allGenresFound.add(genre);
-            }
-          });
-        }
-      });
-      console.log("Available genres found in your collection:", Array.from(allGenresFound).sort());
-    }
-  }, [allMovies]);
-
   const { data: adminPerfectRatedMovies, isLoading: loadingAdminRatings } = useQuery<Movie[], Error>({
     queryKey: ["adminPerfectRatedMovies"],
     queryFn: async () => {
@@ -364,7 +347,7 @@ const Index = () => {
     const carousels: Record<string, Movie[]> = {};
     if (allMovies) {
       // Define the specific genres we want carousels for
-      const desiredGenres = ["Drama", "Thriller", "Sci-Fi", "Horror"];
+      const desiredGenres = ["Drama", "Thriller", "Science Fiction", "Horror"];
 
       // Special case for New Movies
       const newMovies = allMovies.filter(m => m.year === new Date().getFullYear().toString());
@@ -786,7 +769,7 @@ const Index = () => {
     "Sundance selection",
     "Drama",
     "Thriller",
-    "Sci-Fi",
+    "Science Fiction", // Changed from "Sci-Fi" to "Science Fiction"
     "Horror",
     ...customCarouselNames
   ], [customCarouselNames]);
