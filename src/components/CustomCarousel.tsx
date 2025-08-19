@@ -89,7 +89,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
     leaveTimeout.current = window.setTimeout(() => setIsOverflowVisible(false), 100);
   };
 
-  if (movies.length === 0) return null;
+  if (!movies || movies.length === 0) return null;
 
   const IconComponent = titleIcons[title];
   const isSpecialIcon = title === "Cannes selection" || title === "TIFF selection" || title === "Berlinale selection" || title === "Venice selection" || title === "Sundance selection" || title === "Oscar winners";
