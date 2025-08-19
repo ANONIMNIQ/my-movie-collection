@@ -952,7 +952,16 @@ const Index = () => {
                           {selectedMovieIds.size > 0 && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="gap-2" disabled={isManagingCarousels || isDeleting}>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "gap-2",
+                                    headerShrunk && isHeaderDark ? "border-primary text-primary hover:bg-accent hover:text-accent-foreground" : "bg-transparent border-black text-black hover:bg-gray-200 hover:text-black",
+                                    // Force white text for this specific button when header is dark
+                                    headerShrunk && isHeaderDark && "border-white text-white hover:bg-white/20 hover:text-white"
+                                  )}
+                                  disabled={isManagingCarousels || isDeleting}
+                                >
                                   {isManagingCarousels ? <Loader2 className="h-4 w-4 animate-spin" /> : "Manage Carousels"}
                                 </Button>
                               </DropdownMenuTrigger>
