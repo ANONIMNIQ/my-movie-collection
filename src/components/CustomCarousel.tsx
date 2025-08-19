@@ -46,7 +46,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
   const [isOverflowVisible, setIsOverflowVisible] = useState(false);
-  const leaveTimeout = useRef<number | null>(null);
+  const leaveTimeout = useRef<number | null>(leaveTimeout);
 
   const scrollPrev = useCallback(() => { if (emblaApi) emblaApi.scrollPrev(); }, [emblaApi]);
   const scrollNext = useCallback(() => { if (emblaApi) emblaApi.scrollNext(); }, [emblaApi]);
@@ -105,8 +105,8 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
         >
           {!isMobileHook && IconComponent && (
             isSpecialIcon ? (
-              <div className="mr-4 flex items-center justify-center h-full w-12">
-                <IconComponent className="h-8 w-auto text-white" />
+              <div className="mr-4 flex items-center justify-center h-12"> {/* Container matches h2 height */}
+                <IconComponent className="h-full w-auto" /> {/* Icon fills container height */}
               </div>
             ) : (
               <div className={cn(
