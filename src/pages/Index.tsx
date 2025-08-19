@@ -43,7 +43,25 @@ import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
 import FloatingAllMoviesHeader from "@/components/FloatingAllMoviesHeader";
 import { Movie } from "@/data/movies";
 import AlphabeticalFilter from "@/components/AlphabeticalFilter";
-import { MovieReelIcon, CannesIcon, TiffIcon, BerlinaleIcon, VeniceIcon, SundanceIcon, OscarIcon } from "@/components/icons"; // Added OscarIcon
+import { MovieReelIcon, CannesIcon, TiffIcon, BerlinaleIcon, VeniceIcon, SundanceIcon, OscarIcon } from "@/components/icons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 const BATCH_SIZE = 18;
@@ -72,6 +90,7 @@ const Index = () => {
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
   const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isManagingCarousels, setIsManagingCarousels] = useState(false); // New state for carousel management loading
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
   const allMoviesSectionRef = useRef<HTMLDivElement>(null);
@@ -96,6 +115,9 @@ const Index = () => {
   const footerRef = useRef<HTMLDivElement>(null);
   const [isLoadMoreTriggerVisible, setIsLoadMoreTriggerVisible] = useState(false);
   const [isFooterVisible, setIsFooter] = useState(false);
+
+  const [showNewCarouselDialog, setShowNewCarouselDialog] = useState(false);
+  const [newCarouselName, setNewCarouselName] = useState("");
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -143,6 +165,52 @@ const Index = () => {
     staleTime: 1000 * 60 * 10,
     retry: false,
   });
+
+  const { data: adminCarouselEntries, isLoading: isLoadingAdminCarouselEntries } = useQuery({
+    queryKey: ["adminCarouselEntries", ADMIN_USER_ID],
+    queryFn: async () => {
+      if (!isAdmin) return [];
+      const { data, error } = await supabase
+        .from('carousel_collections')
+        .select('movie_id, collection_name')
+        .eq('user_id', ADMIN_USER_ID);
+      if (error) throw error;
+      return data;
+    },
+    enabled: isAdmin,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: adminCustomCarousels, isLoading: isLoadingAdminCustomCarousels } = useQuery<Record<string, Movie[]>, Error>({
+    queryKey: ["adminCustomCarousels", adminCarouselEntries, allMovies], // Depend on allMovies to get full movie data
+    queryFn: async () => {
+      if (!adminCarouselEntries || adminCarouselEntries.length === 0 || !allMovies) return {};
+
+      const groupedMovies: Record<string, Movie[]> = {};
+      adminCarouselEntries.forEach(entry => {
+        const movie = allMovies.find(m => m.id === entry.movie_id);
+        if (movie) {
+          if (!groupedMovies[entry.collection_name]) {
+            groupedMovies[entry.collection_name] = [];
+          }
+          groupedMovies[entry.collection_name].push(movie as Movie);
+        }
+      });
+      // Sort movies within each carousel by title
+      for (const key in groupedMovies) {
+        groupedMovies[key].sort((a, b) => a.title.localeCompare(b.title));
+      }
+      return groupedMovies;
+    },
+    enabled: !!adminCarouselEntries && adminCarouselEntries.length > 0 && !!allMovies,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const customCarouselNames = useMemo(() => {
+    if (!adminCarouselEntries) return [];
+    const names = Array.from(new Set(adminCarouselEntries.map(entry => entry.collection_name)));
+    return names.sort();
+  }, [adminCarouselEntries]);
 
   const heroSliderMovies = useMemo(() => {
     if (!adminPerfectRatedMovies || adminPerfectRatedMovies.length === 0) return [];
@@ -358,7 +426,7 @@ const Index = () => {
   ]), []);
 
   const cannesSelectionTitles = useMemo(() => new Set([
-    "Apocalypse Now", "Burning", "Dancer in the Dark", "The Cook, the Thief, His Wife & Her Lover", "Amélie", "Oldboy", "The Handmaiden", "Capernaum", "Parasite", "Anatomy of a Fall", "Pulp Fiction", "Taxi Driver", "The Piano", "Fahrenheit 451", "The Tree of Life", "Blue Is the Warmest Colour", "Titane", "Triangle of Sadness", "Shoplifters", "The Square", "Winter Sleep", "The Class", "4 Months, 3 Weeks and 2 Days", "The Wind That Shakes the Barley", "The Son's Room", "Rosetta", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Best Intentions", "Barton Fink", "Wild at Heart", "Sex, Lies, and Videotape", "Under the Sun of Satan", "Yol", "Missing", "Kagemusha", "All That Jazz", "The Tin Drum", "The Conversation", "Scarecrow", "The Hireling", "The Go-Between", "The French Connection", "MASH", "If....", "The Umbrellas of Cherbourg", "The Leopard", "Viridiana", "The Cranes Are Flying", "The Silent World", "Marty", "Rome, Open City", "The Third Man", "The Red Shoes", "The Wages of Fear", "The Seventh Seal", "Hiroshima Mon Amour", "La Dolce Vita", "L'Avventura", "Belle de Jour", "Blow-Up", "Z", "Easy Rider", "Midnight Cowboy", "The Conformist", "Death in Venice", "A Clockwork Orange", "Deliverance", "Last Tango in Paris", "Amarcord", "Nashville", "All the President's Men", "Network", "Coming Home", "The Deer Hunter", "Apocalypse Now", "All That Jazz", "Kagemusha", "Man of Iron", "Missing", "Yol", "The Ballad of Narayama", "Paris, Texas", "When Father Was Away on Business", "The Mission", "Under the Sun of Satan", "Pelle the Conqueror", "Sex, Lies, and Videotape", "Wild at Heart", "Barton Fink", "The Best Intentions", "Farewell My Concubine", "The Piano", "Pulp Fiction", "Underground", "Secrets & Lies", "The Eel", "Taste of Cherry", "Eternity and a Day", "Rosetta", "Dancer in the Dark", "The Son's Room", "The Piano Teacher", "The Man Without a Past", "Elephant", "Fahrenheit 9/11", "L'Enfant", "The Child", "The Wind That Shakes the Barley", "4 Months, 3 Weeks and 2 Days", "The Class", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Tree of Life", "Amour", "Blue Is the Warmest Colour", "Winter Sleep", "Dheepan", "I, Daniel Blake", "The Square", "Shoplifters", "Parasite", "Titane", "Triangle of Sadness", "Anatomy of a Fall"
+    "Apocalypse Now", "Burning", "Dancer in the Dark", "The Cook, the Thief, His Wife & Her Lover", "Amélie", "Oldboy", "The Handmaiden", "Capernaum", "Parasite", "Anatomy of a Fall", "Pulp Fiction", "Taxi Driver", "The Piano", "Fahrenheit 451", "The Tree of Life", "Blue Is the Warmest Colour", "Titane", "Triangle of Sadness", "Shoplifters", "The Square", "Winter Sleep", "The Class", "4 Months, 3 Weeks and 2 Days", "The Wind That Shakes the Barley", "The Son's Room", "Rosetta", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Best Intentions", "Barton Fink", "Wild at Heart", "Sex, Lies, and Videotape", "Under the Sun of Satan", "Yol", "Missing", "Kagemusha", "All That Jazz", "The Tin Drum", "The Conversation", "Scarecrow", "The Hireling", "The Go-Between", "The French Connection", "MASH", "If....", "The Umbrellas of Cherbourg", "The Leopard", "Viridiana", "The Cranes Are Flying", "The Silent World", "Marty", "Rome, Open City", "The Third Man", "The Red Shoes", "The Wages of Fear", "The Seventh Seal", "Hiroshima Mon Amour", "La Dolce Vita", "L'Avventura", "Belle de Jour", "Blow-Up", "Z", "Easy Rider", "Midnight Cowboy", "The Conformist", "Death in Venice", "A Clockwork Orange", "Deliverance", "Last Tango in Paris", "Amarcord", "Nashville", "All the President's Men", "Network", "Coming Home", "The Deer Hunter", "Apocalypse Now", "All That Jazz", "Kagemusha", "Man of Iron", "Missing", "Yol", "The Ballad of Narayama", "Paris, Texas", "When Father Was Away on Business", "The Mission", "Under the Sun of Satan", "Pelle the Conqueror", "Sex, Lies, and Videotape", "Wild at Heart", "Barton Fink", "The Best Intentions", "Farewell My Concubine", "The Piano", "Pulp Fiction", "Underground", "Secrets & Lies", "The Eel", "Taste of Cherry", "Eternity and a Day", "Rosetta", "Dancer in the Dark", "The Son's Room", "The Piano Teacher", "The Man Without a Past", "Elephant", "Fahrenheit 9/11", "L'Enfant", "The Child", "The Wind That Shakes a Barley", "4 Months, 3 Weeks and 2 Days", "The Class", "The White Ribbon", "Uncle Boonmee Who Can Recall His Past Lives", "The Tree of Life", "Amour", "Blue Is the Warmest Colour", "Winter Sleep", "Dheepan", "I, Daniel Blake", "The Square", "Shoplifters", "Parasite", "Titane", "Triangle of Sadness", "Anatomy of a Fall"
   ]), []);
 
   const tiffSelectionTitles = useMemo(() => new Set([
@@ -502,6 +570,68 @@ const Index = () => {
     setSelectedMovieIds(new Set());
     queryClient.invalidateQueries({ queryKey: ["movies"] });
     setIsDeleting(false);
+  };
+
+  const handleAddOrRemoveFromCarousel = async (collectionName: string, action: 'add' | 'remove') => {
+    if (selectedMovieIds.size === 0) {
+      showError("No movies selected.");
+      return;
+    }
+    if (!isAdmin) {
+      showError("You do not have permission to manage carousels.");
+      return;
+    }
+
+    setIsManagingCarousels(true);
+
+    const movieIdsArray = Array.from(selectedMovieIds);
+    let successfulCount = 0;
+    let failedCount = 0;
+    const errors: string[] = [];
+
+    if (action === 'add') {
+      const inserts = movieIdsArray.map(movieId => ({
+        user_id: ADMIN_USER_ID,
+        movie_id: movieId,
+        collection_name: collectionName,
+      }));
+      const { error } = await supabase.from('carousel_collections').upsert(inserts, { onConflict: 'user_id, movie_id, collection_name' });
+      if (error) {
+        errors.push(error.message);
+        failedCount = movieIdsArray.length;
+      } else {
+        successfulCount = movieIdsArray.length;
+      }
+    } else { // 'remove'
+      const deletePromises = movieIdsArray.map(movieId =>
+        supabase.from('carousel_collections')
+          .delete()
+          .eq('user_id', ADMIN_USER_ID)
+          .eq('movie_id', movieId)
+          .eq('collection_name', collectionName)
+      );
+      const results = await Promise.allSettled(deletePromises);
+      results.forEach(result => {
+        if (result.status === 'fulfilled' && !result.value.error) {
+          successfulCount++;
+        } else {
+          failedCount++;
+          errors.push(result.status === 'rejected' ? result.reason.message : (result.value as any).error.message);
+        }
+      });
+    }
+
+    if (successfulCount > 0) {
+      showSuccess(`${successfulCount} movies ${action === 'add' ? 'added to' : 'removed from'} "${collectionName}".`);
+    }
+    if (failedCount > 0) {
+      showError(`Failed to ${action} ${failedCount} movies. Errors: ${errors.join("; ")}`);
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["adminCarouselEntries"] });
+    queryClient.invalidateQueries({ queryKey: ["adminCustomCarousels"] });
+    setSelectedMovieIds(new Set()); // Clear selection after action
+    setIsManagingCarousels(false);
   };
 
   const shrunkenHeaderPaddingY = '0.5rem';
@@ -774,6 +904,28 @@ const Index = () => {
                   {categorizedMovies.thrillerMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Thriller" movies={categorizedMovies.thrillerMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.scifiMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies.scifiMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies.horrorMovies.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies.horrorMovies} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
+                  {/* Display Custom Carousels */}
+                  {isLoadingAdminCustomCarousels ? (
+                    <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
+                      <h2 className="text-3xl font-bold mb-4">Your Custom Carousels</h2>
+                      <div className="flex overflow-hidden gap-4">
+                        {Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="aspect-[2/3] w-1/6 flex-shrink-0 rounded-lg" />)}
+                      </div>
+                    </motion.div>
+                  ) : (
+                    Object.entries(adminCustomCarousels || {}).map(([collectionName, movies]) => (
+                      <motion.div variants={contentVariants} key={collectionName}>
+                        <CustomCarousel
+                          title={collectionName}
+                          movies={movies}
+                          selectedMovieIds={selectedMovieIds}
+                          onSelectMovie={handleSelectMovie}
+                          isMobile={isMobile}
+                          pageLoaded={pageLoaded}
+                        />
+                      </motion.div>
+                    ))
+                  )}
                 </>
               )}
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
@@ -793,18 +945,50 @@ const Index = () => {
                     {isAdmin && (
                       <div className="flex items-center justify-between mb-4 px-6">
                         <div className="flex items-center space-x-2">
-                          <Checkbox id="select-all" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting} />
+                          <Checkbox id="select-all" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting || isManagingCarousels} />
                           <label htmlFor="select-all" className="text-sm font-medium">Select All ({selectedMovieIds.size} selected)</label>
                         </div>
-                        {selectedMovieIds.size > 0 && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deconstruct</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
-                              <AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
+                        <div className="flex gap-2">
+                          {selectedMovieIds.size > 0 && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="gap-2" disabled={isManagingCarousels || isDeleting}>
+                                  {isManagingCarousels ? <Loader2 className="h-4 w-4 animate-spin" /> : "Manage Carousels"}
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setShowNewCarouselDialog(true)} disabled={selectedMovieIds.size === 0}>
+                                  Add to new carousel...
+                                </DropdownMenuItem>
+                                {customCarouselNames.length > 0 && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuLabel>Existing Carousels</DropdownMenuLabel>
+                                    {customCarouselNames.map(name => (
+                                      <React.Fragment key={name}>
+                                        <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
+                                          Add to "{name}"
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
+                                          Remove from "{name}"
+                                        </DropdownMenuItem>
+                                      </React.Fragment>
+                                    ))}
+                                  </>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                          {selectedMovieIds.size > 0 && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting || isManagingCarousels}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete Selected (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deconstruct</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
+                                <AlertDialogFooter><AlertDialogCancel disabled={isDeleting || isManagingCarousels}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting || isManagingCarousels}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
+                        </div>
                       </div>
                     )}
                   </>
@@ -845,15 +1029,45 @@ const Index = () => {
               {isAdmin && !loadingAllMovies && (
                 <motion.div variants={contentVariants} className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="select-all-mobile" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting} />
+                    <Checkbox id="select-all-mobile" checked={selectedMovieIds.size === filteredAndSortedMovies.length && filteredAndSortedMovies.length > 0} onCheckedChange={(checked) => handleSelectAll(!!checked)} disabled={filteredAndSortedMovies.length === 0 || isDeleting || isManagingCarousels} />
                     <label htmlFor="select-all-mobile" className="text-sm font-medium">Select All ({selectedMovieIds.size} selected)</label>
                   </div>
                   {selectedMovieIds.size > 0 && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="gap-2" disabled={isManagingCarousels || isDeleting}>
+                          {isManagingCarousels ? <Loader2 className="h-4 w-4 animate-spin" /> : "Manage Carousels"}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => setShowNewCarouselDialog(true)} disabled={selectedMovieIds.size === 0}>
+                          Add to new carousel...
+                        </DropdownMenuItem>
+                        {customCarouselNames.length > 0 && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel>Existing Carousels</DropdownMenuLabel>
+                            {customCarouselNames.map(name => (
+                              <React.Fragment key={name}>
+                                <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'add')} disabled={selectedMovieIds.size === 0}>
+                                  Add to "{name}"
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleAddOrRemoveFromCarousel(name, 'remove')} disabled={selectedMovieIds.size === 0}>
+                                  Remove from "{name}"
+                                </DropdownMenuItem>
+                              </React.Fragment>
+                            ))}
+                          </>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                  {selectedMovieIds.size > 0 && (
                     <AlertDialog>
-                      <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
+                      <AlertDialogTrigger asChild><Button variant="destructive" className="gap-2" disabled={isDeleting || isManagingCarousels}><Trash2 className="h-4 w-4" /> {isDeleting ? "Deleting..." : `Delete (${selectedMovieIds.size})`}</Button></AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader><AlertDialogTitle>Confirm Bulk Deletion</AlertDialogTitle><AlertDialogDescription>This action cannot be undone. This will permanently delete <span className="font-bold">{selectedMovieIds.size}</span> selected movies.</AlertDialogDescription></AlertDialogHeader>
-                        <AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
+                        <AlertDialogFooter><AlertDialogCancel disabled={isDeleting || isManagingCarousels}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleBulkDelete} disabled={isDeleting || isManagingCarousels}>{isDeleting ? "Deleting..." : "Delete All"}</AlertDialogAction></AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
                   )}
@@ -892,6 +1106,47 @@ const Index = () => {
           <MadeWithDyad />
         </motion.footer>
       </motion.div>
+
+      {/* Dialog for New Carousel */}
+      <Dialog open={showNewCarouselDialog} onOpenChange={setShowNewCarouselDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Carousel</DialogTitle>
+            <DialogDescription>Enter a name for your new movie carousel.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="new-carousel-name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="new-carousel-name"
+                placeholder="e.g., My Favorites, Sci-Fi Gems"
+                value={newCarouselName}
+                onChange={(e) => setNewCarouselName(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowNewCarouselDialog(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (newCarouselName.trim()) {
+                  handleAddOrRemoveFromCarousel(newCarouselName.trim(), 'add');
+                  setNewCarouselName('');
+                  setShowNewCarouselDialog(false);
+                } else {
+                  showError("Carousel name cannot be empty.");
+                }
+              }}
+              disabled={!newCarouselName.trim() || isManagingCarousels}
+            >
+              {isManagingCarousels ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create & Add"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

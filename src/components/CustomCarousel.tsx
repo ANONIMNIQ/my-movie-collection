@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LazyMovieCard } from './LazyMovieCard';
 import { motion } from 'framer-motion';
-import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon, CannesIcon, TiffIcon, BerlinaleIcon, VeniceIcon, SundanceIcon, OscarIcon } from '@/components/icons'; // Added OscarIcon
+import { CalendarAltIcon, HeartBreakIcon, BinocularIcon, UfoIcon, GhostIcon, TrophyIcon, CannesIcon, TiffIcon, BerlinaleIcon, VeniceIcon, SundanceIcon, OscarIcon } from '@/components/icons';
 
 interface CustomCarouselProps {
   title: string;
@@ -20,7 +20,7 @@ interface CustomCarouselProps {
 
 const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "New Movies": CalendarAltIcon,
-  "Oscar winners": OscarIcon, // New entry for Oscar winners
+  "Oscar winners": OscarIcon,
   "The best thought provoking / mind-bending movies in my collection": TrophyIcon,
   "The best mystery / psychological thrillers in my collection": TrophyIcon,
   "Cannes selection": CannesIcon,
@@ -103,15 +103,18 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
-          {!isMobileHook && IconComponent && (
+          {!isMobileHook && IconComponent ? (
             <div className={cn(
               "flex items-center justify-center mr-2",
-              isSpecialIcon ? "" : "bg-white rounded-full p-2 w-10 h-10" // No background/padding/fixed size for special icons
+              isSpecialIcon ? "" : "bg-white rounded-full p-2 w-10 h-10"
             )}>
               <IconComponent className={cn(
-                isSpecialIcon ? "w-12 h-12 text-white" : "w-6 h-6 text-black" // Bigger and white for special icons
+                isSpecialIcon ? "w-12 h-12 text-white" : "w-6 h-6 text-black"
               )} />
             </div>
+          ) : (
+            // Fallback for custom carousels without a predefined icon
+            !isMobileHook && <span className="mr-2 text-white">🎬</span> // Simple emoji icon
           )}
           {title}
         </motion.h2>
