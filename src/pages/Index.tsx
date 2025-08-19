@@ -203,72 +203,72 @@ const Index = () => {
     retry: false,
   });
 
-  const { data: adminCarouselEntries, isLoading: isLoadingAdminCarouselEntries } = useQuery<{ movie_id: string; collection_name: string; type: string }[], Error>({
-    queryKey: ["adminCarouselEntries", ADMIN_USER_ID],
+  const { data: predefinedCarousels, isLoading: isLoadingPredefinedCarousels } = useQuery<Record<string, Movie[]>, Error>({
+    queryKey: ["predefinedCarousels", allMovies],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (!allMovies) return {};
+      const { data: entries, error } = await supabase
         .from('carousel_collections')
-        .select('movie_id, collection_name, type')
-        .eq('user_id', ADMIN_USER_ID);
+        .select('movie_id, collection_name')
+        .eq('type', 'predefined');
       if (error) throw error;
-      return data;
-    },
-    enabled: !!ADMIN_USER_ID,
-    staleTime: 1000 * 60 * 5,
-  });
+      if (!entries) return {};
 
-  const { data: adminCarousels, isLoading: isLoadingAdminCarousels } = useQuery<{ predefined: Record<string, Movie[]>, custom: Record<string, Movie[]> }, Error>({
-    queryKey: ["adminCarousels", adminCarouselEntries, allMovies],
-    queryFn: async () => {
-      if (!adminCarouselEntries || adminCarouselEntries.length === 0 || !allMovies) {
-        return { predefined: {}, custom: {} };
-      }
-
-      const predefined: Record<string, Movie[]> = {};
-      const custom: Record<string, Movie[]> = {};
-
-      adminCarouselEntries.forEach(entry => {
+      const grouped: Record<string, Movie[]> = {};
+      entries.forEach(entry => {
         const movie = allMovies.find(m => m.id === entry.movie_id);
         if (movie) {
-          if (entry.type === 'predefined') {
-            if (!predefined[entry.collection_name]) {
-              predefined[entry.collection_name] = [];
-            }
-            predefined[entry.collection_name].push(movie as Movie);
-          } else { // 'custom'
-            if (!custom[entry.collection_name]) {
-              custom[entry.collection_name] = [];
-            }
-            custom[entry.collection_name].push(movie as Movie);
+          if (!grouped[entry.collection_name]) {
+            grouped[entry.collection_name] = [];
           }
+          grouped[entry.collection_name].push(movie);
         }
       });
-
-      // Sort movies within each carousel by title
-      for (const key in predefined) {
-        predefined[key].sort((a, b) => a.title.localeCompare(b.title));
+      for (const key in grouped) {
+        grouped[key].sort((a, b) => a.title.localeCompare(b.title));
       }
-      for (const key in custom) {
-        custom[key].sort((a, b) => a.title.localeCompare(b.title));
-      }
-
-      return { predefined, custom };
+      return grouped;
     },
-    enabled: !!adminCarouselEntries && !!allMovies,
-    staleTime: 1000 * 60 * 5,
+    enabled: !!allMovies,
+  });
+
+  const { data: customCarousels, isLoading: isLoadingCustomCarousels } = useQuery<Record<string, Movie[]>, Error>({
+    queryKey: ["customCarousels", allMovies],
+    queryFn: async () => {
+      if (!allMovies) return {};
+      const { data: entries, error } = await supabase
+        .from('carousel_collections')
+        .select('movie_id, collection_name')
+        .eq('user_id', ADMIN_USER_ID)
+        .eq('type', 'custom');
+      if (error) throw error;
+      if (!entries) return {};
+
+      const grouped: Record<string, Movie[]> = {};
+      entries.forEach(entry => {
+        const movie = allMovies.find(m => m.id === entry.movie_id);
+        if (movie) {
+          if (!grouped[entry.collection_name]) {
+            grouped[entry.collection_name] = [];
+          }
+          grouped[entry.collection_name].push(movie);
+        }
+      });
+      for (const key in grouped) {
+        grouped[key].sort((a, b) => a.title.localeCompare(b.title));
+      }
+      return grouped;
+    },
+    enabled: isAdmin && !!allMovies, // Only for admin
   });
 
   const customCarouselNames = useMemo(() => {
-    const entries = adminCarouselEntries || []; // Ensure entries is always an array
-    const names = Array.from(new Set(entries.filter((entry: any) => entry.type === 'custom').map(entry => entry.collection_name)));
-    return names.sort();
-  }, [adminCarouselEntries]);
+    return customCarousels ? Object.keys(customCarousels).sort() : [];
+  }, [customCarousels]);
 
   const predefinedCarouselNames = useMemo(() => {
-    const entries = adminCarouselEntries || []; // Ensure entries is always an array
-    const names = Array.from(new Set(entries.filter((entry: any) => entry.type === 'predefined').map(entry => entry.collection_name)));
-    return names.sort();
-  }, [adminCarouselEntries]);
+    return predefinedCarousels ? Object.keys(predefinedCarousels).sort() : [];
+  }, [predefinedCarousels]);
 
   const heroSliderMovies = useMemo(() => {
     if (!adminPerfectRatedMovies || adminPerfectRatedMovies.length === 0) return [];
@@ -332,8 +332,7 @@ const Index = () => {
           showError("Failed to migrate some predefined carousel data.");
         } else {
           console.log("Predefined carousels migrated successfully.");
-          queryClient.invalidateQueries({ queryKey: ["adminCarouselEntries"] });
-          queryClient.invalidateQueries({ queryKey: ["adminCarousels"] });
+          queryClient.invalidateQueries({ queryKey: ["predefinedCarousels"] });
         }
       }
     };
@@ -341,11 +340,11 @@ const Index = () => {
     if (!sessionLoading && isAdmin && allMovies && allMovies.length > 0) {
       migratePredefinedCarousels();
     }
-  }, [sessionLoading, isAdmin, allMovies, initialOscarWinnersTitles, initialMindBendingTitles, initialMysteryThrillerTitles, initialCannesSelectionTitles, initialTiffSelectionTitles, initialBerlinaleSelectionTitles, initialVeniceSelectionTitles, initialSundanceSelectionTitles, queryClient]);
+  }, [sessionLoading, isAdmin, allMovies, queryClient]);
 
 
   const categorizedMovies = useMemo(() => {
-    const publicCarousels: Record<string, Movie[]> = {
+    const carousels: Record<string, Movie[]> = {
       "New Movies": [],
       "Drama": [],
       "Thriller": [],
@@ -353,28 +352,26 @@ const Index = () => {
       "Horror": [],
     };
 
-    if (!allMovies) {
-      return publicCarousels;
+    if (allMovies) {
+      carousels["New Movies"] = allMovies.filter(m => m.year === new Date().getFullYear().toString());
+      carousels["Drama"] = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
+      carousels["Thriller"] = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
+      carousels["Sci-Fi"] = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
+      carousels["Horror"] = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
     }
 
-    publicCarousels["New Movies"] = allMovies.filter(m => m.year === new Date().getFullYear().toString());
-    publicCarousels["Drama"] = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
-    publicCarousels["Thriller"] = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
-    publicCarousels["Sci-Fi"] = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
-    publicCarousels["Horror"] = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
-
-    let finalCarousels = { ...publicCarousels };
-
-    if (adminCarousels?.predefined) {
-      finalCarousels = { ...finalCarousels, ...adminCarousels.predefined };
+    // Merge public predefined carousels
+    if (predefinedCarousels) {
+      Object.assign(carousels, predefinedCarousels);
     }
 
-    if (isAdmin && adminCarousels?.custom) {
-      finalCarousels = { ...finalCarousels, ...adminCarousels.custom };
+    // Merge admin-only custom carousels
+    if (isAdmin && customCarousels) {
+      Object.assign(carousels, customCarousels);
     }
 
-    return finalCarousels;
-  }, [allMovies, isAdmin, adminCarousels]);
+    return carousels;
+  }, [allMovies, predefinedCarousels, isAdmin, customCarousels]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -710,8 +707,8 @@ const Index = () => {
       showError(`Failed to ${action} ${failedCount} movies. Errors: ${errors.join("; ")}`);
     }
 
-    queryClient.invalidateQueries({ queryKey: ["adminCarouselEntries"] });
-    queryClient.invalidateQueries({ queryKey: ["adminCarousels"] });
+    queryClient.invalidateQueries({ queryKey: ["predefinedCarousels"] });
+    queryClient.invalidateQueries({ queryKey: ["customCarousels"] });
     setSelectedMovieIds(new Set()); // Clear selection after action
     setIsManagingCarousels(false);
   };
@@ -987,7 +984,7 @@ const Index = () => {
                   {categorizedMovies["Sci-Fi"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies["Sci-Fi"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies["Horror"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies["Horror"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {/* Display Custom Carousels */}
-                  {isLoadingAdminCarousels ? (
+                  {isLoadingCustomCarousels ? (
                     <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
                       <h2 className="text-3xl font-bold mb-4">Your Custom Carousels</h2>
                       <div className="flex overflow-hidden gap-4">
