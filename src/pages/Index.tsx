@@ -346,24 +346,8 @@ const Index = () => {
   const categorizedMovies = useMemo(() => {
     const carousels: Record<string, Movie[]> = {};
     if (allMovies) {
-      // Dynamically find top genres to create carousels
-      const genreCounts: Record<string, number> = {};
-      allMovies.forEach(movie => {
-        if (Array.isArray(movie.genres)) {
-          movie.genres.forEach(genre => {
-            if (genre) {
-              genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-            }
-          });
-        }
-      });
-
-      // Get top 4 genres with at least 10 movies
-      const topGenres = Object.entries(genreCounts)
-        .filter(([, count]) => count >= 10)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 4)
-        .map(([genre]) => genre);
+      // Define the specific genres we want carousels for
+      const desiredGenres = ["Drama", "Thriller", "Sci-Fi", "Horror"];
 
       // Special case for New Movies
       const newMovies = allMovies.filter(m => m.year === new Date().getFullYear().toString());
@@ -371,10 +355,12 @@ const Index = () => {
         carousels["New Movies"] = newMovies;
       }
 
-      // Create carousels for the dynamically found top genres
-      topGenres.forEach(genre => {
-        const moviesInGenre = allMovies.filter(m => m.genres.includes(genre)).sort((a, b) => a.title.localeCompare(b.title));
+      // Create carousels for the desired genres
+      desiredGenres.forEach(genre => {
+        const moviesInGenre = allMovies.filter(m => Array.isArray(m.genres) && m.genres.includes(genre));
         if (moviesInGenre.length > 0) {
+          // Sort movies alphabetically by title
+          moviesInGenre.sort((a, b) => a.title.localeCompare(b.title));
           carousels[genre] = moviesInGenre;
         }
       });
@@ -771,6 +757,23 @@ const Index = () => {
     visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
   };
 
+  const carouselOrder = useMemo(() => [
+    "New Movies",
+    "Oscar winners",
+    "The best thought provoking / mind-bending movies in my collection",
+    "The best mystery / psychological thrillers in my collection",
+    "Cannes selection",
+    "TIFF selection",
+    "Berlinale selection",
+    "Venice selection",
+    "Sundance selection",
+    "Drama",
+    "Thriller",
+    "Sci-Fi",
+    "Horror",
+    ...customCarouselNames
+  ], [customCarouselNames]);
+
   return (
     <>
       {!isPageReadyForInteraction && <div className="fixed inset-0 z-[100] bg-transparent" />}
@@ -998,18 +1001,24 @@ const Index = () => {
                 </motion.div>
               ) : (
                 <>
-                  {Object.entries(categorizedMovies).map(([collectionName, movies]) => (
-                    <motion.div variants={contentVariants} key={collectionName}>
-                      <CustomCarousel
-                        title={collectionName}
-                        movies={movies}
-                        selectedMovieIds={selectedMovieIds}
-                        onSelectMovie={handleSelectMovie}
-                        isMobile={isMobile}
-                        pageLoaded={pageLoaded}
-                      />
-                    </motion.div>
-                  ))}
+                  {carouselOrder.map(name => {
+                    const movies = categorizedMovies[name];
+                    if (movies && movies.length > 0) {
+                      return (
+                        <motion.div variants={contentVariants} key={name}>
+                          <CustomCarousel
+                            title={name}
+                            movies={movies}
+                            selectedMovieIds={selectedMovieIds}
+                            onSelectMovie={handleSelectMovie}
+                            isMobile={isMobile}
+                            pageLoaded={pageLoaded}
+                          />
+                        </motion.div>
+                      );
+                    }
+                    return null;
+                  })}
                 </>
               )}
               <motion.div ref={allMoviesSectionRef} variants={contentVariants} className="px-4 overflow-x-visible md:bg-gray-200 md:text-black">
