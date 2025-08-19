@@ -522,7 +522,7 @@ const Index = () => {
         ([entry]) => {
           setIsHeroSliderInView(entry.isIntersecting);
         },
-        { threshold: 0 }
+        { threshold: 0.1 } // Appear later
       );
       heroSliderObserver.observe(currentHeroSliderRef);
     }
@@ -765,7 +765,7 @@ const Index = () => {
         </AnimatePresence>
         <AnimatePresence>
           {/* Floating Search Bar (bottom-center) */}
-          {shouldShowSearchBar && (
+          {!isMobile && shouldShowSearchBar && (
             <motion.div
               key="floating-search-bar"
               className={cn(
