@@ -217,28 +217,44 @@ const Index = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const { data: adminGroupedCarousels, isLoading: isLoadingAdminGroupedCarousels } = useQuery<Record<string, Movie[]>, Error>({
-    queryKey: ["adminGroupedCarousels", adminCarouselEntries, allMovies], // Depend on allMovies to get full movie data
+  const { data: adminCarousels, isLoading: isLoadingAdminCarousels } = useQuery<{ predefined: Record<string, Movie[]>, custom: Record<string, Movie[]> }, Error>({
+    queryKey: ["adminCarousels", adminCarouselEntries, allMovies],
     queryFn: async () => {
-      if (!adminCarouselEntries || adminCarouselEntries.length === 0 || !allMovies) return {};
+      if (!adminCarouselEntries || adminCarouselEntries.length === 0 || !allMovies) {
+        return { predefined: {}, custom: {} };
+      }
 
-      const groupedMovies: Record<string, Movie[]> = {};
+      const predefined: Record<string, Movie[]> = {};
+      const custom: Record<string, Movie[]> = {};
+
       adminCarouselEntries.forEach(entry => {
         const movie = allMovies.find(m => m.id === entry.movie_id);
         if (movie) {
-          if (!groupedMovies[entry.collection_name]) {
-            groupedMovies[entry.collection_name] = [];
+          if (entry.type === 'predefined') {
+            if (!predefined[entry.collection_name]) {
+              predefined[entry.collection_name] = [];
+            }
+            predefined[entry.collection_name].push(movie as Movie);
+          } else { // 'custom'
+            if (!custom[entry.collection_name]) {
+              custom[entry.collection_name] = [];
+            }
+            custom[entry.collection_name].push(movie as Movie);
           }
-          groupedMovies[entry.collection_name].push(movie as Movie);
         }
       });
+
       // Sort movies within each carousel by title
-      for (const key in groupedMovies) {
-        groupedMovies[key].sort((a, b) => a.title.localeCompare(b.title));
+      for (const key in predefined) {
+        predefined[key].sort((a, b) => a.title.localeCompare(b.title));
       }
-      return groupedMovies;
+      for (const key in custom) {
+        custom[key].sort((a, b) => a.title.localeCompare(b.title));
+      }
+
+      return { predefined, custom };
     },
-    enabled: !!adminCarouselEntries && adminCarouselEntries.length > 0 && !!allMovies,
+    enabled: !!adminCarouselEntries && !!allMovies,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -317,7 +333,7 @@ const Index = () => {
         } else {
           console.log("Predefined carousels migrated successfully.");
           queryClient.invalidateQueries({ queryKey: ["adminCarouselEntries"] });
-          queryClient.invalidateQueries({ queryKey: ["adminGroupedCarousels"] });
+          queryClient.invalidateQueries({ queryKey: ["adminCarousels"] });
         }
       }
     };
@@ -329,7 +345,6 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
-    // This object defines all carousels that should exist for public users.
     const publicCarousels: Record<string, Movie[]> = {
       "New Movies": [],
       "Drama": [],
@@ -339,28 +354,27 @@ const Index = () => {
     };
 
     if (!allMovies) {
-      return publicCarousels; // Return the empty structure
+      return publicCarousels;
     }
 
-    // Populate the public carousels
     publicCarousels["New Movies"] = allMovies.filter(m => m.year === new Date().getFullYear().toString());
     publicCarousels["Drama"] = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
     publicCarousels["Thriller"] = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
     publicCarousels["Sci-Fi"] = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
     publicCarousels["Horror"] = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
 
-    // If the user is an admin and has their own carousels, merge them in.
-    // This allows an admin's "Drama" carousel to override the public one.
-    if (isAdmin && adminGroupedCarousels) {
-      return {
-        ...publicCarousels,
-        ...adminGroupedCarousels,
-      };
+    let finalCarousels = { ...publicCarousels };
+
+    if (adminCarousels?.predefined) {
+      finalCarousels = { ...finalCarousels, ...adminCarousels.predefined };
     }
 
-    // Otherwise, just return the public carousels.
-    return publicCarousels;
-  }, [allMovies, isAdmin, adminGroupedCarousels]);
+    if (isAdmin && adminCarousels?.custom) {
+      finalCarousels = { ...finalCarousels, ...adminCarousels.custom };
+    }
+
+    return finalCarousels;
+  }, [allMovies, isAdmin, adminCarousels]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
@@ -697,7 +711,7 @@ const Index = () => {
     }
 
     queryClient.invalidateQueries({ queryKey: ["adminCarouselEntries"] });
-    queryClient.invalidateQueries({ queryKey: ["adminGroupedCarousels"] });
+    queryClient.invalidateQueries({ queryKey: ["adminCarousels"] });
     setSelectedMovieIds(new Set()); // Clear selection after action
     setIsManagingCarousels(false);
   };
@@ -973,7 +987,7 @@ const Index = () => {
                   {categorizedMovies["Sci-Fi"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Sci-Fi" movies={categorizedMovies["Sci-Fi"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {categorizedMovies["Horror"]?.length > 0 && <motion.div variants={contentVariants}><CustomCarousel title="Horror" movies={categorizedMovies["Horror"]} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} isMobile={isMobile} pageLoaded={pageLoaded} /></motion.div>}
                   {/* Display Custom Carousels */}
-                  {isLoadingAdminGroupedCarousels ? (
+                  {isLoadingAdminCarousels ? (
                     <motion.div variants={contentVariants} className="container mx-auto px-4 mb-12">
                       <h2 className="text-3xl font-bold mb-4">Your Custom Carousels</h2>
                       <div className="flex overflow-hidden gap-4">
