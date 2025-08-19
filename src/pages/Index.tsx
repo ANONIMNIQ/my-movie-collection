@@ -34,7 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
 import { MobileMovieCard } from "@/components/MobileMovieCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -344,19 +344,35 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
-    // 1. Always start with the automatically generated genre carousels.
-    // This ensures that for public visitors, carousels like "Sci-Fi" are always created from the full movie list.
     const carousels: Record<string, Movie[]> = {};
     if (allMovies) {
-      const genresToDisplay = ["New Movies", "Drama", "Thriller", "Sci-Fi", "Horror"];
-      
+      // Dynamically find top genres to create carousels
+      const genreCounts: Record<string, number> = {};
+      allMovies.forEach(movie => {
+        if (Array.isArray(movie.genres)) {
+          movie.genres.forEach(genre => {
+            if (genre) {
+              genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+            }
+          });
+        }
+      });
+
+      // Get top 4 genres with at least 10 movies
+      const topGenres = Object.entries(genreCounts)
+        .filter(([, count]) => count >= 10)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 4)
+        .map(([genre]) => genre);
+
       // Special case for New Movies
       const newMovies = allMovies.filter(m => m.year === new Date().getFullYear().toString());
       if (newMovies.length > 0) {
         carousels["New Movies"] = newMovies;
       }
 
-      genresToDisplay.slice(1).forEach(genre => {
+      // Create carousels for the dynamically found top genres
+      topGenres.forEach(genre => {
         const moviesInGenre = allMovies.filter(m => m.genres.includes(genre)).sort((a, b) => a.title.localeCompare(b.title));
         if (moviesInGenre.length > 0) {
           carousels[genre] = moviesInGenre;
@@ -364,8 +380,7 @@ const Index = () => {
       });
     }
 
-    // 2. Layer the public, predefined carousels from the database on top.
-    // This will overwrite a genre carousel if a predefined one with the same name exists and has movies.
+    // Layer the public, predefined carousels from the database on top.
     if (predefinedCarousels) {
       for (const name in predefinedCarousels) {
         if (predefinedCarousels[name] && predefinedCarousels[name].length > 0) {
@@ -374,7 +389,7 @@ const Index = () => {
       }
     }
 
-    // 3. For the admin, layer their custom carousels on top of everything else.
+    // For the admin, layer their custom carousels on top of everything else.
     if (isAdmin && customCarousels) {
       for (const name in customCarousels) {
         if (customCarousels[name] && customCarousels[name].length > 0) {
