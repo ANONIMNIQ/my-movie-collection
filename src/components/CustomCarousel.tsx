@@ -104,14 +104,16 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
           {!isMobileHook && IconComponent && (
-            <div className={cn(
-              "flex items-center justify-center mr-2 w-12 h-12 flex-shrink-0",
-              isSpecialIcon ? "" : "bg-white rounded-full"
-            )}>
-              <IconComponent className={cn(
-                isSpecialIcon ? "h-10 w-auto text-white" : "h-6 w-6 text-black"
-              )} />
-            </div>
+            isSpecialIcon ? (
+              <IconComponent className="mr-4 h-8 w-auto text-white" />
+            ) : (
+              <div className={cn(
+                "flex items-center justify-center mr-2 w-12 h-12 flex-shrink-0",
+                "bg-white rounded-full"
+              )}>
+                <IconComponent className="h-6 w-6 text-black" />
+              </div>
+            )
           )}
           <span>{title}</span>
         </motion.h2>
