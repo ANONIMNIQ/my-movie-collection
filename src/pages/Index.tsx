@@ -329,66 +329,38 @@ const Index = () => {
 
 
   const categorizedMovies = useMemo(() => {
-    if (!allMovies) {
-      return {
-        newMovies: [],
-        "Drama": [],
-        "Thriller": [],
-        "Sci-Fi": [],
-        "Horror": [],
-      };
-    }
-  
-    const newMovies: Movie[] = [];
-    const currentYear = new Date().getFullYear().toString();
-    allMovies.forEach((movie) => {
-      if (movie.year === currentYear) newMovies.push(movie);
-    });
-
-    // Always create genre carousels for public view
-    const dramaMovies = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
-    const thrillerMovies = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
-    const sciFiMovies = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
-    const horrorMovies = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
-
-    const baseCarousels = {
-      newMovies,
-      "Drama": dramaMovies,
-      "Thriller": thrillerMovies,
-      "Sci-Fi": sciFiMovies,
-      "Horror": horrorMovies,
+    // This object defines all carousels that should exist for public users.
+    const publicCarousels: Record<string, Movie[]> = {
+      "New Movies": [],
+      "Drama": [],
+      "Thriller": [],
+      "Sci-Fi": [],
+      "Horror": [],
     };
 
-    // Add admin-specific carousels if data is available
-    if (adminCarouselEntries && adminGroupedCarousels) {
-      const predefinedCarousels: Record<string, Movie[]> = {};
-      const customCarousels: Record<string, Movie[]> = {};
-      
-      const collectionTypes = new Map<string, string>();
-      adminCarouselEntries.forEach(entry => {
-        collectionTypes.set(entry.collection_name, entry.type);
-      });
-    
-      for (const collectionName in adminGroupedCarousels) {
-        if (Object.prototype.hasOwnProperty.call(adminGroupedCarousels, collectionName)) {
-          const type = collectionTypes.get(collectionName);
-          if (type === 'predefined') {
-            predefinedCarousels[collectionName] = adminGroupedCarousels[collectionName];
-          } else if (type === 'custom') {
-            customCarousels[collectionName] = adminGroupedCarousels[collectionName];
-          }
-        }
-      }
-      
+    if (!allMovies) {
+      return publicCarousels; // Return the empty structure
+    }
+
+    // Populate the public carousels
+    publicCarousels["New Movies"] = allMovies.filter(m => m.year === new Date().getFullYear().toString());
+    publicCarousels["Drama"] = allMovies.filter(m => m.genres.includes('Drama')).sort((a, b) => a.title.localeCompare(b.title));
+    publicCarousels["Thriller"] = allMovies.filter(m => m.genres.includes('Thriller')).sort((a, b) => a.title.localeCompare(b.title));
+    publicCarousels["Sci-Fi"] = allMovies.filter(m => m.genres.includes('Sci-Fi')).sort((a, b) => a.title.localeCompare(b.title));
+    publicCarousels["Horror"] = allMovies.filter(m => m.genres.includes('Horror')).sort((a, b) => a.title.localeCompare(b.title));
+
+    // If the user is an admin and has their own carousels, merge them in.
+    // This allows an admin's "Drama" carousel to override the public one.
+    if (isAdmin && adminGroupedCarousels) {
       return {
-        ...baseCarousels,
-        ...predefinedCarousels,
-        ...customCarousels,
+        ...publicCarousels,
+        ...adminGroupedCarousels,
       };
     }
 
-    return baseCarousels;
-  }, [allMovies, adminGroupedCarousels, adminCarouselEntries]);
+    // Otherwise, just return the public carousels.
+    return publicCarousels;
+  }, [allMovies, isAdmin, adminGroupedCarousels]);
 
   const allGenres = useMemo(() => {
     const genres = new Set<string>();
