@@ -109,7 +109,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
               isSpecialIcon ? "" : "bg-white rounded-full" // Conditional styling
             )}>
               <IconComponent className={cn(
-                isSpecialIcon ? "h-10 w-auto text-white" : "h-6 w-6 text-black" // Adjusted icon sizes
+                isSpecialIcon ? "h-full w-full p-1 text-white" : "h-6 w-6 text-black" // Let SVG fill container, add some padding
               )} />
             </div>
           )}
