@@ -372,6 +372,68 @@ const Index = () => {
     };
   }, [allMovies, adminGroupedCarousels, adminCarouselEntries]);
 
+  const allGenres = useMemo(() => {
+    const genres = new Set<string>();
+    allMovies?.forEach((movie) => {
+      if (Array.isArray(movie.genres)) {
+        movie.genres.forEach((genre) => {
+          if (genre) genres.add(genre);
+        });
+      }
+    });
+    return Array.from(genres).sort();
+  }, [allMovies]);
+
+  const allCountries = useMemo(() => {
+    const countries = new Set<string>();
+    allMovies?.forEach((movie) => {
+      if (Array.isArray(movie.origin_country)) {
+        movie.origin_country.forEach((country) => {
+          if (country) countries.add(country);
+        });
+      }
+    });
+    return Array.from(countries).sort();
+  }, [allMovies]);
+
+  const baseFilteredMovies = useMemo(() => {
+    let result = [...(allMovies || [])];
+    if (searchQuery) {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      result = result.filter(
+        (movie) =>
+          movie.title.toLowerCase().includes(lowerCaseQuery) ||
+          (movie.director && movie.director.toLowerCase().includes(lowerCaseQuery)) ||
+          (Array.isArray(movie.genres) && movie.genres.some((genre) => genre.toLowerCase().includes(lowerCaseQuery))) ||
+          (Array.isArray(movie.movie_cast) && movie.movie_cast.some((actor) => actor.toLowerCase().includes(lowerCaseQuery))) ||
+          movie.year.includes(lowerCaseQuery)
+      );
+    }
+    if (allGenres.includes(sortAndFilter)) {
+      result = result.filter((movie) => movie.genres.includes(sortAndFilter));
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (allCountries.includes(sortAndFilter)) {
+      result = result.filter((movie) => movie.origin_country && movie.origin_country.includes(sortAndFilter));
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else {
+      switch (sortAndFilter) {
+        case "title-asc": result.sort((a, b) => a.title.localeCompare(b.title)); break;
+        case "title-desc": result.sort((a, b) => b.title.localeCompare(a.title)); break;
+        case "year-desc": result.sort((a, b) => b.year.localeCompare(a.year)); break;
+        case "year-asc": result.sort((a, b) => a.year.localeCompare(b.year)); break;
+        default: result.sort((a, b) => a.title.localeCompare(b.title)); break;
+      }
+    }
+    return result;
+  }, [allMovies, searchQuery, sortAndFilter, allGenres, allCountries]);
+
+  const filteredAndSortedMovies = useMemo(() => {
+    if (!selectedLetter) {
+      return baseFilteredMovies;
+    }
+    return baseFilteredMovies.filter(movie => movie.title.toUpperCase().startsWith(selectedLetter));
+  }, [baseFilteredMovies, selectedLetter]);
+
   const moviesToShow = filteredAndSortedMovies.slice(0, visibleCount);
 
   useEffect(() => {
@@ -533,68 +595,6 @@ const Index = () => {
     setVisibleCount(BATCH_SIZE);
     setSelectedLetter(null);
   }, [searchQuery, sortAndFilter]);
-
-  const allGenres = useMemo(() => {
-    const genres = new Set<string>();
-    allMovies?.forEach((movie) => {
-      if (Array.isArray(movie.genres)) {
-        movie.genres.forEach((genre) => {
-          if (genre) genres.add(genre);
-        });
-      }
-    });
-    return Array.from(genres).sort();
-  }, [allMovies]);
-
-  const allCountries = useMemo(() => {
-    const countries = new Set<string>();
-    allMovies?.forEach((movie) => {
-      if (Array.isArray(movie.origin_country)) {
-        movie.origin_country.forEach((country) => {
-          if (country) countries.add(country);
-        });
-      }
-    });
-    return Array.from(countries).sort();
-  }, [allMovies]);
-
-  const baseFilteredMovies = useMemo(() => {
-    let result = [...(allMovies || [])];
-    if (searchQuery) {
-      const lowerCaseQuery = searchQuery.toLowerCase();
-      result = result.filter(
-        (movie) =>
-          movie.title.toLowerCase().includes(lowerCaseQuery) ||
-          (movie.director && movie.director.toLowerCase().includes(lowerCaseQuery)) ||
-          (Array.isArray(movie.genres) && movie.genres.some((genre) => genre.toLowerCase().includes(lowerCaseQuery))) ||
-          (Array.isArray(movie.movie_cast) && movie.movie_cast.some((actor) => actor.toLowerCase().includes(lowerCaseQuery))) ||
-          movie.year.includes(lowerCaseQuery)
-      );
-    }
-    if (allGenres.includes(sortAndFilter)) {
-      result = result.filter((movie) => movie.genres.includes(sortAndFilter));
-      result.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (allCountries.includes(sortAndFilter)) {
-      result = result.filter((movie) => movie.origin_country && movie.origin_country.includes(sortAndFilter));
-      result.sort((a, b) => a.title.localeCompare(b.title));
-    } else {
-      switch (sortAndFilter) {
-        case "title-asc": result.sort((a, b) => a.title.localeCompare(b.title)); break;
-        case "title-desc": result.sort((a, b) => b.title.localeCompare(a.title)); break;
-        case "year-desc": result.sort((a, b) => b.year.localeCompare(a.year)); break;
-        case "year-asc": result.sort((a, b) => a.year.localeCompare(b.year)); break;
-        default: result.sort((a, b) => a.title.localeCompare(b.title)); break;
-      }
-    }
-    return result;
-  }, [allMovies, searchQuery, sortAndFilter, allGenres, allCountries]);
-
-  const filteredAndSortedMovies = useMemo(() => {
-    if (!selectedLetter) {
-      return baseFilteredMovies;
-    }
-    return baseFilteredMovies.filter(movie => movie.title.toUpperCase().startsWith(selectedLetter));
-  }, [baseFilteredMovies, selectedLetter]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
