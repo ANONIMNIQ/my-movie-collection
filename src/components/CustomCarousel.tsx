@@ -98,8 +98,13 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
           {!isMobileHook && IconComponent && (
-            <div className="bg-white rounded-full p-2 flex items-center justify-center mr-2 w-10 h-10">
-              <IconComponent className="w-6 h-6 text-black" />
+            <div className={cn(
+              "flex items-center justify-center mr-2",
+              title === "Cannes selection" ? "" : "bg-white rounded-full p-2 w-10 h-10" // No background/padding/fixed size for Cannes container
+            )}>
+              <IconComponent className={cn(
+                title === "Cannes selection" ? "w-12 h-12 text-white" : "w-6 h-6 text-black" // Bigger and white for Cannes
+              )} />
             </div>
           )}
           {title}
