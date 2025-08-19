@@ -10,3 +10,4 @@ export { TiffIcon } from './TiffIcon';
 export { BerlinaleIcon } from './BerlinaleIcon';
 export { VeniceIcon } from './VeniceIcon';
 export { SundanceIcon } from './SundanceIcon';
+export { OscarIcon } from './OscarIcon';
