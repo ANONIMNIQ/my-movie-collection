@@ -27,7 +27,6 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb";
-import { FilmRollIcon } from '@/components/icons'; // Import FilmRollIcon
 
 interface MovieCardProps {
   movie: Movie;
@@ -49,8 +48,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
-  const [isLoadingImage, setIsLoadingImage] = useState(true); // State for image loading
-  const [hasImageError, setHasImageError] = useState(false); // State for image error
+  const [imageLoaded, setImageLoaded] = useState(false); // New state for image loading
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -70,7 +68,9 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     staleTime: 1000 * 60 * 5,
   });
 
-  const posterUrl = getTmdbPosterUrl(tmdbMovie?.poster_path || movie.poster_url);
+  const posterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
+    ? movie.poster_url
+    : getTmdbPosterUrl(tmdbMovie?.poster_path);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -210,32 +210,24 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         "aspect-[2/3] w-full bg-muted relative overflow-hidden", // Added relative and overflow-hidden
         !isAnimatingClone && "transition-opacity duration-300 group-hover/slide:opacity-0" // Apply this only to the original card
       )}>
-        {/* Skeleton always present behind, visible if image not loaded or error */}
-        {(isLoadingImage || hasImageError) && (
+        {/* Skeleton for image loading */}
+        {!imageLoaded && (
           <Skeleton className="absolute inset-0 w-full h-full" />
         )}
-
-        {/* Actual image, fades in when loaded and no error */}
         <img
           src={posterUrl}
           alt={movie.title}
           className={cn(
-            "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
-            !isLoadingImage && !hasImageError ? "opacity-100" : "opacity-0"
+            "w-full h-full object-cover transition-opacity duration-500",
+            imageLoaded ? "opacity-100" : "opacity-0"
           )}
-          onLoad={() => setIsLoadingImage(false)}
-          onError={() => {
-            setIsLoadingImage(false);
-            setHasImageError(true);
+          onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
+          onError={(e) => {
+            e.currentTarget.src = '/placeholder.svg';
+            setImageLoaded(true); // Still set loaded to true even if it's the placeholder
           }}
+          // Removed loading="lazy" as LazyMovieCard handles visibility
         />
-
-        {/* Fallback icon for errors, appears on top of skeleton */}
-        {hasImageError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground z-10">
-            <FilmRollIcon className="w-1/2 h-1/2" />
-          </div>
-        )}
       </div>
 
       {/* Hover Overlay */}
