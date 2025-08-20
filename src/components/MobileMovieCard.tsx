@@ -24,7 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
-import { cn } => "@/lib/utils"; // Import cn utility
+import { cn } from "@/lib/utils"; // Import cn utility
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils"; // Import getTmdbPosterUrl
 
 interface MobileMovieCardProps {
