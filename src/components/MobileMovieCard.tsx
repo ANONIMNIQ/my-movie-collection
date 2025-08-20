@@ -25,7 +25,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
 import { cn } from "@/lib/utils"; // Import cn utility
-import { getTmdbPosterUrl } from "@/utils/tmdbUtils"; // Import getTmdbPosterUrl
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -44,6 +43,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false); // New state for image loading
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -114,8 +114,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
     queryClient.prefetchQuery({
         queryKey: ["tmdb", movie.id], // Use movie.id for TMDb prefetch
         queryFn: async () => {
-            let tmdbIdToFetch = movie.tmdb_id;
-            if (!tmdbIdToFetch) {
+            let finalTmdbId = movie.tmdb_id;
+            if (!finalTmdbId) {
               let searchResults = await fetchFromTmdb("/search/movie", {
                   query: movie.title,
                   primary_release_year: movie.year,
@@ -124,13 +124,13 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
                   searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
               }
               if (searchResults && searchResults.results.length > 0) {
-                  tmdbIdToFetch = String(searchResults.results[0].id);
+                  finalTmdbId = String(searchResults.results[0].id);
               }
             }
-            if (!tmdbIdToFetch) {
+            if (!finalTmdbId) {
                 return null;
             }
-            const details = await fetchFromTmdb(`/movie/${tmdbIdToFetch}`, {
+            const details = await fetchFromTmdb(`/movie/${finalTmdbId}`, {
                 append_to_response: "credits,release_dates,images,videos,watch/providers",
             });
             return details;
@@ -214,25 +214,36 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
         </div>
       )}
 
-      {/* Top Section: Backdrop with Logo/Title */}
       <div
-        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center overflow-hidden"
+        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2 overflow-hidden" // Added overflow-hidden
         style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >
+        {/* Skeleton for image loading */}
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
         {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-        {logoUrl ? (
+        {logoUrl && !isLoading ? ( // Only render img if logoUrl exists and TMDb data is not loading
           <img
             src={logoUrl}
             alt={`${movie.title} logo`}
-            className="max-h-24 max-w-full object-contain z-10"
-            onError={(e) => (e.currentTarget.style.display = 'none')}
+            className={cn(
+              "max-h-24 max-w-full object-contain z-10 transition-opacity duration-500",
+              imageLoaded ? "opacity-100" : "opacity-0"
+            )}
+            onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'; // Hide broken image icon
+              setImageLoaded(true); // Still set loaded to true even if it's hidden
+            }}
+            // Removed loading="lazy"
           />
         ) : (
-          <h3 className="text-2xl font-bold text-white text-center z-10 px-4">{movie.title}</h3>
+          // Fallback for when no logoUrl or TMDb data is loading
+          !isLoading && <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
         )}
       </div>
 
-      {/* Details Section */}
       <div className="p-4">
         <div className="flex justify-between items-start">
             <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>

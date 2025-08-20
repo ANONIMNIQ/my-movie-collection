@@ -48,9 +48,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
-
-  const [isImageLoading, setIsImageLoading] = useState(true); // True initially
-  const [hasImageError, setHasImageError] = useState(false); // False initially
+  const [imageLoaded, setImageLoaded] = useState(false); // New state for image loading
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -70,15 +68,9 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     staleTime: 1000 * 60 * 5,
   });
 
-  const finalPosterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
+  const posterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
     ? movie.poster_url
     : getTmdbPosterUrl(tmdbMovie?.poster_path);
-
-  // Reset loading/error states when movie or finalPosterUrl changes
-  useEffect(() => {
-    setIsImageLoading(true);
-    setHasImageError(false);
-  }, [movie.id, finalPosterUrl]);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -140,8 +132,8 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     queryClient.prefetchQuery({
         queryKey: ["tmdb", movie.id], // Use movie.id for TMDb prefetch
         queryFn: async () => {
-            let tmdbIdToFetch = movie.tmdb_id;
-            if (!tmdbIdToFetch) {
+            let finalTmdbId = movie.tmdb_id;
+            if (!finalTmdbId) {
               let searchResults = await fetchFromTmdb("/search/movie", {
                   query: movie.title,
                   primary_release_year: movie.year,
@@ -150,13 +142,13 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
                   searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
               }
               if (searchResults && searchResults.results.length > 0) {
-                  tmdbIdToFetch = String(searchResults.results[0].id);
+                  finalTmdbId = String(searchResults.results[0].id);
               }
             }
-            if (!tmdbIdToFetch) {
+            if (!finalTmdbId) {
                 return null;
             }
-            const details = await fetchFromTmdb(`/movie/${tmdbIdToFetch}`, {
+            const details = await fetchFromTmdb(`/movie/${finalTmdbId}`, {
                 append_to_response: "credits,release_dates,images,videos,watch/providers",
             });
             return details;
@@ -218,32 +210,24 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         "aspect-[2/3] w-full bg-muted relative overflow-hidden", // Added relative and overflow-hidden
         !isAnimatingClone && "transition-opacity duration-300 group-hover/slide:opacity-0" // Apply this only to the original card
       )}>
-        {finalPosterUrl && !hasImageError ? (
-          <img
-            src={finalPosterUrl}
-            alt={movie.title}
-            className={cn(
-              "w-full h-full object-cover transition-opacity duration-500",
-              isImageLoading ? "opacity-0" : "opacity-100" // Only fade in when loaded
-            )}
-            onLoad={() => setIsImageLoading(false)}
-            onError={(e) => {
-              console.error(`Failed to load image for ${movie.title}: ${e.currentTarget.src}`);
-              setIsImageLoading(false); // Stop loading state
-              setHasImageError(true); // Indicate error
-            }}
-          />
-        ) : (
-          // Fallback when no valid poster URL or image failed to load
-          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
-            No Poster Available
-          </div>
-        )}
-
-        {/* Skeleton overlay for loading state, only if a URL exists and it's still loading */}
-        {isImageLoading && finalPosterUrl && !hasImageError && (
+        {/* Skeleton for image loading */}
+        {!imageLoaded && (
           <Skeleton className="absolute inset-0 w-full h-full" />
         )}
+        <img
+          src={posterUrl}
+          alt={movie.title}
+          className={cn(
+            "w-full h-full object-cover transition-opacity duration-500",
+            imageLoaded ? "opacity-100" : "opacity-0"
+          )}
+          onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
+          onError={(e) => {
+            e.currentTarget.src = '/placeholder.svg';
+            setImageLoaded(true); // Still set loaded to true even if it's the placeholder
+          }}
+          // Removed loading="lazy" as LazyMovieCard handles visibility
+        />
       </div>
 
       {/* Hover Overlay */}
