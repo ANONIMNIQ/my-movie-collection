@@ -107,7 +107,7 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
         <motion.h2
           className={cn(
             "flex items-center font-bold",
-            "text-lg sm:text-xl md:text-2xl lg:text-3xl", // Responsive font sizes
+            "text-base sm:text-lg md:text-xl lg:text-2xl", // Responsive font sizes
             "whitespace-nowrap overflow-hidden text-ellipsis" // Ensure single line
           )}
           initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
