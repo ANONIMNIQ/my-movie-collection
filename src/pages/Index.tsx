@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Loader2 } from "lucide-react"; // Import Loader2 icon
 import { showSuccess, showError } from "@/utils/toast";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useQuery } => "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -548,7 +548,7 @@ const Index = () => {
       ([entry]) => {
         setIsLoadMoreTriggerVisible(entry.isIntersecting);
       },
-      { rootMargin: '0px 0px 200px 0px' } // Trigger when 200px from bottom of viewport
+      { rootMargin: '0px 0px 500px 0px' } // Trigger when 500px from bottom of viewport
     );
 
     // Observer for footerRef (to move search bar up)
