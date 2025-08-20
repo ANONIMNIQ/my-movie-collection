@@ -214,14 +214,25 @@ const Index = () => {
       if (error) throw error;
       if (!entries) return {};
 
+      // Map old collection names to new ones for display consistency
+      const nameMap: Record<string, string> = {
+        "Oscar winners": "Oscar Winners",
+        "Cannes selection": "Cannes Film Festival Selection",
+        "TIFF selection": "Toronto International Film Festival Selection",
+        "Berlinale selection": "Berlinale Selection",
+        "Venice selection": "Venice International Film Festival Selection",
+        "Sundance selection": "Sundance Selection",
+      };
+
       const grouped: Record<string, Movie[]> = {};
       entries.forEach(entry => {
+        const mappedCollectionName = nameMap[entry.collection_name] || entry.collection_name;
         const movie = allMovies.find(m => m.id === entry.movie_id);
         if (movie) {
-          if (!grouped[entry.collection_name]) {
-            grouped[entry.collection_name] = [];
+          if (!grouped[mappedCollectionName]) {
+            grouped[mappedCollectionName] = [];
           }
-          grouped[entry.collection_name].push(movie);
+          grouped[mappedCollectionName].push(movie);
         }
       });
       for (const key in grouped) {
@@ -279,14 +290,14 @@ const Index = () => {
   // One-time migration effect
   useEffect(() => {
     const migratePredefinedCarousels = async () => {
-      if (!isAdmin || !allMovies || allMovies.length === 0) return;
+      if (!isAdmin || !allMovies || allMovies.length === 0) return; // Only runs for admin
 
+      // Check if ANY predefined entries exist, regardless of user_id
       const { data: existingPredefinedEntries, error } = await supabase
         .from('carousel_collections')
         .select('collection_name')
-        .eq('user_id', ADMIN_USER_ID)
         .eq('type', 'predefined')
-        .limit(1); // Just check if any predefined entry exists
+        .limit(1);
 
       if (error) {
         console.error("Error checking for existing predefined carousels:", error);
@@ -294,8 +305,10 @@ const Index = () => {
       }
 
       if (existingPredefinedEntries && existingPredefinedEntries.length > 0) {
-        console.log("Predefined carousels already migrated.");
-        return; // Already migrated, do nothing
+        console.log("Predefined carousels already migrated or exist.");
+        // If old names exist in DB, they will be mapped client-side for display.
+        // No need to re-insert or update here in this one-time migration.
+        return;
       }
 
       console.log("Migrating predefined carousels...");
@@ -316,7 +329,7 @@ const Index = () => {
           const movie = allMovies.find(m => m.title === title);
           if (movie) {
             inserts.push({
-              user_id: ADMIN_USER_ID,
+              user_id: ADMIN_USER_ID, // Still insert with ADMIN_USER_ID as it's NOT NULL
               movie_id: movie.id,
               collection_name: carousel.name,
               type: 'predefined',
@@ -337,6 +350,7 @@ const Index = () => {
       }
     };
 
+    // This effect should still only run for admin to perform the insertion
     if (!sessionLoading && isAdmin && allMovies && allMovies.length > 0) {
       migratePredefinedCarousels();
     }
