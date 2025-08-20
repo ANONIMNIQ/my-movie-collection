@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
 import { cn } from "@/lib/utils"; // Import cn utility
+import { FilmRollIcon } from '@/components/icons'; // Import FilmRollIcon
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -43,7 +44,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
-  const [imageLoaded, setImageLoaded] = useState(false); // New state for image loading
+  const [isLoadingImage, setIsLoadingImage] = useState(true); // State for image loading
+  const [hasImageError, setHasImageError] = useState(false); // State for image error
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -215,32 +217,49 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
       )}
 
       <div
-        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2 overflow-hidden" // Added overflow-hidden
-        style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
+        className="relative h-40 w-full bg-muted flex items-center justify-center p-2 overflow-hidden" // Added overflow-hidden
       >
         {/* Skeleton for image loading */}
-        {!imageLoaded && (
+        {(isLoadingImage || hasImageError) && (
           <Skeleton className="absolute inset-0 w-full h-full" />
         )}
+        
+        <img
+          src={backdropUrl || ''} // Use empty string for src if null to prevent broken image icon
+          alt={`${movie.title} backdrop`}
+          className={cn(
+            "absolute inset-0 w-full h-full object-cover transition-opacity duration-500",
+            !isLoadingImage && !hasImageError ? "opacity-100" : "opacity-0"
+          )}
+          onLoad={() => setIsLoadingImage(false)}
+          onError={() => {
+            setIsLoadingImage(false);
+            setHasImageError(true);
+          }}
+        />
         {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-        {logoUrl && !isLoading ? ( // Only render img if logoUrl exists and TMDb data is not loading
+        {logoUrl && !isLoading && !hasImageError ? ( // Only render img if logoUrl exists and TMDb data is not loading and no image error
           <img
             src={logoUrl}
             alt={`${movie.title} logo`}
             className={cn(
               "max-h-24 max-w-full object-contain z-10 transition-opacity duration-500",
-              imageLoaded ? "opacity-100" : "opacity-0"
+              !isLoadingImage && !hasImageError ? "opacity-100" : "opacity-0"
             )}
-            onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'; // Hide broken image icon
-              setImageLoaded(true); // Still set loaded to true even if it's hidden
+            onLoad={() => setIsLoadingImage(false)}
+            onError={() => {
+              setIsLoadingImage(false);
+              setHasImageError(true);
             }}
-            // Removed loading="lazy"
           />
         ) : (
-          // Fallback for when no logoUrl or TMDb data is loading
-          !isLoading && <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
+          // Fallback for when no logoUrl or TMDb data is loading or image error
+          !isLoading && !hasImageError && <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
+        )}
+        {hasImageError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-800 text-gray-400 z-10">
+            <FilmRollIcon className="w-1/2 h-1/2" />
+          </div>
         )}
       </div>
 
