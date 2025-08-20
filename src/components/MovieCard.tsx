@@ -210,23 +210,30 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         "aspect-[2/3] w-full bg-muted relative overflow-hidden", // Added relative and overflow-hidden
         !isAnimatingClone && "transition-opacity duration-300 group-hover/slide:opacity-0" // Apply this only to the original card
       )}>
-        {/* Skeleton for image loading */}
-        {!imageLoaded && (
-          <Skeleton className="absolute inset-0 w-full h-full" />
-        )}
-        <img
+        <AnimatePresence> {/* Wrap skeleton with AnimatePresence */}
+          {!imageLoaded && (
+            <motion.div
+              key="skeleton" // Key for AnimatePresence
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.8 } }} // Fade out skeleton
+              className="absolute inset-0 w-full h-full"
+            >
+              <Skeleton className="w-full h-full" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <motion.img // Changed to motion.img
           src={posterUrl}
           alt={movie.title}
-          className={cn(
-            "w-full h-full object-cover transition-opacity duration-500",
-            imageLoaded ? "opacity-100" : "opacity-0"
-          )}
-          onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
+          className="w-full h-full object-cover" // Removed Tailwind transition classes
+          initial={{ opacity: 0 }} // Initial state: invisible
+          animate={{ opacity: imageLoaded ? 1 : 0 }} // Animate to 1 if loaded, else 0
+          transition={{ duration: 0.8, ease: "easeOut" }} // Animation duration and ease
+          onLoad={() => setImageLoaded(true)}
           onError={(e) => {
             e.currentTarget.src = '/placeholder.svg';
-            setImageLoaded(true); // Still set loaded to true even if it's the placeholder
+            setImageLoaded(true);
           }}
-          // Removed loading="lazy" as LazyMovieCard handles visibility
         />
       </div>
 
