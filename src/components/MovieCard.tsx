@@ -218,32 +218,31 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
         "aspect-[2/3] w-full bg-muted relative overflow-hidden", // Added relative and overflow-hidden
         !isAnimatingClone && "transition-opacity duration-300 group-hover/slide:opacity-0" // Apply this only to the original card
       )}>
-        {/* Skeleton or themed fallback */}
-        {(isImageLoading || hasImageError || !finalPosterUrl) && (
-          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
-            {hasImageError || !finalPosterUrl ? "No Poster Available" : <Skeleton className="w-full h-full" />}
-          </div>
-        )}
-
-        {/* Actual image, only rendered if a URL exists and no explicit error */}
-        {finalPosterUrl && (
+        {finalPosterUrl && !hasImageError ? (
           <img
             src={finalPosterUrl}
             alt={movie.title}
             className={cn(
               "w-full h-full object-cover transition-opacity duration-500",
-              !isImageLoading && !hasImageError ? "opacity-100" : "opacity-0"
+              isImageLoading ? "opacity-0" : "opacity-100" // Only fade in when loaded
             )}
-            onLoad={() => {
-              setIsImageLoading(false);
-              setHasImageError(false);
-            }}
+            onLoad={() => setIsImageLoading(false)}
             onError={(e) => {
               console.error(`Failed to load image for ${movie.title}: ${e.currentTarget.src}`);
               setIsImageLoading(false); // Stop loading state
               setHasImageError(true); // Indicate error
             }}
           />
+        ) : (
+          // Fallback when no valid poster URL or image failed to load
+          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
+            No Poster Available
+          </div>
+        )}
+
+        {/* Skeleton overlay for loading state, only if a URL exists and it's still loading */}
+        {isImageLoading && finalPosterUrl && !hasImageError && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
         )}
       </div>
 

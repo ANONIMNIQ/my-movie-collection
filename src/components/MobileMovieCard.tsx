@@ -45,8 +45,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  const [isImageLoading, setIsImageLoading] = useState(true); // True initially
-  const [hasImageError, setHasImageError] = useState(false); // False initially
+  const [isImageLoading, setIsImageLoading] = useState(true); // True initially for the main poster
+  const [hasImageError, setHasImageError] = useState(false); // False initially for the main poster
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -227,39 +227,55 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
         </div>
       )}
 
+      {/* Main Poster Section */}
       <div
-        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2 overflow-hidden" // Added overflow-hidden
-        style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
+        className="relative h-80 w-full bg-muted flex items-center justify-center overflow-hidden" // Increased height for prominence
       >
-        {/* Skeleton or themed fallback */}
-        {(isImageLoading || hasImageError || !finalPosterUrl) && (
-          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
-            {hasImageError || !finalPosterUrl ? "No Poster Available" : <Skeleton className="w-full h-full" />}
-          </div>
-        )}
-
-        {/* Actual image, only rendered if a URL exists and no explicit error */}
-        {finalPosterUrl && (
+        {finalPosterUrl && !hasImageError ? (
           <img
             src={finalPosterUrl}
             alt={movie.title}
             className={cn(
-              "max-h-24 max-w-full object-contain z-10 transition-opacity duration-500",
-              !isImageLoading && !hasImageError ? "opacity-100" : "opacity-0"
+              "w-full h-full object-cover transition-opacity duration-500",
+              isImageLoading ? "opacity-0" : "opacity-100"
             )}
-            onLoad={() => {
-              setIsImageLoading(false);
-              setHasImageError(false);
-            }}
+            onLoad={() => setIsImageLoading(false)}
             onError={(e) => {
               console.error(`Failed to load image for ${movie.title}: ${e.currentTarget.src}`);
-              setIsImageLoading(false); // Stop loading state
-              setHasImageError(true); // Indicate error
+              setIsImageLoading(false);
+              setHasImageError(true);
             }}
           />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
+            No Poster Available
+          </div>
         )}
+
+        {isImageLoading && finalPosterUrl && !hasImageError && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
+
+        {/* Overlay for logo/title on top of the poster */}
+        <div
+          className="absolute inset-0 bg-black/50 flex flex-col justify-end p-4"
+          style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
+          {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={`${movie.title} logo`}
+              className="max-h-24 max-w-full object-contain z-10 self-start"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          ) : (
+            <h3 className="text-2xl font-bold text-white z-10">{movie.title}</h3>
+          )}
+        </div>
       </div>
 
+      {/* Details Section */}
       <div className="p-4">
         <div className="flex justify-between items-start">
             <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>
