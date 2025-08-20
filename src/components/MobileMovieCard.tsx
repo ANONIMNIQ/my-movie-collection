@@ -191,6 +191,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   // Render function for the card content (used by both original and animating card)
   const renderCardContent = (isAnimatingClone = false) => (
     <>
+      {/* Admin Checkbox and Buttons (unchanged) */}
       {isAdmin && (
         <div className={`absolute top-2 left-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-25 */}
           <Checkbox
@@ -227,39 +228,52 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
         </div>
       )}
 
+      {/* Top Section: Backdrop with Logo/Title */}
       <div
-        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center overflow-hidden" // Increased height for prominence
+        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center overflow-hidden"
         style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >
-        {/* Skeleton or themed fallback */}
-        {(isImageLoading || hasImageError || !finalPosterUrl) && (
-          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
-            {hasImageError || !finalPosterUrl ? "No Poster Available" : <Skeleton className="w-full h-full" />}
-          </div>
+        {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={`${movie.title} logo`}
+            className="max-h-24 max-w-full object-contain z-10"
+            onError={(e) => (e.currentTarget.style.display = 'none')}
+          />
+        ) : (
+          <h3 className="text-2xl font-bold text-white text-center z-10 px-4">{movie.title}</h3>
         )}
+      </div>
 
-        {/* Actual image, only rendered if a URL exists and no explicit error */}
-        {finalPosterUrl && (
+      {/* Main Poster Section */}
+      <div className="relative aspect-[2/3] w-full bg-muted flex items-center justify-center overflow-hidden">
+        {finalPosterUrl && !hasImageError ? (
           <img
             src={finalPosterUrl}
             alt={movie.title}
             className={cn(
-              "max-h-24 max-w-full object-contain z-10 transition-opacity duration-500",
+              "w-full h-full object-cover transition-opacity duration-500",
               isImageLoading ? "opacity-0" : "opacity-100"
             )}
-            onLoad={() => {
-              setIsImageLoading(false);
-              setHasImageError(false);
-            }}
+            onLoad={() => setIsImageLoading(false)}
             onError={(e) => {
               console.error(`Failed to load image for ${movie.title}: ${e.currentTarget.src}`);
               setIsImageLoading(false);
               setHasImageError(true);
             }}
           />
+        ) : (
+          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
+            No Poster Available
+          </div>
+        )}
+        {isImageLoading && finalPosterUrl && !hasImageError && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
         )}
       </div>
 
+      {/* Details Section (unchanged) */}
       <div className="p-4">
         <div className="flex justify-between items-start">
             <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>
