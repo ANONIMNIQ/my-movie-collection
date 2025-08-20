@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
 import { cn } from "@/lib/utils"; // Import cn utility
+import { getTmdbPosterUrl } from "@/utils/tmdbUtils"; // Import getTmdbPosterUrl
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -43,7 +44,9 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
-  const [imageLoaded, setImageLoaded] = useState(false); // New state for image loading
+
+  const [isImageLoading, setIsImageLoading] = useState(true); // True initially
+  const [hasImageError, setHasImageError] = useState(false); // False initially
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -61,6 +64,16 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
     },
     staleTime: 1000 * 60 * 5,
   });
+
+  const finalPosterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
+    ? movie.poster_url
+    : getTmdbPosterUrl(tmdbMovie?.poster_path);
+
+  // Reset loading/error states when movie or finalPosterUrl changes
+  useEffect(() => {
+    setIsImageLoading(true);
+    setHasImageError(false);
+  }, [movie.id, finalPosterUrl]);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -114,8 +127,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
     queryClient.prefetchQuery({
         queryKey: ["tmdb", movie.id], // Use movie.id for TMDb prefetch
         queryFn: async () => {
-            let finalTmdbId = movie.tmdb_id;
-            if (!finalTmdbId) {
+            let tmdbIdToFetch = movie.tmdb_id;
+            if (!tmdbIdToFetch) {
               let searchResults = await fetchFromTmdb("/search/movie", {
                   query: movie.title,
                   primary_release_year: movie.year,
@@ -124,13 +137,13 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
                   searchResults = await fetchFromTmdb("/search/movie", { query: movie.title });
               }
               if (searchResults && searchResults.results.length > 0) {
-                  finalTmdbId = String(searchResults.results[0].id);
+                  tmdbIdToFetch = String(searchResults.results[0].id);
               }
             }
-            if (!finalTmdbId) {
+            if (!tmdbIdToFetch) {
                 return null;
             }
-            const details = await fetchFromTmdb(`/movie/${finalTmdbId}`, {
+            const details = await fetchFromTmdb(`/movie/${tmdbIdToFetch}`, {
                 append_to_response: "credits,release_dates,images,videos,watch/providers",
             });
             return details;
@@ -218,29 +231,32 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
         className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2 overflow-hidden" // Added overflow-hidden
         style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >
-        {/* Skeleton for image loading */}
-        {!imageLoaded && (
-          <Skeleton className="absolute inset-0 w-full h-full" />
+        {/* Skeleton or themed fallback */}
+        {(isImageLoading || hasImageError || !finalPosterUrl) && (
+          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
+            {hasImageError || !finalPosterUrl ? "No Poster Available" : <Skeleton className="w-full h-full" />}
+          </div>
         )}
-        {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-        {logoUrl && !isLoading ? ( // Only render img if logoUrl exists and TMDb data is not loading
+
+        {/* Actual image, only rendered if a URL exists and no explicit error */}
+        {finalPosterUrl && (
           <img
-            src={logoUrl}
-            alt={`${movie.title} logo`}
+            src={finalPosterUrl}
+            alt={movie.title}
             className={cn(
               "max-h-24 max-w-full object-contain z-10 transition-opacity duration-500",
-              imageLoaded ? "opacity-100" : "opacity-0"
+              !isImageLoading && !hasImageError ? "opacity-100" : "opacity-0"
             )}
-            onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'; // Hide broken image icon
-              setImageLoaded(true); // Still set loaded to true even if it's hidden
+            onLoad={() => {
+              setIsImageLoading(false);
+              setHasImageError(false);
             }}
-            // Removed loading="lazy"
+            onError={(e) => {
+              console.error(`Failed to load image for ${movie.title}: ${e.currentTarget.src}`);
+              setIsImageLoading(false); // Stop loading state
+              setHasImageError(true); // Indicate error
+            }}
           />
-        ) : (
-          // Fallback for when no logoUrl or TMDb data is loading
-          !isLoading && <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
         )}
       </div>
 

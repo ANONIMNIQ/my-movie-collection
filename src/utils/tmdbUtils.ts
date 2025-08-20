@@ -4,6 +4,6 @@ export const extractTmdbMovieId = (url: string): string | null => {
   return match ? match[1] : null;
 };
 
-export const getTmdbPosterUrl = (posterPath: string | null): string => {
-  return posterPath ? `https://image.tmdb.org/t/p/w780${posterPath}` : '/placeholder.svg';
+export const getTmdbPosterUrl = (posterPath: string | null): string | null => {
+  return posterPath ? `https://image.tmdb.org/t/p/w780${posterPath}` : null;
 };
