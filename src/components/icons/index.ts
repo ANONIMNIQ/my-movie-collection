@@ -11,4 +11,3 @@ export { BerlinaleIcon } from './BerlinaleIcon';
 export { VeniceIcon } from './VeniceIcon';
 export { SundanceIcon } from './SundanceIcon';
 export { OscarIcon } from './OscarIcon';
-export { FilmRollIcon } from './FilmRollIcon';
