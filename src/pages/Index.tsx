@@ -36,7 +36,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { MobileMovieCard } from "@/components/MobileMovieCard";
+import { LazyMobileMovieCard } from "@/components/LazyMobileMovieCard"; // Import LazyMobileMovieCard
 import { motion, AnimatePresence } from "framer-motion";
 import HeroSlider from "@/components/HeroSlider";
 import DynamicMovieCountHeader from "@/components/DynamicMovieCountHeader";
@@ -121,7 +121,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAndFilter, setSortAndFilter] = useState("title-asc");
   const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
-  const [selectedMovieIds, setSelectedMovieIds] = new Set();
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<string>>(new Set());
   const [isDeleting, setIsDeleting] = useState(false);
   const [isManagingCarousels, setIsManagingCarousels] = useState(false); // New state for carousel management loading
   const queryClient = useQueryClient();
@@ -548,7 +548,7 @@ const Index = () => {
       ([entry]) => {
         setIsLoadMoreTriggerVisible(entry.isIntersecting);
       },
-      { threshold: 0.1 }
+      { rootMargin: '0px 0px 200px 0px' } // Trigger when 200px from bottom of viewport
     );
 
     // Observer for footerRef (to move search bar up)
@@ -1225,7 +1225,7 @@ const Index = () => {
                 ) : filteredAndSortedMovies.length === 0 ? (
                   <div className="text-center text-gray-500 text-lg py-16">No movies found matching your search.</div>
                 ) : (
-                  moviesToShow.map(movie => <motion.div key={movie.id} variants={contentVariants}><MobileMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} /></motion.div>)
+                  moviesToShow.map(movie => <motion.div key={movie.id} variants={contentVariants}><LazyMobileMovieCard movie={movie} selectedMovieIds={selectedMovieIds} onSelectMovie={handleSelectMovie} /></motion.div>)
                 )}
               </div>
               {/* Infinite Scroll Trigger and Messages for Mobile */}
