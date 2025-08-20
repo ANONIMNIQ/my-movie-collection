@@ -201,7 +201,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This action cannot be undone. This will permanently delete the movie "{movie.title}" from your collection.
-                </DAlertDialogDescription>
+                </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
