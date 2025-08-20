@@ -300,14 +300,14 @@ const Index = () => {
 
       console.log("Migrating predefined carousels...");
       const predefinedCarouselsToMigrate = [
-        { name: "Oscar winners", titles: initialOscarWinnersTitles },
+        { name: "Oscar Winners", titles: initialOscarWinnersTitles },
         { name: "The best thought provoking / mind-bending movies in my collection", titles: initialMindBendingTitles },
         { name: "The best mystery / psychological thrillers in my collection", titles: initialMysteryThrillerTitles },
-        { name: "Cannes selection", titles: initialCannesSelectionTitles },
-        { name: "TIFF selection", titles: initialTiffSelectionTitles },
-        { name: "Berlinale selection", titles: initialBerlinaleSelectionTitles },
-        { name: "Venice selection", titles: initialVeniceSelectionTitles },
-        { name: "Sundance selection", titles: initialSundanceSelectionTitles },
+        { name: "Cannes Film Festival Selection", titles: initialCannesSelectionTitles },
+        { name: "Toronto International Film Festival Selection", titles: initialTiffSelectionTitles },
+        { name: "Berlinale Selection", titles: initialBerlinaleSelectionTitles },
+        { name: "Venice International Film Festival Selection", titles: initialVeniceSelectionTitles },
+        { name: "Sundance Selection", titles: initialSundanceSelectionTitles },
       ];
 
       const inserts: { user_id: string; movie_id: string; collection_name: string; type: string }[] = [];
@@ -773,17 +773,17 @@ const Index = () => {
 
   const carouselOrder = useMemo(() => [
     "New Movies",
-    "Oscar winners",
+    "Oscar Winners",
     "The best thought provoking / mind-bending movies in my collection",
     "The best mystery / psychological thrillers in my collection",
-    "Cannes selection",
-    "TIFF selection",
-    "Berlinale selection",
-    "Venice selection",
-    "Sundance selection",
+    "Cannes Film Festival Selection",
+    "Toronto International Film Festival Selection",
+    "Berlinale Selection",
+    "Venice International Film Festival Selection",
+    "Sundance Selection",
     "Drama",
     "Thriller",
-    "Science Fiction", // Changed from "Sci-Fi" to "Science Fiction"
+    "Science Fiction",
     "Horror",
     ...customCarouselNames
   ], [customCarouselNames]);

@@ -20,17 +20,17 @@ interface CustomCarouselProps {
 
 const titleIcons: { [key: string]: React.FC<React.SVGProps<SVGSVGElement>> } = {
   "New Movies": CalendarAltIcon,
-  "Oscar winners": OscarIcon,
+  "Oscar Winners": OscarIcon,
   "The best thought provoking / mind-bending movies in my collection": TrophyIcon,
   "The best mystery / psychological thrillers in my collection": TrophyIcon,
-  "Cannes selection": CannesIcon,
-  "TIFF selection": TiffIcon,
-  "Berlinale selection": BerlinaleIcon,
-  "Venice selection": VeniceIcon,
-  "Sundance selection": SundanceIcon,
+  "Cannes Film Festival Selection": CannesIcon,
+  "Toronto International Film Festival Selection": TiffIcon,
+  "Berlinale Selection": BerlinaleIcon,
+  "Venice International Film Festival Selection": VeniceIcon,
+  "Sundance Selection": SundanceIcon,
   "Drama": HeartBreakIcon,
   "Thriller": BinocularIcon,
-  "Science Fiction": UfoIcon, // Changed to UfoIcon
+  "Science Fiction": UfoIcon,
   "Horror": GhostIcon,
 };
 
@@ -92,20 +92,31 @@ export const CustomCarousel: React.FC<CustomCarouselProps> = ({ title, movies, s
   if (!movies || movies.length === 0) return null;
 
   const IconComponent = titleIcons[title];
-  const isSpecialIcon = title === "Cannes selection" || title === "TIFF selection" || title === "Berlinale selection" || title === "Venice selection" || title === "Sundance selection" || title === "Oscar winners";
+  const isSpecialIcon = [
+    "Cannes Film Festival Selection",
+    "Toronto International Film Festival Selection",
+    "Berlinale Selection",
+    "Venice International Film Festival Selection",
+    "Sundance Selection",
+    "Oscar Winners"
+  ].includes(title);
 
   return (
     <section className="mb-12 relative z-30">
       <div className="px-10">
         <motion.h2
-          className="text-3xl font-bold flex items-center"
+          className={cn(
+            "flex items-center font-bold",
+            "text-xl sm:text-2xl md:text-3xl lg:text-4xl", // Responsive font sizes
+            "whitespace-nowrap overflow-hidden text-ellipsis" // Ensure single line
+          )}
           initial={isMobile ? { color: "rgb(255,255,255)" } : {}}
           animate={isMobile && pageLoaded ? { color: "rgb(0,0,0)" } : {}}
           transition={{ duration: 0.8, ease: "easeOut", delay: 1.5 }}
         >
           {!isMobileHook && IconComponent ? (
             <div className={cn(
-              "flex items-center justify-center mr-2",
+              "flex items-center justify-center mr-2", // Consistent small gap
               isSpecialIcon ? "" : "bg-white rounded-full p-2 w-10 h-10"
             )}>
               <IconComponent className={cn(
