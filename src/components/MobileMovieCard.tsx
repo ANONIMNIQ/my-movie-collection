@@ -26,6 +26,7 @@ import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
 import { cn } from "@/lib/utils"; // Import cn utility
 import { FilmRollIcon } from '@/components/icons'; // Import FilmRollIcon
+import { getTmdbPosterUrl } from "@/utils/tmdbUtils"; // Import getTmdbPosterUrl
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -63,6 +64,8 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
     },
     staleTime: 1000 * 60 * 5,
   });
+
+  const posterUrl = getTmdbPosterUrl(tmdbMovie?.poster_path || movie.poster_url);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 

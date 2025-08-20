@@ -70,9 +70,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
     staleTime: 1000 * 60 * 5,
   });
 
-  const posterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
-    ? movie.poster_url
-    : getTmdbPosterUrl(tmdbMovie?.poster_path);
+  const posterUrl = getTmdbPosterUrl(tmdbMovie?.poster_path || movie.poster_url);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
