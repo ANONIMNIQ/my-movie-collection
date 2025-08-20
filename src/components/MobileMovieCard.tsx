@@ -191,7 +191,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   // Render function for the card content (used by both original and animating card)
   const renderCardContent = (isAnimatingClone = false) => (
     <>
-      {/* Admin Checkbox and Buttons (unchanged) */}
       {isAdmin && (
         <div className={`absolute top-2 left-2 z-25 ${isAnimatingClone ? 'opacity-0' : ''}`}> {/* Changed z-index to z-25 */}
           <Checkbox
