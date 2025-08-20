@@ -24,7 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
-import { cn } from "@/lib/utils"; // Import cn utility
+import { cn } => "@/lib/utils"; // Import cn utility
 import { getTmdbPosterUrl } from "@/utils/tmdbUtils"; // Import getTmdbPosterUrl
 
 interface MobileMovieCardProps {
@@ -45,9 +45,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
 
-  const [isImageLoading, setIsImageLoading] = useState(true); // True initially for the main poster
-  const [hasImageError, setHasImageError] = useState(false); // False initially for the main poster
-
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
     queryFn: async () => {
@@ -64,16 +61,6 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
     },
     staleTime: 1000 * 60 * 5,
   });
-
-  const finalPosterUrl = movie.poster_url && movie.poster_url !== '/placeholder.svg'
-    ? movie.poster_url
-    : getTmdbPosterUrl(tmdbMovie?.poster_path);
-
-  // Reset loading/error states when movie or finalPosterUrl changes
-  useEffect(() => {
-    setIsImageLoading(true);
-    setHasImageError(false);
-  }, [movie.id, finalPosterUrl]);
 
   const isAdmin = session?.user?.id === ADMIN_USER_ID;
 
@@ -245,34 +232,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
         )}
       </div>
 
-      {/* Main Poster Section */}
-      <div className="relative aspect-[2/3] w-full bg-muted flex items-center justify-center overflow-hidden">
-        {finalPosterUrl && !hasImageError ? (
-          <img
-            src={finalPosterUrl}
-            alt={movie.title}
-            className={cn(
-              "w-full h-full object-cover transition-opacity duration-500",
-              isImageLoading ? "opacity-0" : "opacity-100"
-            )}
-            onLoad={() => setIsImageLoading(false)}
-            onError={(e) => {
-              console.error(`Failed to load image for ${movie.title}: ${e.currentTarget.src}`);
-              setIsImageLoading(false);
-              setHasImageError(true);
-            }}
-          />
-        ) : (
-          <div className="absolute inset-0 w-full h-full bg-gray-900 flex items-center justify-center text-gray-400 text-xs p-2 text-center">
-            No Poster Available
-          </div>
-        )}
-        {isImageLoading && finalPosterUrl && !hasImageError && (
-          <Skeleton className="absolute inset-0 w-full h-full" />
-        )}
-      </div>
-
-      {/* Details Section (unchanged) */}
+      {/* Details Section */}
       <div className="p-4">
         <div className="flex justify-between items-start">
             <h3 className="text-xl font-bold line-clamp-1 mb-2">{movie.title}</h3>
