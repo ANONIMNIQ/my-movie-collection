@@ -1229,7 +1229,7 @@ const Index = () => {
                 )}
               </div>
               {/* Infinite Scroll Trigger and Messages for Mobile */}
-              <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12">
+              <motion.div ref={loadMoreRef} variants={contentVariants} className="text-center mt-12 pb-12 min-h-[50px]">
                 {visibleCount < filteredAndSortedMovies.length ? (
                   isLoadMoreTriggerVisible && (
                     <div className="flex justify-center items-center gap-2 text-muted-foreground">
