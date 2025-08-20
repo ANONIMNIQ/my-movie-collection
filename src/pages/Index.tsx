@@ -485,73 +485,20 @@ const Index = () => {
   const shrunkenHeaderHeight = isMobile ? 36 : 50; // Keep these values for overall height
 
   useEffect(() => {
-    if (isMobile) {
-      setIsHeaderDark(false);
-      setIsFloatingAllMoviesHeaderVisible(false);
-      setIsTitleScrolledPastTop(false);
-      setIsAllMoviesSectionInView(false);
-      setIsHeroSliderInView(false);
-      setShouldShowSearchBar(false); // Ensure mobile search bar is off
-      setShouldMoveSearchUp(false); // Ensure mobile search bar is off
-      return;
-    }
-
     const currentAllMoviesSectionRef = allMoviesSectionRef.current;
     const currentAllMoviesTitleContainerRef = allMoviesTitleContainerRef.current;
     const currentHeroSliderRef = heroSliderRef.current;
     const currentLoadMoreRef = loadMoreRef.current;
     const currentFooterRef = footerRef.current;
 
-    if (!currentAllMoviesSectionRef || !currentAllMoviesTitleContainerRef) return;
-
-    const headerDarkObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (headerShrunk) {
-          setIsHeaderDark(entry.isIntersecting);
-        } else {
-          setIsHeaderDark(false);
-        }
-      },
-      { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
-    );
-
-    const sectionInViewObserver = new IntersectionObserver(
-      ([entry]) => {
-        setIsAllMoviesSectionInView(entry.isIntersecting);
-      },
-      { threshold: 0 }
-    );
-
-    const titleTopObserver = new IntersectionObserver(
-      ([entry]) => {
-        setIsTitleScrolledPastTop(!entry.isIntersecting);
-      },
-      {
-        rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`,
-        threshold: 0,
-      }
-    );
-
-    let heroSliderObserver: IntersectionObserver | undefined;
-    if (currentHeroSliderRef) {
-      heroSliderObserver = new IntersectionObserver(
-        ([entry]) => {
-          setIsHeroSliderInView(entry.isIntersecting);
-        },
-        { threshold: 0.1 } // Appear later
-      );
-      heroSliderObserver.observe(currentHeroSliderRef);
-    }
-
-    // Observer for loadMoreRef (for infinite scroll and search bar positioning)
+    // Observers that should always be active (or conditionally active based on their own logic)
     const loadMoreObserver = new IntersectionObserver(
       ([entry]) => {
         setIsLoadMoreTriggerVisible(entry.isIntersecting);
       },
-      { rootMargin: '0px 0px 500px 0px' } // Trigger when 500px from bottom of viewport
+      { rootMargin: '0px 0px 500px 0px' }
     );
 
-    // Observer for footerRef (to move search bar up)
     const footerObserver = new IntersectionObserver(
       ([entry]) => {
         setIsFooter(entry.isIntersecting);
@@ -559,22 +506,79 @@ const Index = () => {
       { threshold: 0.1 }
     );
 
-    headerDarkObserver.observe(currentAllMoviesSectionRef);
-    sectionInViewObserver.observe(currentAllMoviesSectionRef);
-    titleTopObserver.observe(currentAllMoviesTitleContainerRef);
     if (currentLoadMoreRef) loadMoreObserver.observe(currentLoadMoreRef);
     if (currentFooterRef) footerObserver.observe(currentFooterRef);
 
+    // Desktop-specific observers and logic
+    let headerDarkObserver: IntersectionObserver | undefined;
+    let sectionInViewObserver: IntersectionObserver | undefined;
+    let titleTopObserver: IntersectionObserver | undefined;
+    let heroSliderObserver: IntersectionObserver | undefined;
+
+    if (!isMobile) {
+      if (!currentAllMoviesSectionRef || !currentAllMoviesTitleContainerRef) return; // Only for desktop
+
+      headerDarkObserver = new IntersectionObserver(
+        ([entry]) => {
+          if (headerShrunk) {
+            setIsHeaderDark(entry.isIntersecting);
+          } else {
+            setIsHeaderDark(false);
+          }
+        },
+        { rootMargin: `-${shrunkenHeaderHeight}px 0px -90% 0px`, threshold: 0 }
+      );
+
+      sectionInViewObserver = new IntersectionObserver(
+        ([entry]) => {
+          setIsAllMoviesSectionInView(entry.isIntersecting);
+        },
+        { threshold: 0 }
+      );
+
+      titleTopObserver = new IntersectionObserver(
+        ([entry]) => {
+          setIsTitleScrolledPastTop(!entry.isIntersecting);
+        },
+        {
+          rootMargin: `-${shrunkenHeaderHeight}px 0px 0px 0px`,
+          threshold: 0,
+        }
+      );
+
+      if (currentHeroSliderRef) {
+        heroSliderObserver = new IntersectionObserver(
+          ([entry]) => {
+            setIsHeroSliderInView(entry.isIntersecting);
+          },
+          { threshold: 0.1 }
+        );
+        heroSliderObserver.observe(currentHeroSliderRef);
+      }
+
+      headerDarkObserver.observe(currentAllMoviesSectionRef);
+      sectionInViewObserver.observe(currentAllMoviesSectionRef);
+      titleTopObserver.observe(currentAllMoviesTitleContainerRef);
+    } else { // Mobile-specific state resets
+      setIsHeaderDark(false);
+      setIsFloatingAllMoviesHeaderVisible(false);
+      setIsTitleScrolledPastTop(false);
+      setIsAllMoviesSectionInView(false);
+      setIsHeroSliderInView(false);
+      setShouldShowSearchBar(false);
+      setShouldMoveSearchUp(false);
+    }
 
     return () => {
-      headerDarkObserver.unobserve(currentAllMoviesSectionRef);
-      sectionInViewObserver.unobserve(currentAllMoviesSectionRef);
-      titleTopObserver.unobserve(currentAllMoviesTitleContainerRef);
-      if (heroSliderObserver && currentHeroSliderRef) {
-        heroSliderObserver.unobserve(currentHeroSliderRef);
-      }
       if (currentLoadMoreRef) loadMoreObserver.unobserve(currentLoadMoreRef);
       if (currentFooterRef) footerObserver.unobserve(currentFooterRef);
+
+      if (!isMobile) { // Only unobserve desktop-specific observers if they were set up
+        if (headerDarkObserver && currentAllMoviesSectionRef) headerDarkObserver.unobserve(currentAllMoviesSectionRef);
+        if (sectionInViewObserver && currentAllMoviesSectionRef) sectionInViewObserver.unobserve(currentAllMoviesSectionRef);
+        if (titleTopObserver && currentAllMoviesTitleContainerRef) titleTopObserver.unobserve(currentAllMoviesTitleContainerRef);
+        if (heroSliderObserver && currentHeroSliderRef) heroSliderObserver.unobserve(currentHeroSliderRef);
+      }
     };
   }, [isMobile, headerShrunk, shrunkenHeaderHeight]);
 
