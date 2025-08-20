@@ -24,6 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from 'react-dom';
 import { fetchFromTmdb } from "@/lib/tmdb"; // Import fetchFromTmdb
+import { cn } from "@/lib/utils"; // Import cn utility
 
 interface MobileMovieCardProps {
   movie: Movie;
@@ -42,6 +43,7 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false); // New state for image loading
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -213,21 +215,32 @@ export const MobileMovieCard = ({ movie, selectedMovieIds, onSelectMovie, should
       )}
 
       <div
-        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2"
+        className="relative h-40 w-full bg-cover bg-center flex items-center justify-center p-2 overflow-hidden" // Added overflow-hidden
         style={{ backgroundImage: backdropUrl ? `url(${backdropUrl})` : 'none', backgroundColor: 'black' }}
       >
-        {isLoading && <Skeleton className="w-full h-full" />}
+        {/* Skeleton for image loading */}
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
         {backdropUrl && <div className="absolute inset-0 bg-black opacity-50"></div>}
-        {logoUrl && !isLoading && (
+        {logoUrl && !isLoading ? ( // Only render img if logoUrl exists and TMDb data is not loading
           <img
             src={logoUrl}
             alt={`${movie.title} logo`}
-            className="max-h-24 max-w-full object-contain z-10"
-            onError={(e) => (e.currentTarget.style.display = 'none')}
+            className={cn(
+              "max-h-24 max-w-full object-contain z-10 transition-opacity duration-500",
+              imageLoaded ? "opacity-100" : "opacity-0"
+            )}
+            onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'; // Hide broken image icon
+              setImageLoaded(true); // Still set loaded to true even if it's hidden
+            }}
+            // Removed loading="lazy"
           />
-        )}
-        {!backdropUrl && !logoUrl && !isLoading && (
-          <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
+        ) : (
+          // Fallback for when no logoUrl or TMDb data is loading
+          !isLoading && <h3 className="text-xl font-bold text-white text-center z-10">{movie.title}</h3>
         )}
       </div>
 

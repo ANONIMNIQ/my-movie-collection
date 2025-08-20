@@ -48,6 +48,7 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
   const [isClicked, setIsClicked] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false); // New state for image loading
 
   const { data: adminPersonalRatingData } = useQuery({
     queryKey: ['admin_user_rating', movie.id, ADMIN_USER_ID],
@@ -206,20 +207,27 @@ export const MovieCard = ({ movie, selectedMovieIds, onSelectMovie, showSynopsis
       )}
 
       <div className={cn(
-        "aspect-[2/3] w-full bg-muted",
+        "aspect-[2/3] w-full bg-muted relative overflow-hidden", // Added relative and overflow-hidden
         !isAnimatingClone && "transition-opacity duration-300 group-hover/slide:opacity-0" // Apply this only to the original card
       )}>
-        {isLoading ? (
-          <Skeleton className="w-full h-full" />
-        ) : (
-          <img
-            src={posterUrl}
-            alt={movie.title}
-            className="w-full h-full object-cover"
-            onError={(e) => (e.currentTarget.src = '/placeholder.svg')}
-            loading="lazy"
-          />
+        {/* Skeleton for image loading */}
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
         )}
+        <img
+          src={posterUrl}
+          alt={movie.title}
+          className={cn(
+            "w-full h-full object-cover transition-opacity duration-500",
+            imageLoaded ? "opacity-100" : "opacity-0"
+          )}
+          onLoad={() => setImageLoaded(true)} // Set imageLoaded to true when image loads
+          onError={(e) => {
+            e.currentTarget.src = '/placeholder.svg';
+            setImageLoaded(true); // Still set loaded to true even if it's the placeholder
+          }}
+          // Removed loading="lazy" as LazyMovieCard handles visibility
+        />
       </div>
 
       {/* Hover Overlay */}
