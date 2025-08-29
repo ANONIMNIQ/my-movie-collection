@@ -14,8 +14,9 @@ import React, { useState, useEffect, useRef } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
 import WatchProviders from "@/components/WatchProviders";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
+import { RottenTomatoesIcon } from "@/components/icons";
 
 const ADMIN_USER_ID = "48127854-07f2-40a5-9373-3c75206482db";
 
@@ -312,6 +313,15 @@ const MovieDetail = () => {
                     </Button>
                   </a>
                 )}
+                <a
+                  href={`https://www.rottentomatoes.com/search?search=${encodeURIComponent(movie.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button size="lg" variant="outline">
+                    <RottenTomatoesIcon className="mr-2 h-5 w-5" /> Search on Rotten Tomatoes
+                  </Button>
+                </a>
               </motion.div>
 
               <motion.p
