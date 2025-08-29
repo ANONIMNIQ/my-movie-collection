@@ -14,7 +14,7 @@ import React, { useState, useEffect, useRef } from "react";
 import YouTubePlayerBackground from "@/components/YouTubePlayerBackground";
 import { motion, AnimatePresence } from "framer-motion";
 import WatchProviders from "@/components/WatchProviders";
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { useIsMobile } from "@/hooks/use-mobile"; // Corrected import path
 import { cn } from "@/lib/utils";
 import { RottenTomatoesIcon } from "@/components/icons";
 
